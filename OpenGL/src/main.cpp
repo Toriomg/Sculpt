@@ -112,19 +112,30 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-    float positions[6] = {
+    float positions[] = {
         -0.5f, -0.5f, // Bottom left
          0.5f, -0.5f, // Bottom right
-         0.0f,  0.5f  // Top
+         0.5f,  0.5f,  // Top right
+        -0.5f,  0.5f // Top left
 	};
+
+	unsigned int indices[6] = { 
+        0, 1, 2,
+		2, 3, 0
+    };
 
 	unsigned int bufferID;
 	glGenBuffers(1, &bufferID); // Generate a buffer ID
 	glBindBuffer(GL_ARRAY_BUFFER, bufferID); // Bind the buffer to the GL_ARRAY_BUFFER target
-	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW); // Upload the vertex data to the buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW); // Upload the vertex data to the buffer
 
 	glEnableVertexAttribArray(0); // Enable the vertex attribute at index 0
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); // 2 floats per vertex, no normalization, stride of 2 floats, starting at the beginning of the buffer
+
+    unsigned int iboID;
+    glGenBuffers(1, &iboID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Parse the shader file
 	ShaderProgramSource source = ParseShader("res/shaders/Basic.shader"); // Parse the shader file
@@ -138,12 +149,10 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
-
         /* Poll for and process events */
         glfwPollEvents();
     }
