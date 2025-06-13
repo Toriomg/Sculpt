@@ -2,9 +2,50 @@
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+struct ShaderProgramSource {
+    std::string VertexSource; // Source code for the vertex shader
+    std::string FragmentSource; // Source code for the fragment shader
+};
+
+static ShaderProgramSource ParseShader(const std::string& filepath) {
+	std::ifstream stream(filepath); // Open the shader file
+
+	enum class ShaderType{
+        NONE = -1, VERTEX = 0, FRAGMENT = 1
+    };
+
+	std::string line; // String to hold each line of the shader file
+	std::stringstream ss[2];
+	ShaderType type = ShaderType::NONE; // Initialize the shader type to NONE
+
+    // Read each line of the shader file
+	while (getline(stream, line)) { 
+		if (line.find("#shader") != std::string::npos) { // Check if the line contains a shader directive
+            // Check if the shader is a vertex shader
+            if (line.find("vertex") != std::string::npos) { 
+				type = ShaderType::VERTEX; // Set the shader type to VERTEX
+			}
+            // Check if the shader is a fragment shader
+			else if (line.find("fragment") != std::string::npos) { 
+				type = ShaderType::FRAGMENT; // Set the shader type to FRAGMENT
+			}
+        }
+        else {
+			// If the line does not contain a shader directive
+            // Append the line to the appropriate shader type's stringstream
+			ss[(int)type] << line << '\n';
+        }
+    }
+
+	return { ss[0].str(), ss[1].str() }; // Return the vertex and fragment shader sources as a ShaderProgramSource struct
+}
 
 static unsigned int CompileShader(const std::string& source, unsigned int type) {
-	unsigned int id = glCreateShader(GL_VERTEX_SHADER); // Create a shader object of the specified type
+	unsigned int id = glCreateShader(type); // Create a shader object of the specified type
 	const char* src = source.c_str(); // Convert the source string to a C-style string
 	glShaderSource(id, 1, &src, nullptr); // Attach the source code to the shader object
 	glCompileShader(id); // Compile the shader
@@ -85,21 +126,10 @@ int main(void)
 	glEnableVertexAttribArray(0); // Enable the vertex attribute at index 0
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); // 2 floats per vertex, no normalization, stride of 2 floats, starting at the beginning of the buffer
 
-    std::string vertexShader = 
-        "#version 330 core\n"
-        "layout(location = 0) in vec4 position;\n"
-        "void main() {\n"
-        "    gl_Position = position;\n"
-	    "}\n";
+	// Parse the shader file
+	ShaderProgramSource source = ParseShader("res/shaders/Basic.shader"); // Parse the shader file
 
-    std::string fragmentShader =
-        "#version 330 core\n"
-        "layout(location = 0) out vec4 color;\n"
-        "void main() {\n"
-        "    color = vec4(1.0, 0.0, 0.0, 0.0);\n"
-        "}\n";
-
-	unsigned int shader = CreateShader(vertexShader, fragmentShader); // Create the shader program
+    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource); // Create the shader program
     glUseProgram(shader);
 
     /* Loop until the user closes the window */
@@ -108,7 +138,7 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
         /* Swap front and back buffers */
@@ -118,6 +148,7 @@ int main(void)
         glfwPollEvents();
     }
 
+	glDeleteProgram(shader); // Delete the shader program
     glfwTerminate();
     return 0;
 }
