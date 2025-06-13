@@ -1,10 +1,29 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
+
+// Macro to assert conditions, triggering a breakpoint if false
+#define ASSERT(x) if (!(x)) __debugbreak() 
+// Macro to clear OpenGL errors before and after a function call
+#define GLCall(x) GLClearError(); x; ASSERT(GLLogCall(#x, __FILE__, __LINE__)) 
+
+static void GLClearError() {
+    while (glGetError() != GL_NO_ERROR); // Clear all OpenGL errors
+}
+
+static bool GLLogCall(const char* function, const char* file, int line) {
+    while (GLenum error = glGetError()) { // Check for OpenGL errors
+        std::cerr << "[OpenGL Error] (" << error << "): " 
+			<< function << " " << file << ":" << line << std::endl; // Log the error
+		return false; // Return false if an error occurred
+    }
+	return true; // Return true if no errors occurred
+}
 
 struct ShaderProgramSource {
     std::string VertexSource; // Source code for the vertex shader
@@ -104,6 +123,7 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+	glfwSwapInterval(1); // Enable vsync
 
     if (glewInit() != GLEW_OK) {
         std::cerr << "Failed to initialize GLEW" << std::endl;
@@ -125,31 +145,50 @@ int main(void)
     };
 
 	unsigned int bufferID;
-	glGenBuffers(1, &bufferID); // Generate a buffer ID
-	glBindBuffer(GL_ARRAY_BUFFER, bufferID); // Bind the buffer to the GL_ARRAY_BUFFER target
-	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW); // Upload the vertex data to the buffer
+    GLCall(glGenBuffers(1, &bufferID)); // Generate a buffer ID
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, bufferID)); // Bind the buffer to the GL_ARRAY_BUFFER target
+    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW)); // Upload the vertex data to the buffer
 
-	glEnableVertexAttribArray(0); // Enable the vertex attribute at index 0
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); // 2 floats per vertex, no normalization, stride of 2 floats, starting at the beginning of the buffer
+    GLCall(glEnableVertexAttribArray(0)); // Enable the vertex attribute at index 0
+    GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0)); // 2 floats per vertex, no normalization, stride of 2 floats, starting at the beginning of the buffer
 
     unsigned int iboID;
-    glGenBuffers(1, &iboID);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    GLCall(glGenBuffers(1, &iboID));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW));
 
 	// Parse the shader file
 	ShaderProgramSource source = ParseShader("res/shaders/Basic.shader"); // Parse the shader file
 
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource); // Create the shader program
-    glUseProgram(shader);
+    GLCall(glUseProgram(shader));
 
+	GLCall(int location = glGetUniformLocation(shader, "u_Color")); // Get the location of the uniform variable
+	ASSERT(location != -1); // Ensure the uniform variable was found
+    GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
+
+
+    float r = 0.2f;
+    float g = 0.3f;
+    float b = 0.8f;
+    float a = 1.0f;
+	float var = 0.01f; // Variable to control color change
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        GLCall(glUniform4f(location, r, g, b, a));
+		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+        if (r >= 1.0f) {
+			var = -0.01f; // Reverse direction when reaching 1.0
+		}
+		else if (r <= 0.0f) {
+			var = 0.01f; // Reverse direction when reaching 0.0
+		}
+		r += var; // Increment the red component
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
