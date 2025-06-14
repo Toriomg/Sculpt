@@ -7,23 +7,11 @@
 #include <string>
 #include <sstream>
 
-// Macro to assert conditions, triggering a breakpoint if false
-#define ASSERT(x) if (!(x)) __debugbreak() 
-// Macro to clear OpenGL errors before and after a function call
-#define GLCall(x) GLClearError(); x; ASSERT(GLLogCall(#x, __FILE__, __LINE__)) 
+#include "Renderer.h" // Include the Renderer header for GLCall macro
 
-static void GLClearError() {
-    while (glGetError() != GL_NO_ERROR); // Clear all OpenGL errors
-}
-
-static bool GLLogCall(const char* function, const char* file, int line) {
-    while (GLenum error = glGetError()) { // Check for OpenGL errors
-        std::cerr << "[OpenGL Error] (" << error << "): " 
-			<< function << " " << file << ":" << line << std::endl; // Log the error
-		return false; // Return false if an error occurred
-    }
-	return true; // Return true if no errors occurred
-}
+// Include custom headers for VertexBuffer and IndexBuffer
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 struct ShaderProgramSource {
     std::string VertexSource; // Source code for the vertex shader
@@ -134,86 +122,82 @@ int main(void)
     }
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
-
-    float positions[] = {
-        -0.5f, -0.5f, // Bottom left
-         0.5f, -0.5f, // Bottom right
-         0.5f,  0.5f,  // Top right
-        -0.5f,  0.5f // Top left
-	};
-
-	unsigned int indices[6] = { 
-        0, 1, 2,
-		2, 3, 0
-    };
-
-	unsigned int vaoID;
-    GLCall(glGenVertexArrays(1, &vaoID)); // Generate a Vertex Array Object (VAO)
-    GLCall(glBindVertexArray(vaoID)); // Bind the VAO
-	// Create a Vertex Buffer Object (VBO) and upload vertex data
-
-	unsigned int bufferID;
-    GLCall(glGenBuffers(1, &bufferID)); // Generate a buffer ID
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, bufferID)); // Bind the buffer to the GL_ARRAY_BUFFER target
-    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW)); // Upload the vertex data to the buffer
-
-    GLCall(glEnableVertexAttribArray(0)); // Enable the vertex attribute at index 0
-    GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0)); // 2 floats per vertex, no normalization, stride of 2 floats, starting at the beginning of the buffer
-
-    unsigned int iboID;
-    GLCall(glGenBuffers(1, &iboID));
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW));
-
-	// Parse the shader file
-	ShaderProgramSource source = ParseShader("res/shaders/Basic.shader"); // Parse the shader file
-
-    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource); // Create the shader program
-    GLCall(glUseProgram(shader));
-
-	GLCall(int location = glGetUniformLocation(shader, "u_Color")); // Get the location of the uniform variable
-	ASSERT(location != -1); // Ensure the uniform variable was found
-    GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
-
-	GLCall(glBindVertexArray(vaoID)); // Bind the VAO
-	GLCall(glUseProgram(0));
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
-
-    float r = 0.2f;
-    float g = 0.3f;
-    float b = 0.8f;
-    float a = 1.0f;
-	float var = 0.01f; // Variable to control color change
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
     {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
 
+        float positions[] = {
+            -0.5f, -0.5f, // Bottom left
+             0.5f, -0.5f, // Bottom right
+             0.5f,  0.5f,  // Top right
+            -0.5f,  0.5f // Top left
+        };
+
+        unsigned int indices[6] = {
+            0, 1, 2,
+            2, 3, 0
+        };
+
+        unsigned int vaoID;
+        GLCall(glGenVertexArrays(1, &vaoID)); // Generate a Vertex Array Object (VAO)
+        GLCall(glBindVertexArray(vaoID)); // Bind the VAO
+        // Create a Vertex Buffer Object (VBO) and upload vertex data
+
+        VertexBuffer vb(positions, sizeof(positions)); // Create a Vertex Buffer Object (VBO) with the vertex data
+
+        GLCall(glEnableVertexAttribArray(0)); // Enable the vertex attribute at index 0
+        GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0)); // 2 floats per vertex, no normalization, stride of 2 floats, starting at the beginning of the buffer
+
+        IndexBuffer ib(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
+
+        // Parse the shader file
+        ShaderProgramSource source = ParseShader("res/shaders/Basic.shader"); // Parse the shader file
+
+        unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource); // Create the shader program
         GLCall(glUseProgram(shader));
-        GLCall(glUniform4f(location, r, g, b, a));
 
-		GLCall(glBindVertexArray(vaoID)); // Bind the VAO
-        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
+        GLCall(int location = glGetUniformLocation(shader, "u_Color")); // Get the location of the uniform variable
+        ASSERT(location != -1); // Ensure the uniform variable was found
+        GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
 
-		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+        GLCall(glBindVertexArray(vaoID)); // Bind the VAO
+        GLCall(glUseProgram(0));
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
-        if (r >= 1.0f) {
-			var = -0.01f; // Reverse direction when reaching 1.0
-		}
-		else if (r <= 0.0f) {
-			var = 0.01f; // Reverse direction when reaching 0.0
-		}
-		r += var; // Increment the red component
+        float r = 0.2f;
+        float g = 0.3f;
+        float b = 0.8f;
+        float a = 1.0f;
+        float var = 0.01f; // Variable to control color change
+        /* Loop until the user closes the window */
+        while (!glfwWindowShouldClose(window))
+        {
+            /* Render here */
+            glClear(GL_COLOR_BUFFER_BIT);
 
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-        /* Poll for and process events */
-        glfwPollEvents();
+            GLCall(glUseProgram(shader));
+            GLCall(glUniform4f(location, r, g, b, a));
+
+            GLCall(glBindVertexArray(vaoID)); // Bind the VAO
+            ib.Bind(); // Bind the Index Buffer Object (IBO)
+
+            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+            if (r >= 1.0f) {
+                var = -0.01f; // Reverse direction when reaching 1.0
+            }
+            else if (r <= 0.0f) {
+                var = 0.01f; // Reverse direction when reaching 0.0
+            }
+            r += var; // Increment the red component
+
+            /* Swap front and back buffers */
+            glfwSwapBuffers(window);
+            /* Poll for and process events */
+            glfwPollEvents();
+        }
+
+        glDeleteProgram(shader); // Delete the shader program
     }
-
-	glDeleteProgram(shader); // Delete the shader program
     glfwTerminate();
     return 0;
 }
