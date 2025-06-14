@@ -111,6 +111,9 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // Set the major version of OpenGL
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // Set the minor version of OpenGL
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Use the core profile of OpenGL
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
@@ -144,6 +147,11 @@ int main(void)
 		2, 3, 0
     };
 
+	unsigned int vaoID;
+    GLCall(glGenVertexArrays(1, &vaoID)); // Generate a Vertex Array Object (VAO)
+    GLCall(glBindVertexArray(vaoID)); // Bind the VAO
+	// Create a Vertex Buffer Object (VBO) and upload vertex data
+
 	unsigned int bufferID;
     GLCall(glGenBuffers(1, &bufferID)); // Generate a buffer ID
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, bufferID)); // Bind the buffer to the GL_ARRAY_BUFFER target
@@ -167,6 +175,10 @@ int main(void)
 	ASSERT(location != -1); // Ensure the uniform variable was found
     GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
 
+	GLCall(glBindVertexArray(vaoID)); // Bind the VAO
+	GLCall(glUseProgram(0));
+	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
     float r = 0.2f;
     float g = 0.3f;
@@ -179,7 +191,12 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
+        GLCall(glUseProgram(shader));
         GLCall(glUniform4f(location, r, g, b, a));
+
+		GLCall(glBindVertexArray(vaoID)); // Bind the VAO
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
+
 		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
         if (r >= 1.0f) {
