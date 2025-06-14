@@ -10,6 +10,7 @@
 #include "Renderer.h" // Include the Renderer header for GLCall macro
 
 #include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
@@ -83,6 +84,8 @@ int main(void)
 		vb.Unbind(); // Unbind the VBO
 		ib.Unbind(); // Unbind the IBO
 
+		Renderer renderer; // Create a Renderer object to handle OpenGL calls
+
         float r = 0.2f;
         float g = 0.1f;
         float b = 0.2f;
@@ -97,10 +100,7 @@ int main(void)
 			shader.Bind(); // Bind the shader program
 			shader.SetUniform4f("u_Color", r, g, b, a); // Set the uniform color variable in the shader
 
-			va.Bind(); // Bind the Vertex Array Object (VAO)
-            ib.Bind(); // Bind the Index Buffer Object (IBO)
-
-            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+			renderer.Draw(va, ib, shader); // Draw the object using the Renderer
 
             if (r >= 1.0f) {
                 var = -0.01f; // Reverse direction when reaching 1.0

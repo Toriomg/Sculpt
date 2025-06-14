@@ -2,6 +2,10 @@
 
 #include <GL/glew.h> // Include GLEW for OpenGL function pointers
 
+#include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "Shader.h"
+
 // Macro to assert conditions, triggering a breakpoint if false
 #define ASSERT(x) if (!(x)) __debugbreak() 
 // Macro to clear OpenGL errors before and after a function call
@@ -10,3 +14,8 @@
 void GLClearError();
 
 bool GLLogCall(const char* function, const char* file, int line);
+
+class Renderer {
+public:
+	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
+};

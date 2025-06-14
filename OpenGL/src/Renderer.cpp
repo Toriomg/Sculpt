@@ -13,3 +13,11 @@ bool GLLogCall(const char* function, const char* file, int line) {
     }
     return true; // Return true if no errors occurred
 }
+
+void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const {
+    shader.Bind(); // Bind the shader program
+    va.Bind(); // Bind the Vertex Array Object (VAO)
+    ib.Bind(); // Bind the Index Buffer Object (IBO)
+
+    GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+}
