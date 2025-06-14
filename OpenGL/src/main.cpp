@@ -12,6 +12,7 @@
 // Include custom headers for VertexBuffer and IndexBuffer
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
 
 struct ShaderProgramSource {
     std::string VertexSource; // Source code for the vertex shader
@@ -141,10 +142,12 @@ int main(void)
         GLCall(glBindVertexArray(vaoID)); // Bind the VAO
         // Create a Vertex Buffer Object (VBO) and upload vertex data
 
+		VertexArray va; // Create a Vertex Array Object (VAO) to hold the vertex attributes
         VertexBuffer vb(positions, sizeof(positions)); // Create a Vertex Buffer Object (VBO) with the vertex data
 
-        GLCall(glEnableVertexAttribArray(0)); // Enable the vertex attribute at index 0
-        GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0)); // 2 floats per vertex, no normalization, stride of 2 floats, starting at the beginning of the buffer
+        VertexBufferLayout layout;
+		layout.Push<float>(2); 
+		va.AddBuffer(vb, layout);
 
         IndexBuffer ib(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
 
@@ -164,8 +167,8 @@ int main(void)
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
         float r = 0.2f;
-        float g = 0.3f;
-        float b = 0.8f;
+        float g = 0.1f;
+        float b = 0.2f;
         float a = 1.0f;
         float var = 0.01f; // Variable to control color change
         /* Loop until the user closes the window */
@@ -177,7 +180,7 @@ int main(void)
             GLCall(glUseProgram(shader));
             GLCall(glUniform4f(location, r, g, b, a));
 
-            GLCall(glBindVertexArray(vaoID)); // Bind the VAO
+			va.Bind(); // Bind the Vertex Array Object (VAO)
             ib.Bind(); // Bind the Index Buffer Object (IBO)
 
             GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
