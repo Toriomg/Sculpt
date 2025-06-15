@@ -158,8 +158,7 @@
     <ClInclude Include="src\VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\..\Pictures\Screenshots\Captura de pantalla 2025-05-27 181801.png" />
-    <Image Include="res\textures\Captura de pantalla 2025-05-27 181801.png" />
+    <Image Include="res\textures\texture1.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

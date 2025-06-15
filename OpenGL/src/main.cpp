@@ -14,6 +14,7 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Texture.h"
 
 int main(void)
 {
@@ -49,20 +50,20 @@ int main(void)
     {
 
         float positions[] = {
-            -0.5f, -0.5f, // Bottom left
-             0.5f, -0.5f, // Bottom right
-             0.5f,  0.5f,  // Top right
-            -0.5f,  0.5f // Top left
+            -0.5f, -0.5f, 0.0f, 0.0f, // Bottom left
+             0.5f, -0.5f, 1.0f, 0.0f, // Bottom right
+             0.5f,  0.5f, 1.0f, 1.0f,  // Top right
+            -0.5f,  0.5f, 0.0f, 1.0f // Top left
         };
 
-        unsigned int indices[6] = {
+        unsigned int indices[] = {
             0, 1, 2,
             2, 3, 0
         };
 
-        unsigned int vaoID;
-        GLCall(glGenVertexArrays(1, &vaoID)); // Generate a Vertex Array Object (VAO)
-        GLCall(glBindVertexArray(vaoID)); // Bind the VAO
+		GLCall(glEnable(GL_BLEND)); // Enable blending for transparency
+		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); // Set the blending function for transparency
+
         // Create a Vertex Buffer Object (VBO) and upload vertex data
 
 		VertexArray va; // Create a Vertex Array Object (VAO) to hold the vertex attributes
@@ -70,6 +71,7 @@ int main(void)
 
         VertexBufferLayout layout;
 		layout.Push<float>(2); 
+        layout.Push<float>(2);
 		va.AddBuffer(vb, layout);
 
         IndexBuffer ib(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
@@ -78,6 +80,10 @@ int main(void)
 		Shader shader("res/shaders/Basic.shader"); // Create a Shader object with the shader file path
 		shader.Bind(); // Bind the shader program
         shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
+
+        Texture texture("res/textures/texture1.png");
+		texture.Bind(); // Bind the texture 
+		shader.SetUniform1i("u_Texture", 0); // Set the texture uniform in the shader
 
 		va.Unbind(); // Unbind the VAO
 		shader.Unbind(); // Unbind the shader program
