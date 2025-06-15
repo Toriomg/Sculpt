@@ -16,6 +16,9 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp" // Include GLM for vector and matrix operations
+#include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
+
 int main(void)
 {
     GLFWwindow* window;
@@ -74,10 +77,13 @@ int main(void)
 
         IndexBuffer ib(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
 
+        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
         // Parse the shader file
 		Shader shader("res/shaders/Basic.shader"); // Create a Shader object with the shader file path
 		shader.Bind(); // Bind the shader program
         shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
+        shader.SetUniform4f("u_MVP", proj);
 
         Texture texture("res/textures/texture1.png");
 		texture.Bind(); // Bind the texture 
