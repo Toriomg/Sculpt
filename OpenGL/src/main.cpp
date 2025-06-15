@@ -19,6 +19,8 @@
 #include "glm/glm.hpp" // Include GLM for vector and matrix operations
 #include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
 
+#include "imgui/imgui.h" // Include ImGui for GUI rendering
+
 int main(void)
 {
     GLFWwindow* window;
@@ -102,6 +104,9 @@ int main(void)
 		ib.Unbind(); // Unbind the IBO
 
 		Renderer renderer; // Create a Renderer object to handle OpenGL calls
+
+		ImGui::CreateContext(); // Initialize ImGui context
+
 
         float r = 0.2f;
         float g = 0.1f;
