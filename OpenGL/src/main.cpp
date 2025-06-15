@@ -53,7 +53,7 @@ int main(void)
     {
 
         float positions[] = {
-            -0.5f, -0.5f, 0.0f, 0.0f, // Bottom left
+            -2.0f, -2.0f, 0.0f, 0.0f, // Bottom left
              0.5f, -0.5f, 1.0f, 0.0f, // Bottom right
              0.5f,  0.5f, 1.0f, 1.0f,  // Top right
             -0.5f,  0.5f, 0.0f, 1.0f // Top left
@@ -83,7 +83,7 @@ int main(void)
 		Shader shader("res/shaders/Basic.shader"); // Create a Shader object with the shader file path
 		shader.Bind(); // Bind the shader program
         shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
-        shader.SetUniform4f("u_MVP", proj);
+        shader.SetUniformMat4f("u_MVP", proj);
 
         Texture texture("res/textures/texture1.png");
 		texture.Bind(); // Bind the texture 
