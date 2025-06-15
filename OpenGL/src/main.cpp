@@ -9,10 +9,10 @@
 
 #include "Renderer.h" // Include the Renderer header for GLCall macro
 
-#include "VertexBuffer.h"
-#include "VertexBufferLayout.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
+#include "buffers/VertexBuffer.h"
+#include "buffers/VertexBufferLayout.h"
+#include "buffers/IndexBuffer.h"
+#include "buffers/VertexArray.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -63,8 +63,6 @@ int main(void)
 
 		GLCall(glEnable(GL_BLEND)); // Enable blending for transparency
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); // Set the blending function for transparency
-
-        // Create a Vertex Buffer Object (VBO) and upload vertex data
 
 		VertexArray va; // Create a Vertex Array Object (VAO) to hold the vertex attributes
         VertexBuffer vb(positions, sizeof(positions)); // Create a Vertex Buffer Object (VBO) with the vertex data
