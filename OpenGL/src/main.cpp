@@ -32,7 +32,7 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Use the core profile of OpenGL
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -53,10 +53,10 @@ int main(void)
     {
 
         float positions[] = {
-            -2.0f, -2.0f, 0.0f, 0.0f, // Bottom left
-             0.5f, -0.5f, 1.0f, 0.0f, // Bottom right
-             0.5f,  0.5f, 1.0f, 1.0f,  // Top right
-            -0.5f,  0.5f, 0.0f, 1.0f // Top left
+             100.0f,  100.0f, 0.0f, 0.0f, // Bottom left
+             200.0f,  100.0f, 1.0f, 0.0f, // Bottom right
+             200.0f,  200.0f, 1.0f, 1.0f,  // Top right
+             100.0f,  200.0f, 0.0f, 1.0f // Top left
         };
 
         unsigned int indices[] = {
@@ -77,13 +77,20 @@ int main(void)
 
         IndexBuffer ib(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
 
-        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+        glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));
 
+        glm::mat4 mvp = proj * view * model;
+
+        glm::vec4 vp(100.0f, 100.0f, 0.0f, 1.0f);
+
+        
         // Parse the shader file
 		Shader shader("res/shaders/Basic.shader"); // Create a Shader object with the shader file path
 		shader.Bind(); // Bind the shader program
         shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
-        shader.SetUniformMat4f("u_MVP", proj);
+        shader.SetUniformMat4f("u_MVP", mvp);
 
         Texture texture("res/textures/texture1.png");
 		texture.Bind(); // Bind the texture 
