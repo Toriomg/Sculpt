@@ -19,7 +19,9 @@
 #include "glm/glm.hpp" // Include GLM for vector and matrix operations
 #include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
 
-#include "imgui/imgui.h" // Include ImGui for GUI rendering
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
 
 int main(void)
 {
@@ -105,7 +107,14 @@ int main(void)
 
 		Renderer renderer; // Create a Renderer object to handle OpenGL calls
 
+		// Setting up ImGui
+		IMGUI_CHECKVERSION(); // Check ImGui version
 		ImGui::CreateContext(); // Initialize ImGui context
+		ImGuiIO& io = ImGui::GetIO(); // Get ImGui IO object
+		(void)io; // Suppress unused variable warning
+		ImGui::StyleColorsDark(); // Set ImGui style to dark
+		ImGui_ImplGlfw_InitForOpenGL(window, true); // Initialize ImGui for GLFW
+        ImGui_ImplOpenGL3_Init("#version 330"); // Initialize ImGui for OpenGL 3.3
 
 
         float r = 0.2f;
@@ -118,6 +127,11 @@ int main(void)
         {
             /* Render here */
             glClear(GL_COLOR_BUFFER_BIT);
+
+			ImGui_ImplOpenGL3_NewFrame(); // Start a new ImGui frame
+            ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame(); // Create a new ImGui frame
+
 
 			shader.Bind(); // Bind the shader program
 			shader.SetUniform4f("u_Color", r, g, b, a); // Set the uniform color variable in the shader
@@ -132,12 +146,24 @@ int main(void)
             }
             r += var; // Increment the red component
 
+            ImGui::Begin("My name is window, ImGui window");
+			ImGui::Text("Hello, world!"); // Display text in the ImGui window
+			ImGui::End(); // End the ImGui window
+
+			ImGui::Render(); // Render ImGui
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); // Render ImGui draw data
+
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
             /* Poll for and process events */
             glfwPollEvents();
         }
     }
+
+	ImGui_ImplOpenGL3_Shutdown(); // Shutdown ImGui for OpenGLç
+    ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext(); // Destroy ImGui context
+
     glfwTerminate();
     return 0;
 }
