@@ -23,6 +23,9 @@
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 
+const float WINDW_SIZE_X = 960.0f; // Define the window width
+const float WINDW_SIZE_Y = 540.0f; // Define the window height
+
 int main(void)
 {
     GLFWwindow* window;
@@ -36,7 +39,7 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Use the core profile of OpenGL
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
+    window = glfwCreateWindow((int)WINDW_SIZE_X, (int)WINDW_SIZE_Y, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -81,11 +84,8 @@ int main(void)
 
         IndexBuffer ib(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
 
-        glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+        glm::mat4 proj = glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1.0f, 1.0f);
         glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));
-
-        glm::mat4 mvp = proj * view * model;
 
         glm::vec4 vp(100.0f, 100.0f, 0.0f, 1.0f);
 
@@ -93,8 +93,6 @@ int main(void)
         // Parse the shader file
 		Shader shader("res/shaders/Basic.shader"); // Create a Shader object with the shader file path
 		shader.Bind(); // Bind the shader program
-        shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
-        shader.SetUniformMat4f("u_MVP", mvp);
 
         Texture texture("res/textures/texture1.png");
 		texture.Bind(); // Bind the texture 
@@ -116,6 +114,7 @@ int main(void)
 		ImGui_ImplGlfw_InitForOpenGL(window, true); // Initialize ImGui for GLFW
         ImGui_ImplOpenGL3_Init("#version 330"); // Initialize ImGui for OpenGL 3.3
 
+        glm::vec3 translation(200.0f, 200.0f, 0.0f);
 
         float r = 0.2f;
         float g = 0.1f;
@@ -132,9 +131,12 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame(); // Create a new ImGui frame
 
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+            glm::mat4 mvp = proj * view * model;
 
 			shader.Bind(); // Bind the shader program
 			shader.SetUniform4f("u_Color", r, g, b, a); // Set the uniform color variable in the shader
+            shader.SetUniformMat4f("u_MVP", mvp);
 
 			renderer.Draw(va, ib, shader); // Draw the object using the Renderer
 
@@ -146,9 +148,14 @@ int main(void)
             }
             r += var; // Increment the red component
 
-            ImGui::Begin("My name is window, ImGui window");
-			ImGui::Text("Hello, world!"); // Display text in the ImGui window
-			ImGui::End(); // End the ImGui window
+            {
+                ImGui::Begin("Debug");
+                //ImGui::Text("Hello, world!"); // Display text in the ImGui window
+                ImGui::SliderFloat3("translation", &translation.x, 0.0f, WINDW_SIZE_X);
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+                ImGui::End(); // End the ImGui window
+            }
 
 			ImGui::Render(); // Render ImGui
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); // Render ImGui draw data
