@@ -60,10 +60,10 @@ int main(void)
     {
 
         float positions[] = {
-             100.0f,  100.0f, 0.0f, 0.0f, // Bottom left
-             200.0f,  100.0f, 1.0f, 0.0f, // Bottom right
-             200.0f,  200.0f, 1.0f, 1.0f,  // Top right
-             100.0f,  200.0f, 0.0f, 1.0f // Top left
+            -50.0f, -50.0f, 0.0f, 0.0f, // Bottom left
+             50.0f, -50.0f, 1.0f, 0.0f, // Bottom right
+             50.0f,  50.0f, 1.0f, 1.0f,  // Top right
+            -50.0f,  50.0f, 0.0f, 1.0f // Top left
         };
 
         unsigned int indices[] = {
@@ -85,7 +85,7 @@ int main(void)
         IndexBuffer ib(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
 
         glm::mat4 proj = glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
         glm::vec4 vp(100.0f, 100.0f, 0.0f, 1.0f);
 
@@ -114,7 +114,8 @@ int main(void)
 		ImGui_ImplGlfw_InitForOpenGL(window, true); // Initialize ImGui for GLFW
         ImGui_ImplOpenGL3_Init("#version 330"); // Initialize ImGui for OpenGL 3.3
 
-        glm::vec3 translation(200.0f, 200.0f, 0.0f);
+        glm::vec3 translationA(200.0f, 200.0f, 0.0f);
+        glm::vec3 translationB(400.0f, 200.0f, 0.0f);
 
         float r = 0.2f;
         float g = 0.1f;
@@ -131,14 +132,24 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame(); // Create a new ImGui frame
 
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
-            glm::mat4 mvp = proj * view * model;
 
 			shader.Bind(); // Bind the shader program
-			shader.SetUniform4f("u_Color", r, g, b, a); // Set the uniform color variable in the shader
-            shader.SetUniformMat4f("u_MVP", mvp);
+            {
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
+                glm::mat4 mvp = proj * view * model;
+                shader.SetUniformMat4f("u_MVP", mvp);
+                // Draw the object using the Renderer
+                renderer.Draw(va, ib, shader);
+            }
 
-			renderer.Draw(va, ib, shader); // Draw the object using the Renderer
+            {
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
+                glm::mat4 mvp = proj * view * model;
+                shader.SetUniformMat4f("u_MVP", mvp);
+                // Draw the object using the Renderer
+                renderer.Draw(va, ib, shader);
+            }
+
 
             if (r >= 1.0f) {
                 var = -0.01f; // Reverse direction when reaching 1.0
@@ -150,8 +161,9 @@ int main(void)
 
             {
                 ImGui::Begin("Debug");
-                //ImGui::Text("Hello, world!"); // Display text in the ImGui window
-                ImGui::SliderFloat3("translation", &translation.x, 0.0f, WINDW_SIZE_X);
+                ImGui::Text("Hello, world!"); // Display text in the ImGui window
+                ImGui::SliderFloat3("translation a", &translationA.x, 0.0f, WINDW_SIZE_X);
+                ImGui::SliderFloat3("translation b", &translationB.x, 0.0f, WINDW_SIZE_X);
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
                 ImGui::End(); // End the ImGui window
