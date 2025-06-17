@@ -15,6 +15,7 @@
 #include "buffers/VertexArray.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "tests/TestClearColor.h"
 
 #include "glm/glm.hpp" // Include GLM for vector and matrix operations
 #include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
@@ -114,6 +115,8 @@ int main(void)
 		ImGui_ImplGlfw_InitForOpenGL(window, true); // Initialize ImGui for GLFW
         ImGui_ImplOpenGL3_Init("#version 330"); // Initialize ImGui for OpenGL 3.3
 
+        test::TestClearColor test;
+
         glm::vec3 translationA(200.0f, 200.0f, 0.0f);
         glm::vec3 translationB(400.0f, 200.0f, 0.0f);
 
@@ -126,7 +129,10 @@ int main(void)
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
-            glClear(GL_COLOR_BUFFER_BIT);
+			renderer.Clear(); // Clear the screen
+
+			test.OnUpdate(0.0f); // Update the test object
+            test.OnRender();
 
 			ImGui_ImplOpenGL3_NewFrame(); // Start a new ImGui frame
             ImGui_ImplGlfw_NewFrame();
@@ -164,6 +170,7 @@ int main(void)
                 ImGui::Text("Hello, world!"); // Display text in the ImGui window
                 ImGui::SliderFloat3("translation a", &translationA.x, 0.0f, WINDW_SIZE_X);
                 ImGui::SliderFloat3("translation b", &translationB.x, 0.0f, WINDW_SIZE_X);
+                test.OnImGuiRender();
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
                 ImGui::End(); // End the ImGui window
@@ -179,7 +186,7 @@ int main(void)
         }
     }
 
-	ImGui_ImplOpenGL3_Shutdown(); // Shutdown ImGui for OpenGLç
+	ImGui_ImplOpenGL3_Shutdown(); // Shutdown ImGui for OpenGL
     ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext(); // Destroy ImGui context
 
