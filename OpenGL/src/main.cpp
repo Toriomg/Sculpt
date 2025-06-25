@@ -115,29 +115,39 @@ int main(void)
 		ImGui_ImplGlfw_InitForOpenGL(window, true); // Initialize ImGui for GLFW
         ImGui_ImplOpenGL3_Init("#version 330"); // Initialize ImGui for OpenGL 3.3
 
-        test::TestClearColor test;
+        test::Test* currentTest = nullptr;
+		test::TestMenu* testMenu = new test::TestMenu(currentTest);
+		currentTest = testMenu; // Set the current test to the test menu
+
+        testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+
+        
 
         glm::vec3 translationA(200.0f, 200.0f, 0.0f);
         glm::vec3 translationB(400.0f, 200.0f, 0.0f);
 
-        float r = 0.2f;
-        float g = 0.1f;
-        float b = 0.2f;
-        float a = 1.0f;
-        float var = 0.01f; // Variable to control color change
-        /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
 			renderer.Clear(); // Clear the screen
 
-			test.OnUpdate(0.0f); // Update the test object
-            test.OnRender();
-
 			ImGui_ImplOpenGL3_NewFrame(); // Start a new ImGui frame
-            ImGui_ImplGlfw_NewFrame();
+			ImGui_ImplGlfw_NewFrame(); // Start a new ImGui frame for GLFW
 			ImGui::NewFrame(); // Create a new ImGui frame
+			
+			if (currentTest) {
+                currentTest->OnUpdate(0.0f); // Update the current test object
+                currentTest->OnRender(); // Render the current test object
 
+				// Render test UI
+				ImGui::Begin("Test Menu"); // Begin the ImGui window for the test menu
+                if (currentTest != testMenu && ImGui::Button("<-")) {
+                    delete currentTest;
+                    currentTest = testMenu;
+                }
+				currentTest->OnImGuiRender(); // Render the ImGui interface for the current test
+                ImGui::End();
+            }
 
 			shader.Bind(); // Bind the shader program
             {
@@ -157,20 +167,11 @@ int main(void)
             }
 
 
-            if (r >= 1.0f) {
-                var = -0.01f; // Reverse direction when reaching 1.0
-            }
-            else if (r <= 0.0f) {
-                var = 0.01f; // Reverse direction when reaching 0.0
-            }
-            r += var; // Increment the red component
-
             {
                 ImGui::Begin("Debug");
                 ImGui::Text("Hello, world!"); // Display text in the ImGui window
                 ImGui::SliderFloat3("translation a", &translationA.x, 0.0f, WINDW_SIZE_X);
                 ImGui::SliderFloat3("translation b", &translationB.x, 0.0f, WINDW_SIZE_X);
-                test.OnImGuiRender();
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
                 ImGui::End(); // End the ImGui window
