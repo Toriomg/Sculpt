@@ -4,6 +4,7 @@ C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Renderer.cpp;C:\Users\Hector\sour
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Shader.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Shader.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestClearColor.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\TestClearColor.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\tests.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\tests.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestTexture2D.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\TestTexture2D.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Texture.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Texture.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\vendor\glm\detail\glm.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\glm.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\vendor\glm\glm.cppm;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\glm.obj

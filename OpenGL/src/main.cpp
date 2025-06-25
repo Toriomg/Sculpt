@@ -16,6 +16,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "tests/TestClearColor.h"
+#include "tests/TestTexture2D.h"
 
 #include "glm/glm.hpp" // Include GLM for vector and matrix operations
 #include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
@@ -59,50 +60,8 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
     {
-
-        float positions[] = {
-            -50.0f, -50.0f, 0.0f, 0.0f, // Bottom left
-             50.0f, -50.0f, 1.0f, 0.0f, // Bottom right
-             50.0f,  50.0f, 1.0f, 1.0f,  // Top right
-            -50.0f,  50.0f, 0.0f, 1.0f // Top left
-        };
-
-        unsigned int indices[] = {
-            0, 1, 2,
-            2, 3, 0
-        };
-
-		GLCall(glEnable(GL_BLEND)); // Enable blending for transparency
-		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); // Set the blending function for transparency
-
-		VertexArray va; // Create a Vertex Array Object (VAO) to hold the vertex attributes
-        VertexBuffer vb(positions, sizeof(positions)); // Create a Vertex Buffer Object (VBO) with the vertex data
-
-        VertexBufferLayout layout;
-		layout.Push<float>(2); 
-        layout.Push<float>(2);
-		va.AddBuffer(vb, layout);
-
-        IndexBuffer ib(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
-
-        glm::mat4 proj = glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-
-        glm::vec4 vp(100.0f, 100.0f, 0.0f, 1.0f);
-
-        
-        // Parse the shader file
-		Shader shader("res/shaders/Basic.shader"); // Create a Shader object with the shader file path
-		shader.Bind(); // Bind the shader program
-
-        Texture texture("res/textures/texture1.png");
-		texture.Bind(); // Bind the texture 
-		shader.SetUniform1i("u_Texture", 0); // Set the texture uniform in the shader
-
-		va.Unbind(); // Unbind the VAO
-		shader.Unbind(); // Unbind the shader program
-		vb.Unbind(); // Unbind the VBO
-		ib.Unbind(); // Unbind the IBO
+        GLCall(glEnable(GL_BLEND)); // Enable blending for transparency
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); // Set the blending function for transparency
 
 		Renderer renderer; // Create a Renderer object to handle OpenGL calls
 
@@ -120,6 +79,7 @@ int main(void)
 		currentTest = testMenu; // Set the current test to the test menu
 
         testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+        testMenu->RegisterTest<test::TestTexture2D>("2D Textures");
 
         
 
@@ -149,33 +109,6 @@ int main(void)
                 ImGui::End();
             }
 
-			shader.Bind(); // Bind the shader program
-            {
-                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
-                glm::mat4 mvp = proj * view * model;
-                shader.SetUniformMat4f("u_MVP", mvp);
-                // Draw the object using the Renderer
-                renderer.Draw(va, ib, shader);
-            }
-
-            {
-                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
-                glm::mat4 mvp = proj * view * model;
-                shader.SetUniformMat4f("u_MVP", mvp);
-                // Draw the object using the Renderer
-                renderer.Draw(va, ib, shader);
-            }
-
-
-            {
-                ImGui::Begin("Debug");
-                ImGui::Text("Hello, world!"); // Display text in the ImGui window
-                ImGui::SliderFloat3("translation a", &translationA.x, 0.0f, WINDW_SIZE_X);
-                ImGui::SliderFloat3("translation b", &translationB.x, 0.0f, WINDW_SIZE_X);
-				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-                ImGui::End(); // End the ImGui window
-            }
 
 			ImGui::Render(); // Render ImGui
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); // Render ImGui draw data
@@ -184,6 +117,10 @@ int main(void)
             glfwSwapBuffers(window);
             /* Poll for and process events */
             glfwPollEvents();
+        }
+        if (currentTest) {
+            delete currentTest; // This will delete testMenu if it's the active test
+            currentTest = nullptr; // Avoid dangling pointer
         }
     }
 
