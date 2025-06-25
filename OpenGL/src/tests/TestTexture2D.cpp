@@ -80,11 +80,9 @@ namespace test {
 		}
 	}
 	void TestTexture2D::OnImGuiRender() {
-		//ImGui::Begin("Debug");
 		ImGui::Text("Hello, world!"); // Display text in the ImGui window
 		ImGui::SliderFloat3("translation a", &m_TranslationA.x, 0.0f, WINDW_SIZE_X);
 		ImGui::SliderFloat3("translation b", &m_TranslationB.x, 0.0f, WINDW_SIZE_X);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		//ImGui::End();
 	}
 }
