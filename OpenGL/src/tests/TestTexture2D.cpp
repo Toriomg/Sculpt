@@ -30,7 +30,7 @@ namespace test {
 		};
 
 		m_VAO = std::make_unique<VertexArray>(); // Create a Vertex Array Object (VAO) to hold the vertex attributes
-		m_VBO = std::make_unique<VertexBuffer>(positions, sizeof(positions)); // Create a Vertex Buffer Object (VBO) with the vertex data
+		m_VBO = std::make_unique<VertexBuffer>(positions, sizeof(positions), true); // Create a Vertex Buffer Object (VBO) with the vertex data
 		VertexBufferLayout layout;
 		layout.Push<float>(2);
 		layout.Push<float>(2);
