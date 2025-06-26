@@ -17,6 +17,7 @@
 #include "Texture.h"
 #include "tests/TestClearColor.h"
 #include "tests/TestTexture2D.h"
+#include "tests/TestBatchRendering.h"
 
 #include "glm/glm.hpp" // Include GLM for vector and matrix operations
 #include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
@@ -80,8 +81,7 @@ int main(void)
 
         testMenu->RegisterTest<test::TestClearColor>("Clear Color");
         testMenu->RegisterTest<test::TestTexture2D>("2D Textures");
-
-        
+        testMenu->RegisterTest<test::TestBatchRendering>("Batch Rendering");        
 
         glm::vec3 translationA(200.0f, 200.0f, 0.0f);
         glm::vec3 translationB(400.0f, 200.0f, 0.0f);

@@ -2,6 +2,7 @@ C:\Users\Hector\source\repos\OpenGL\OpenGL\src\buffers\IndexBuffer.cpp;C:\Users\
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\main.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\main.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Renderer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Renderer.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Shader.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Shader.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestBatchRendering.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\TestBatchRendering.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestClearColor.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\TestClearColor.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\tests.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\tests.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestTexture2D.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\TestTexture2D.obj
