@@ -6,6 +6,7 @@
 #include "../Renderer.h"
 
 struct VertexBufferElement {
+	// Represents a single element in the vertex buffer layout
 	unsigned int type; // Data type (e.g., GL_FLOAT)
 	unsigned int count; // Number of elements
 	unsigned char normalized; // Whether the data should be normalized
@@ -23,6 +24,7 @@ struct VertexBufferElement {
 };
 
 class VertexBufferLayout {
+	// Represents the layout of a vertex buffer, defining how vertex data is structured
 private:
 	std::vector<VertexBufferElement> m_Elements;
 	unsigned int m_Stride = 0; // Total size of one vertex in bytes

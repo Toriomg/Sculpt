@@ -18,15 +18,16 @@ namespace test {
 		m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)))
 	{
 		float positions[] = {
-			-150.0f, -50.0f, 0.0f, 0.0f, // Bottom left
-			-50.0f, -50.0f, 1.0f, 0.0f, // Bottom right
-			-50.0f,  50.0f, 1.0f, 1.0f,  // Top right
-			-150.0f,  50.0f, 0.0f, 1.0f, // Top left
+			// I should used array of structs here for better readability and maintainability
+			-150.0f, -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Bottom left
+			-50.0f, -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Bottom right
+			-50.0f,  50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // Top right
+			-150.0f,  50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Top left
 
-			 50.0f, -50.0f, 0.0f, 0.0f, // Bottom left
-			 150.0f, -50.0f, 1.0f, 0.0f, // Bottom right
-			 150.0f,  50.0f, 1.0f, 1.0f,  // Top right
-			 50.0f,  50.0f, 0.0f, 1.0f // Top left
+			 50.0f, -50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // Bottom left
+			 150.0f, -50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // Bottom right
+			 150.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // Top right
+			 50.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f // Top left
 		};
 
 		unsigned int indices[] = {
@@ -40,8 +41,8 @@ namespace test {
 		m_VAO = std::make_unique<VertexArray>(); // Create a Vertex Array Object (VAO) to hold the vertex attributes
 		m_VBO = std::make_unique<VertexBuffer>(positions, sizeof(positions)); // Create a Vertex Buffer Object (VBO) with the vertex data
 		VertexBufferLayout layout;
-		layout.Push<float>(2);
-		layout.Push<float>(2);
+		layout.Push<float>(3); // position: x, y, z
+		layout.Push<float>(4); // color: r, g, b, a
 
 		m_VAO->AddBuffer(*m_VBO, layout);
 		m_IBO = std::make_unique<IndexBuffer>(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
