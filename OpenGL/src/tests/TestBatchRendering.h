@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <array>
 
 #include "Tests.h"
 
@@ -8,6 +9,13 @@
 #include "../buffers/IndexBuffer.h"
 #include "../buffers/VertexBufferLayout.h"
 #include "../Texture.h"
+
+struct Vertex {
+	float Pos[3];
+	float Color[4];
+	float TexCoords[2];
+	float TexID;
+};
 
 namespace test {
 
@@ -31,6 +39,10 @@ namespace test {
 
 		glm::mat4 m_Proj, m_View;
 		glm::vec3 m_Translation;
+
+		glm::vec2 m_QuadPosition;
+
+		static std::array<Vertex, 4> CreateQuad(float x, float y, float textureID);
 	};
 
 };

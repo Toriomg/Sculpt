@@ -1,3 +1,6 @@
+#include <GL/glew.h>
+#include <cstring>
+
 #include "TestBatchRendering.h"
 #include "../Renderer.h"
 
@@ -6,18 +9,18 @@
 #include "glm/glm.hpp" // Include GLM for vector and matrix operations
 #include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
 
-#include <GL/glew.h>
-
 const float WINDW_SIZE_X = 960.0f; // Define the window width
 const float WINDW_SIZE_Y = 540.0f; // Define the window height
 
 namespace test {
 	TestBatchRendering::TestBatchRendering()
 		:m_Translation(200.0f, 200.0f, 0.0f),
+		m_QuadPosition(glm::vec2(0.0f, 0.0f)),
 		m_Proj(glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1.0f, 1.0f)),
 		m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)))
 	{
-		float positions[] = {
+		
+		/*float positions[] = {
 			// I should used array of structs here for better readability and maintainability
 			-150.0f, -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0,// Bottom left
 			-50.0f,  -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0, 0.0, 0.0, // Bottom right
@@ -28,7 +31,7 @@ namespace test {
 			150.0f, -50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0, 0.0, 1.0, // Bottom right
 			150.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0, 1.0, 1.0, // Top right
 			 50.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0, 1.0, 1.0 // Top left
-		};
+		};*/
 
 		unsigned int indices[] = {
 			0, 1, 2,
@@ -39,7 +42,7 @@ namespace test {
 		};
 
 		m_VAO = std::make_unique<VertexArray>(); // Create a Vertex Array Object (VAO) to hold the vertex attributes
-		m_VBO = std::make_unique<VertexBuffer>(positions, sizeof(positions)); // Create a Vertex Buffer Object (VBO) with the vertex data
+		m_VBO = std::make_unique<VertexBuffer>(nullptr, static_cast<unsigned int>(sizeof(Vertex)*1024), false); // Create a Vertex Buffer Object (VBO) with the vertex data
 		VertexBufferLayout layout;
 		layout.Push<float>(3); // position: x, y, z
 		layout.Push<float>(4); // color: r, g, b, a
@@ -66,7 +69,36 @@ namespace test {
 
 	}
 
+	std::array<Vertex, 4> TestBatchRendering::CreateQuad(float x, float y, float textureID){
+		float size = 100.0f;
+
+		Vertex vertices[] = {
+			// Bottom left
+			{ {x, y, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, textureID },
+
+			// Bottom right
+			{ {x + size, y, 0.0f},  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, textureID },
+
+			// Top right
+			{ {x + size, y + size, 0.0f},   {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, textureID },
+
+			// Top left
+			{ {x, y + size, 0.0f},  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, textureID }
+		};
+		return { vertices[0], vertices[1], vertices[2], vertices[3] }; // Return the array of vertices
+	}
+
 	void TestBatchRendering::OnUpdate(float deltaTime) {
+		// Set dynamic vertex buffer
+
+		auto q0 = this->CreateQuad(m_QuadPosition.x, m_QuadPosition.y, 0.0f);
+		auto q1 = this->CreateQuad(  50.0f, -50.0f, 1.0f);
+
+		Vertex vertices[8];
+		memcpy(vertices, q0.data(), q0.size() * sizeof(Vertex));
+		memcpy(vertices + q0.size(), q1.data(), q1.size() * sizeof(Vertex));
+
+		m_VBO->SetData(vertices, sizeof(vertices), 0); // Allocate space for the vertex buffer
 
 	}
 	void TestBatchRendering::OnRender() {
@@ -85,6 +117,7 @@ namespace test {
 	}
 	void TestBatchRendering::OnImGuiRender() {
 		ImGui::Text("Batch Rendering"); // Display text in the ImGui window
+		ImGui::DragFloat2("Quad Position", &m_QuadPosition.x, 10);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 }
