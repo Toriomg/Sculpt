@@ -51,7 +51,7 @@ namespace test {
 		m_Shader = std::make_unique<Shader>("res/shaders/BasicColor.shader"); // Create a Shader object with the shader file path	
 		m_Shader->Bind(); // Bind the shader program
 
-		m_Shader->SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
+		//m_Shader->SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	TestBatchRendering::~TestBatchRendering() {
