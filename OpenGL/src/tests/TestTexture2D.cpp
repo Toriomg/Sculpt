@@ -13,20 +13,26 @@ const float WINDW_SIZE_Y = 540.0f; // Define the window height
 
 namespace test {
 	TestTexture2D::TestTexture2D()
-		:m_TranslationA(200.0f, 200.0f, 0.0f), m_TranslationB(400.0f, 200.0f, 0.0f),
+		:m_TranslationA(200.0f, 200.0f, 0.0f), m_TranslationB(800.0f, 200.0f, 0.0f),
 		m_Proj(glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1.0f, 1.0f)), 
 		m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)))
 	{
 		float positions[] = {
-			-50.0f, -50.0f, 0.0f, 0.0f, // Bottom left
-			 50.0f, -50.0f, 1.0f, 0.0f, // Bottom right
-			 50.0f,  50.0f, 1.0f, 1.0f,  // Top right
-			-50.0f,  50.0f, 0.0f, 1.0f // Top left
+			-200.0f, -50.0f, 0.5f, 0.5f, // Bottom left
+			-50.0f, -50.0f, 1.0f, 0.0f, // Bottom right
+			-50.0f,  50.0f, 1.0f, 1.0f,  // Top right
+			-200.0f,  50.0f, 0.0f, 1.0f, // Top left
+
+			 50.0f, -50.0f, 0.0f, 0.0f, // Bottom left
+			 200.0f, -50.0f, 1.0f, 0.0f, // Bottom right
+			 200.0f,  50.0f, 1.0f, 1.0f,  // Top right
+			 50.0f,  50.0f, 0.0f, 1.0f // Top left
 		};
 
 		unsigned int indices[] = {
 			0, 1, 2,
-			2, 3, 0
+			2, 3, 0,
+			4,5, 6, 6, 7, 4
 		};
 
 		m_VAO = std::make_unique<VertexArray>(); // Create a Vertex Array Object (VAO) to hold the vertex attributes
