@@ -19,15 +19,15 @@ namespace test {
 	{
 		float positions[] = {
 			// I should used array of structs here for better readability and maintainability
-			-150.0f, -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Bottom left
-			-50.0f, -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Bottom right
-			-50.0f,  50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // Top right
-			-150.0f,  50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Top left
+			-150.0f, -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0,// Bottom left
+			-50.0f,  -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0, 0.0, 0.0, // Bottom right
+			-50.0f,   50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0, 1.0, 0.0, // Top right
+			-150.0f,  50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 1.0, 0.0, // Top left
 
-			 50.0f, -50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // Bottom left
-			 150.0f, -50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // Bottom right
-			 150.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // Top right
-			 50.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f // Top left
+			 50.0f, -50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0, 0.0, 1.0, // Bottom left
+			150.0f, -50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0, 0.0, 1.0, // Bottom right
+			150.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0, 1.0, 1.0, // Top right
+			 50.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0, 1.0, 1.0 // Top left
 		};
 
 		unsigned int indices[] = {
@@ -43,6 +43,8 @@ namespace test {
 		VertexBufferLayout layout;
 		layout.Push<float>(3); // position: x, y, z
 		layout.Push<float>(4); // color: r, g, b, a
+		layout.Push<float>(2); // texture coordinates: u, v
+		layout.Push<float>(1); // texture index: used for texture binding
 
 		m_VAO->AddBuffer(*m_VBO, layout);
 		m_IBO = std::make_unique<IndexBuffer>(indices, sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
@@ -51,7 +53,13 @@ namespace test {
 		m_Shader = std::make_unique<Shader>("res/shaders/BasicColor.shader"); // Create a Shader object with the shader file path	
 		m_Shader->Bind(); // Bind the shader program
 
-		//m_Shader->SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
+		m_Texture1 = std::make_unique<Texture>("res/textures/texture1.png"); // Load the first texture
+		m_Texture2 = std::make_unique<Texture>("res/textures/texture2.png"); // Load the second texture
+		m_Texture1->Bind(0); // Bind the first texture to texture unit 0
+		m_Texture2->Bind(1); // Bind the second texture to texture unit 1
+
+		int samplers[2] = { 0,1 };
+		m_Shader->SetUniform1iv("u_Textures", samplers, sizeof(samplers));
 	}
 
 	TestBatchRendering::~TestBatchRendering() {
@@ -66,7 +74,6 @@ namespace test {
 		GLCall(glClear(GL_COLOR_BUFFER_BIT)); // Clear the color buffer
 
 		Renderer renderer; // Create a Renderer object to handle drawing
-
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), m_Translation);
 			glm::mat4 mvp = m_Proj * m_View * model;
