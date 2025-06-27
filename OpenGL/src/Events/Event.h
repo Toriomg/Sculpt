@@ -1,7 +1,7 @@
 #pragma once
+#include "../Core.h"
 #include <string>
-#include <iostream>	
-#define BIT(x) (1 << x)
+#include <iostream>
 
 namespace GLCore {
 
