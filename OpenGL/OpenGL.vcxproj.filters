@@ -1440,7 +1440,10 @@
     <ClInclude Include="src\Core.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\KeyCodes.h">
+    <ClInclude Include="src\Codes\KeyCodes.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Codes\MouseCodes.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

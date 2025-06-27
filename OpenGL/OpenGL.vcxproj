@@ -302,11 +302,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\buffers\IndexBuffer.h" />
+    <ClInclude Include="src\Codes\MouseCodes.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Events\KeyEvent.h" />
-    <ClInclude Include="src\KeyCodes.h" />
+    <ClInclude Include="src\Codes\KeyCodes.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\tests\TestBatchRendering.h" />
