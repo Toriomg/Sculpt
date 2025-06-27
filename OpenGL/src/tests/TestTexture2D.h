@@ -7,7 +7,7 @@
 #include "../buffers/VertexArray.h"
 #include "../buffers/IndexBuffer.h"
 #include "../buffers/VertexBufferLayout.h"
-#include "../Texture.h"
+#include "../Utils/Texture.h"
 
 namespace test {
 

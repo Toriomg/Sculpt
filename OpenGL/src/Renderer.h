@@ -4,7 +4,7 @@
 
 #include "buffers/VertexArray.h"
 #include "buffers/IndexBuffer.h"
-#include "Shader.h"
+#include "Utils/Shader.h"
 
 // Macro to assert conditions, triggering a breakpoint if false
 #define ASSERT(x) if (!(x)) __debugbreak() 
