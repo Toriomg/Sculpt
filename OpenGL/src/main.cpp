@@ -83,9 +83,6 @@ int main(void)
         testMenu->RegisterTest<test::TestTexture2D>("2D Textures");
         testMenu->RegisterTest<test::TestBatchRendering>("Batch Rendering");        
 
-        glm::vec3 translationA(200.0f, 200.0f, 0.0f);
-        glm::vec3 translationB(400.0f, 200.0f, 0.0f);
-
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */

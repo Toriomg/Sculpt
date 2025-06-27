@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 // Macro to assert conditions, triggering a breakpoint if false
 #define ASSERT(x) if (!(x)) __debugbreak() 
