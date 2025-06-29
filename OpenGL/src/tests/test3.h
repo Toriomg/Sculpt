@@ -40,10 +40,13 @@ namespace test {
 
 		Matx4f m_Proj, m_View;
 		Vec3 m_Translation;
+		float m_Rotation;
+		Vec3 m_Scaling;
+		float m_scalar = 1;
 
 		Vec2 m_QuadPosition;
 
-		static std::array<Vertex3, 4> CreateQuad(float x, float y, float textureID);
+		static std::array<Vertex3, 8> CreateCube(float x, float y, float textureID);
 	};
 
 };

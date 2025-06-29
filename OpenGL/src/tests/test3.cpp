@@ -7,14 +7,16 @@
 #include "imgui/imgui.h"
 
 
-const float WINDW_SIZE_X = 960.0f; // Define the window width
-const float WINDW_SIZE_Y = 540.0f; // Define the window height
+const float WINDW_SIZE_X = 1260.0f; // Define the window width
+const float WINDW_SIZE_Y = 1080.0f; // Define the window height
 
 namespace test {
 	test3::test3()
-		:m_Translation(200.0f, 200.0f, 0.0f),
+		:m_Translation(WINDW_SIZE_X / 2.0f, WINDW_SIZE_Y / 2.0f, 0.0f),
+		m_Rotation(0.0f),
+		m_Scaling(1.0f, 1.0f, 1.0f),
 		m_QuadPosition(Vec2(0.0f, 0.0f)),
-		m_Proj(Matx4f::orthographic(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1.0f, 1.0f)),
+		m_Proj(Matx4f::orthographic(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1000.0f, 1000.0f)),
 		m_View(Matx4f::translation(Vec3(0.0f, 0.0f, 0.0f)))
 	{
 
@@ -32,11 +34,25 @@ namespace test {
 		};*/
 
 		unsigned int indices[] = {
+			// Define the indices for the cube
+			// Front face
 			0, 1, 2,
 			2, 3, 0,
-
+			// Back face
 			4 ,5, 6,
-			6, 7, 4
+			6, 7, 4,
+			// Left face
+			0, 3, 7,
+			7, 4, 0,
+			// Right face
+			1, 5, 6,
+			6, 2, 1,
+			// Top face
+			3, 2, 6,
+			6, 7, 3,
+			// Bottom face
+			0, 4, 5,
+			5, 1, 0	
 		};
 
 		m_VAO = std::make_unique<VertexArray>(); // Create a Vertex Array Object (VAO) to hold the vertex attributes
@@ -67,46 +83,36 @@ namespace test {
 
 	}
 
-	std::array<Vertex3, 4> test3::CreateQuad(float x, float y, float textureID) {
-		float size = 100.0f;
-
-		Vertex3 vertices[] = {
-			// Bottom left
-			{ {x, y, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, textureID },
-
-			// Bottom right
-			{ {x + size, y, 0.0f},  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, textureID },
-
-			// Top right
-			{ {x + size, y + size, 0.0f},   {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, textureID },
-
-			// Top left
-			{ {x, y + size, 0.0f},  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, textureID }
+	std::array<Vertex3, 8> test3::CreateCube(float x, float y, float size) {
+		std::array<Vertex3, 8> vertices = {
+			Vertex3{ {x, y, 0.0f},				  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 0.0f },
+			Vertex3{ {x + size, y, 0.0f},		  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 0.0f },
+			Vertex3{ {x + size, y + size, 0.0f},  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 0.0f },
+			Vertex3{ {x, y + size, 0.0f},		  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 0.0f },
+			// Back face vertices
+			Vertex3{ {x, y, size},				  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 0.0f },
+			Vertex3{ {x + size, y, size},		  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 0.0f },
+			Vertex3{ {x + size, y + size, size},  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 0.0f },
+			Vertex3{ {x, y + size, size},		  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 0.0f }
 		};
-		return { vertices[0], vertices[1], vertices[2], vertices[3] }; // Return the array of vertices
+		return vertices; // Return the array of vertices
 	}
 
 	void test3::OnUpdate(float deltaTime) {
 		// Set dynamic vertex buffer
+		auto vertices = CreateCube(m_QuadPosition.x, m_QuadPosition.y, 100.0f);
 
-		auto q0 = this->CreateQuad(m_QuadPosition.x, m_QuadPosition.y, 0.0f);
-		auto q1 = this->CreateQuad(50.0f, -50.0f, 1.0f);
-
-		Vertex3 vertices[8];
-		memcpy(vertices, q0.data(), q0.size() * sizeof(Vertex3));
-		memcpy(vertices + q0.size(), q1.data(), q1.size() * sizeof(Vertex3));
-
-		m_VBO->SetData(vertices, sizeof(vertices), 0); // Allocate space for the vertex buffer
-
+		m_VBO->SetData(vertices.data(), vertices.size() * sizeof(Vertex3), 0);
 	}
+
 	void test3::OnRender() {
 		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // Set the clear color
 		GLCall(glClear(GL_COLOR_BUFFER_BIT)); // Clear the color buffer
 
 		Renderer renderer; // Create a Renderer object to handle drawing
 		{
-			Matx4f model = Matx4f::translation(m_Translation);
-			Matx4f mvp = m_Proj * m_View * model;
+			Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationX(m_Rotation) * Matx4f::scaling(m_Scaling*m_scalar);
+			Matx4f mvp = m_Proj * model * m_View;
 			m_Shader->Bind();
 			m_Shader->SetUniformMat4fm("u_MVP", mvp);
 			// Draw the object using the Renderer
@@ -116,6 +122,9 @@ namespace test {
 	void test3::OnImGuiRender() {
 		ImGui::Text("Batch Rendering"); // Display text in the ImGui window
 		ImGui::DragFloat2("Quad Position", &m_QuadPosition.x, 10);
+		ImGui::DragFloat3("Camera Translation", &m_Translation.x, 10.0f);
+		ImGui::DragFloat("Camera Rotation", &m_Rotation, 0.5f);
+		ImGui::DragFloat("Camera Scaling", &m_scalar, 0.01f);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 }

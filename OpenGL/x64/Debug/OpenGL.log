@@ -1,4 +1,12 @@
-﻿  Shader.cpp
+﻿  test3.cpp
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(105,51): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
+  (compilando archivo de origen "src/tests/test3.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
+      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
+          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(67,16):
+          Vea la referencia a la creación de una instancia de la función plantilla "std::unique_ptr<IndexBuffer,std::default_delete<IndexBuffer>> std::make_unique<IndexBuffer,unsigned int(&)[36],size_t,0>(unsigned int (&)[36],size_t &&)" que se está compilando
+  
   OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
   "pwsh.exe" no se reconoce como un comando interno o externo,
   programa o archivo por lotes ejecutable.
