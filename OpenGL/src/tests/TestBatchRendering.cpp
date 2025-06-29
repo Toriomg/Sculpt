@@ -16,20 +16,20 @@ namespace test {
 	TestBatchRendering::TestBatchRendering()
 		:m_Translation(200.0f, 200.0f, 0.0f),
 		m_QuadPosition(glm::vec2(0.0f, 0.0f)),
-		m_Proj(glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1.0f, 1.0f)),
+		m_Proj(glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -10.0f, 10.0f)),
 		m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)))
 	{
 		
 		/*float positions[] = {
 			// I should used array of structs here for better readability and maintainability
-			-150.0f, -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0,// Bottom left
-			-50.0f,  -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0, 0.0, 0.0, // Bottom right
-			-50.0f,   50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0, 1.0, 0.0, // Top right
-			-150.0f,  50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 1.0, 0.0, // Top left
+			-150.0f, -50.0f, 5.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0,// Bottom left
+			-50.0f,  -50.0f, 5.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0, 0.0, 0.0, // Bottom right
+			-50.0f,   50.0f, 5.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0, 1.0, 0.0, // Top right
+			-150.0f,  50.0f, 5.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 1.0, 0.0, // Top left
 
-			 50.0f, -50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0, 0.0, 1.0, // Bottom left
+			 50.0f, -50.0f, 7.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0, 0.0, 1.0, // Bottom left
 			150.0f, -50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0, 0.0, 1.0, // Bottom right
-			150.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0, 1.0, 1.0, // Top right
+			150.0f,  50.0f, 7.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0, 1.0, 1.0, // Top right
 			 50.0f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0, 1.0, 1.0 // Top left
 		};*/
 
