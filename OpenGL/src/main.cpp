@@ -27,8 +27,8 @@
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 
-const float WINDW_SIZE_X = 960.0f; // Define the window width
-const float WINDW_SIZE_Y = 540.0f; // Define the window height
+const float WINDW_SIZE_X = 1960.0f/2.0f; // Define the window width
+const float WINDW_SIZE_Y = 1080.0f*0.66f; // Define the window height
 
 int main(void)
 {

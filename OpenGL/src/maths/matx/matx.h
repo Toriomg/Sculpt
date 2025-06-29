@@ -61,12 +61,55 @@ public:
 			          0.0f, 0.0f, 0.0f, 1.0f);
     }
 
+    static Matx4f rotationX(float angle) {
+        return Matx4f(1.0f, 0.0f, 0.0f, 0.0f,
+                      0.0f, cos(angle), -sin(angle), 0.0f,
+                      0.0f, sin(angle), cos(angle), 0.0f,
+                      0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+    static Matx4f rotationY(float angle) {
+        return Matx4f(cos(angle), 0.0f, sin(angle), 0.0f,
+                      0.0f, 1.0f, 0.0f, 0.0f,
+                      -sin(angle), 0.0f, cos(angle), 0.0f,
+                      0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+    static Matx4f rotationZ(float angle){
+        return Matx4f(cos(angle),-sin(angle), 0.0f, 0.0f,
+                      sin(angle), cos(angle), 0.0f, 0.0f,
+                      0.0f      , 0.0f      , 1.0f, 0.0f,
+			          0.0f      , 0.0f      , 0.0f, 1.0f);
+    }
+
+    static Matx4f scaling(const Vec3& vec) {
+        return Matx4f(vec.x, 0.0f, 0.0f, 0.0f,
+                      0.0f, vec.y, 0.0f, 0.0f,
+                      0.0f, 0.0f, vec.z, 0.0f,
+                      0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+    static Matx4f scalingScalar(float scalar) {
+        return Matx4f(scalar, 0.0f, 0.0f, 0.0f,
+                      0.0f, scalar, 0.0f, 0.0f,
+                      0.0f, 0.0f, scalar, 0.0f,
+                      0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
     static Matx4f orthographic(float left, float right, float bottom, float top, float near, float far) {
         return Matx4f(2.0f / (right - left), 0.0f, 0.0f, -(right + left) / (right - left),
                       0.0f, 2.0f / (top - bottom), 0.0f, -(top + bottom) / (top - bottom),
                       0.0f, 0.0f, -2.0f / (far - near), -(far + near) / (far - near),
                       0.0f, 0.0f, 0.0f, 1.0f);
     }
+
+    static Matx4f perspective(float fov, float aspect, float near, float far) {
+		float tanHalfFov = tan(fov / 2.0f); // Convert fov from degrees to radians
+        return Matx4f(1.0f / (aspect * tanHalfFov), 0.0f, 0.0f, 0.0f,
+                      0.0f, 1.0f / tanHalfFov, 0.0f, 0.0f,
+                      0.0f, 0.0f, -(far + near) / (far - near), -2.0f * far * near / (far - near),
+                      0.0f, 0.0f, -1.0f, 0.0f);
+	}
 
     const float* data() const {
         return &m[0][0];
