@@ -115,7 +115,7 @@ void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix) {
 }
 
 void Shader::SetUniformMat4fm(const std::string& name, const Matx4f& matrix) {
-	GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix.m[0][0])); // Set a 4x4 matrix uniform variable in the shader
+	GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_TRUE, &matrix.m[0][0])); // Set a 4x4 matrix uniform variable in the shader
 }
 
 GLint Shader::GetUniformLocation(const std::string& name) const{
