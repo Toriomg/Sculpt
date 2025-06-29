@@ -18,6 +18,7 @@
 #include "tests/TestClearColor.h"
 #include "tests/TestTexture2D.h"
 #include "tests/TestBatchRendering.h"
+#include "tests/test3.h"
 
 #include "glm/glm.hpp" // Include GLM for vector and matrix operations
 #include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
@@ -81,7 +82,8 @@ int main(void)
 
         testMenu->RegisterTest<test::TestClearColor>("Clear Color");
         testMenu->RegisterTest<test::TestTexture2D>("2D Textures");
-        testMenu->RegisterTest<test::TestBatchRendering>("Batch Rendering");        
+        testMenu->RegisterTest<test::TestBatchRendering>("Batch Rendering");   
+        testMenu->RegisterTest<test::test3>("Batch Rendering with my maths");
 
         while (!glfwWindowShouldClose(window))
         {

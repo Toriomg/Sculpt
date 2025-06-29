@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include <glm/glm.hpp> // Include GLM for matrix types
+#include "maths/maths.h"
 
 struct ShaderProgramSource {
 	std::string VertexSource; // Source code for the vertex shader
@@ -27,6 +28,7 @@ public:
 	void SetUniform1iv(const std::string& name, const int* array, int size);
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
 	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
+	void SetUniformMat4fm(const std::string& name, const Matx4f& matrix);
 private:
 	ShaderProgramSource ParseShader(const std::string& filepath);
 	unsigned int CompileShader(const std::string& source, unsigned int type);
