@@ -14,14 +14,14 @@ const float WINDW_SIZE_Y = 540.0f; // Define the window height
 namespace test {
 	TestTexture2D::TestTexture2D()
 		:m_TranslationA(200.0f, 200.0f, 0.0f), m_TranslationB(400.0f, 200.0f, 0.0f),
-		m_Proj(glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1.0f, 1.0f)), 
+		m_Proj(glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -10000.0f, 1000000.0f)), 
 		m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)))
 	{
 		float positions[] = {
-			-50.0f, -50.0f, 0.0f, 0.0f, // Bottom left
-			 50.0f, -50.0f, 1.0f, 0.0f, // Bottom right
-			 50.0f,  50.0f, 1.0f, 1.0f,  // Top right
-			-50.0f,  50.0f, 0.0f, 1.0f // Top left
+			-50.0f, -50.0f, 70.0f, 0.0f, 0.0f, // Bottom left
+			 50.0f, -50.0f, 70.0f, 1.0f, 0.0f, // Bottom right
+			 50.0f,  50.0f, 0.0f, 1.0f, 1.0f,  // Top right
+			-50.0f,  50.0f, 0.0f, 0.0f, 1.0f // Top left
 		};
 
 		unsigned int indices[] = {
@@ -32,7 +32,7 @@ namespace test {
 		m_VAO = std::make_unique<VertexArray>(); // Create a Vertex Array Object (VAO) to hold the vertex attributes
 		m_VBO = std::make_unique<VertexBuffer>(positions, sizeof(positions), true); // Create a Vertex Buffer Object (VBO) with the vertex data
 		VertexBufferLayout layout;
-		layout.Push<float>(2);
+		layout.Push<float>(3);
 		layout.Push<float>(2);
 
 		m_VAO->AddBuffer(*m_VBO, layout);
