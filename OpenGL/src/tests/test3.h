@@ -45,10 +45,12 @@ namespace test {
 
 		Vec3 m_QuadPosition;
 		float m_FOV = 90.0f;
-		float m_NearClip = 0.1f;
-		float m_FarClip = 1000.0f;
+		float m_NearClip;
+		float m_FarClip;
+		float m_OrthoScale;
 
 		Vec3 m_CameraPosition;
+		bool m_CameraPersEnabled = true;
 
 		static std::array<Vertex3, 24> CreateCube(float x, float y, float z, float size);
 	};

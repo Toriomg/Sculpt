@@ -15,9 +15,12 @@ namespace test {
 		:m_Translation(0.0f, 0.0f, 0.0f),
 		m_Rotation(0.0f),
 		m_Scaling(1.0f, 1.0f, 1.0f),
-		m_CameraPosition(0.0f, 0.0f, -10.0f),
+		m_CameraPosition(0.0f, 0.0f, -100.0f),
 
-		m_QuadPosition(Vec3(0.0f, 0.0f, -250.0f))
+		m_QuadPosition(Vec3(0.0f, 0.0f, 0.0f)),
+		m_NearClip(0.1f),
+		m_FarClip(1000.0f),
+		m_OrthoScale(150.0f) // Initialize the new variable
 	{
 
 		/*float positions[] = {
@@ -116,6 +119,8 @@ namespace test {
 	void test3::OnUpdate(float deltaTime) {
 		// Set dynamic vertex buffer
 		auto vertices = CreateCube(m_QuadPosition.x, m_QuadPosition.y, m_QuadPosition.z, 50.0f);
+		auto vertices = CreateCube(25.0f, 25.0f, 25.0f, 50.0f);
+		auto vertices = CreateCube(m_QuadPosition.x + 100.0f, m_QuadPosition.y + 100.0f, m_QuadPosition.z, 10.0f);
 
 		m_VBO->SetData(vertices.data(), vertices.size() * sizeof(Vertex3), 0);
 	}
@@ -124,9 +129,18 @@ namespace test {
 		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // Set the clear color
 		GLCall(glClear(GL_COLOR_BUFFER_BIT)); // Clear the color buffer
 
-		Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling);
-		Matx4f view = Matx4f::rotationY(M_PI) * Matx4f::translation(m_CameraPosition * -1.0f); // Rotated to see the positive Z direction
-		Matx4f projection = Matx4f::perspective(m_FOV, WINDW_SIZE_X / WINDW_SIZE_Y, m_NearClip, m_FarClip);
+		Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling * m_scalar);
+		// Rotated to see the positive Z direction
+		Matx4f view = view = Matx4f::rotationY(M_PI) * Matx4f::translation(m_CameraPosition * -1.0f);
+		Matx4f projection;
+		float aspectRatio = WINDW_SIZE_X / WINDW_SIZE_Y; // Calculate the aspect ratio
+		if (m_CameraPersEnabled) {
+			projection = Matx4f::perspective(m_FOV, aspectRatio, m_NearClip, m_FarClip);
+		} else {
+			float orthoHeight = m_OrthoScale; // Define the orthographic height
+			float orthoWidth = orthoHeight * aspectRatio; // Calculate the orthographic width based on the aspect ratio
+			projection = Matx4f::orthographic(-orthoWidth, orthoWidth, -orthoHeight, orthoHeight, m_NearClip, m_FarClip);
+		}
 
 		Renderer renderer; // Create a Renderer object to handle drawing
 		{
@@ -147,10 +161,17 @@ namespace test {
 		ImGui::DragFloat("Camera Scalar", &m_scalar, 0.01f);
 		ImGui::DragFloat3("Camera Scaling", &m_Scaling.x, 0.01f);
 		ImGui::Text("\nCamera Settings");
-		ImGui::DragFloat("Camera FOV", &m_FOV, 0.5f);
+		ImGui::Checkbox("Camera Perspective Enabled", &m_CameraPersEnabled);
+		if (m_CameraPersEnabled) {
+			ImGui::Text("Camera Perspective Mode Enabled");
+			ImGui::DragFloat("Camera FOV", &m_FOV, 0.5f);
+		} else {
+			ImGui::Text("Camera Orthographic Mode Enabled");
+			ImGui::DragFloat("Ortho Scale (Zoom)", &m_OrthoScale, 1.0f, 1.0f, 1000.0f);
+		}
 		ImGui::DragFloat("Camera Near Clip", &m_NearClip, 0.1f);
 		ImGui::DragFloat("Camera Far Clip", &m_FarClip, 0.1f);
-
+		ImGui::Separator();
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 }
