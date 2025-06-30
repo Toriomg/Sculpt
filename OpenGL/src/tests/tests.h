@@ -1,5 +1,7 @@
 #pragma once
 
+#include <GL/glew.h> // Ensure GLEW is included for OpenGL function loading
+#include <GLFW/glfw3.h> // Ensure GLFW is included for window handling
 #include <iostream>
 #include <string>
 #include <functional>
@@ -15,6 +17,7 @@ namespace test {
 		virtual void OnUpdate(float deltaTime);
 		virtual void OnRender();
 		virtual void OnImGuiRender();
+		virtual void OnInput(GLFWwindow* window, float deltaTime);
 	};
 
 	class TestMenu : public Test {

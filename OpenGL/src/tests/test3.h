@@ -1,9 +1,11 @@
 #pragma once
 #include <memory>
 #include <array>
+#include <GLFW/glfw3.h>
 
 #include "Tests.h"
 
+#include "../Camera.h"
 #include "../maths/maths.h"
 #include "../buffers/VertexBuffer.h"
 #include "../buffers/VertexArray.h"
@@ -29,6 +31,7 @@ namespace test {
 		void OnUpdate(float deltaTime) override;
 		void OnRender() override;
 		void OnImGuiRender() override;
+		void OnInput(GLFWwindow* window, float deltaTime) override;
 
 	private:
 		std::unique_ptr<VertexArray> m_VAO;
@@ -37,6 +40,7 @@ namespace test {
 		std::unique_ptr<Shader> m_Shader;
 		std::unique_ptr<Texture> m_Texture1;
 		std::unique_ptr<Texture> m_Texture2;
+		Camera m_Camera;
 
 		Vec3 m_Translation;
 		float m_Rotation;
@@ -44,12 +48,8 @@ namespace test {
 		float m_scalar = 1;
 
 		Vec3 m_QuadPosition;
-		float m_FOV = 90.0f;
-		float m_NearClip;
-		float m_FarClip;
-		float m_OrthoScale;
+		Vec3 m_QuadPosition2;
 
-		Vec3 m_CameraPosition;
 		bool m_CameraPersEnabled = true;
 
 		static std::array<Vertex3, 24> CreateCube(float x, float y, float z, float size);

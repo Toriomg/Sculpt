@@ -90,18 +90,24 @@ int main(void)
         glCullFace(GL_BACK); // Cull back faces to avoid rendering them
         GLCall(glEnable(GL_DEPTH_TEST));
 
+		float lastTime = 0.0f; // Initialize the last frame time
         while (!glfwWindowShouldClose(window))
         {
+            float currentTime = (float)glfwGetTime();
+            float deltaTime = currentTime - lastTime;
+            lastTime = currentTime;
+
             /* Render here */
 			renderer.Clear(); // Clear the screen
 
-			ImGui_ImplOpenGL3_NewFrame(); // Start a new ImGui frame
+            ImGui_ImplOpenGL3_NewFrame(); // Start a new ImGui frame
 			ImGui_ImplGlfw_NewFrame(); // Start a new ImGui frame for GLFW
 			ImGui::NewFrame(); // Create a new ImGui frame
 			
 			if (currentTest) {
-                currentTest->OnUpdate(0.0f); // Update the current test object
+                currentTest->OnUpdate(deltaTime); // Update the current test object
                 currentTest->OnRender(); // Render the current test object
+				currentTest->OnInput(window, deltaTime); // Handle input for the current test object
 
 				// Render test UI
 				ImGui::Begin("Test Menu"); // Begin the ImGui window for the test menu

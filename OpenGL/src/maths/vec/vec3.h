@@ -21,8 +21,22 @@ public:
 		return Vec3(x / scalar, y / scalar, z / scalar);
 	}
 
-	Vec3 dotProduct(const Vec3& other) const {
+	Vec3 operator*(const Vec3& other) const {
 		return Vec3(x * other.x, y * other.y, z * other.z);
+	}
+
+	Vec3 operator+=(const Vec3& other) {
+		x += other.x;
+		y += other.y;
+		z += other.z;
+		return *this;
+	}
+
+	Vec3 operator-=(const Vec3& other) {
+		x -= other.x;
+		y -= other.y;
+		z -= other.z;
+		return *this;
 	}
 
 	float length() const {
@@ -33,6 +47,10 @@ public:
 		float len = length();
 		if (len == 0) return Vec3(0, 0, 0);
 		return Vec3(x / len, y / len, z / len);
+	}
+
+	Vec3 dotProduct(const Vec3& other) const {
+		return Vec3(x * other.x, y * other.y, z * other.z);
 	}
 
 	Vec3 crossProduct(const Vec3& other) const {
