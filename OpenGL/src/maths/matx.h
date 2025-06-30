@@ -1,5 +1,5 @@
 #pragma once
-#include "../vec/vec3.h"
+#include "vec3.h"
 #include <GL/glew.h>
 #include <cmath>
 

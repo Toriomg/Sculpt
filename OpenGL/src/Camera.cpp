@@ -8,7 +8,10 @@ Camera::Camera()
     m_OrthoScale(150.0f),
 	m_AspectRatio(16.0f / 9.0f),    // Un valor por defecto
 	m_NearClip(0.1f),
-	m_FarClip(1000.0f) 
+	m_FarClip(1000.0f),
+    m_Yaw(-90.0f), // Yaw is initialized to -90.0 degrees so a yaw of 0.0 results in a direction vector pointing to the right.
+    m_Pitch(0.0f),
+    m_MouseSensitivity(0.1f)
 {
 
 }
@@ -52,6 +55,29 @@ void Camera::OnInput(GLFWwindow* window, float deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         m_Position -= m_Up * m_Speed * deltaTime;
     }
+}
+
+void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch) {
+    xoffset *= m_MouseSensitivity;
+    yoffset *= m_MouseSensitivity;
+
+    m_Yaw += xoffset;
+    m_Pitch += yoffset;
+
+    // Constrain pitch to avoid flipping
+    if (constrainPitch) {
+        if (m_Pitch > 89.0f)
+            m_Pitch = 89.0f;
+        if (m_Pitch < -89.0f)
+            m_Pitch = -89.0f;
+    }
+
+    // Recalculate the m_Target vector from yaw and pitch
+    Vec3 direction;
+    direction.x = cos(m_Yaw * M_PI / 180.0f) * cos(m_Pitch * M_PI / 180.0f);
+    direction.y = sin(m_Pitch * M_PI / 180.0f);
+    direction.z = sin(m_Yaw * M_PI / 180.0f) * cos(m_Pitch * M_PI / 180.0f);
+    m_Target = direction.normalize();
 }
 
 Matx4f Camera::GetViewMatrix() const {

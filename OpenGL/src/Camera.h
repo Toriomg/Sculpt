@@ -13,15 +13,19 @@ public:
 	float m_NearClip;
 	float m_FarClip;
 	float m_OrthoScale;
+	float m_Speed = 100.0f;
+	float m_Yaw;
+	float m_Pitch;
+	float m_MouseSensitivity;
 	Camera();
 
 	void SetAspectRatio(float aspectRatio);
 	void SetPosition(const Vec3& position);
 	void SetSpeed(float speed);
 	void OnInput(GLFWwindow* window, float deltaTime);
+	void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
 
 	Matx4f GetViewMatrix() const;
 	Matx4f GetProjectionMatrix(bool CameraPersEnabled) const;
 private:
-	float m_Speed = 20.0f;
 };

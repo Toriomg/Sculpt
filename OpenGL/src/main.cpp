@@ -15,6 +15,8 @@
 #include "buffers/VertexArray.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "InputManager.h"
+
 #include "tests/TestClearColor.h"
 #include "tests/TestTexture2D.h"
 #include "tests/TestBatchRendering.h"
@@ -27,8 +29,9 @@
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 
-const float WINDW_SIZE_X = 1960.0f/2.0f; // Define the window width
-const float WINDW_SIZE_Y = 1080.0f*0.66f; // Define the window height
+const float WINDW_SIZE_X = 1960.0f*0.75f; // Define the window width
+const float WINDW_SIZE_Y = 1080.0f*0.75f; // Define the window height
+
 
 int main(void)
 {
@@ -52,7 +55,6 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
-
 	glfwSwapInterval(1); // Enable vsync
 
     if (glewInit() != GLEW_OK) {
@@ -60,6 +62,7 @@ int main(void)
         return -1;
     }
 
+	InitializeInput(window); // Initialize input handling
 	std::cout << glGetString(GL_VERSION) << std::endl;
     {
         GLCall(glEnable(GL_BLEND)); // Enable blending for transparency
