@@ -85,8 +85,9 @@ int main(void)
         testMenu->RegisterTest<test::TestBatchRendering>("Batch Rendering");   
         testMenu->RegisterTest<test::test3>("Batch Rendering with my maths");
 
-        glm::vec3 translationA(200.0f, 200.0f, 0.0f);
-        glm::vec3 translationB(400.0f, 200.0f, 0.0f);
+		glEnable(GL_CULL_FACE); // Enable face culling to improve performance
+		glFrontFace(GL_CW); // Set the front face to counter-clockwise
+        glCullFace(GL_BACK); // Cull back faces to avoid rendering them
 
         while (!glfwWindowShouldClose(window))
         {

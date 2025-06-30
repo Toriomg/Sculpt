@@ -46,7 +46,7 @@ namespace test {
 
 		Vec2 m_QuadPosition;
 
-		static std::array<Vertex3, 8> CreateCube(float x, float y, float textureID);
+		static std::array<Vertex3, 24> CreateCube(float x, float y, float z, float textureID);
 	};
 
 };

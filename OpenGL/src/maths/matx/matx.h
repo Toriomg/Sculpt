@@ -1,6 +1,7 @@
 #pragma once
 #include "../vec/vec3.h"
 #include <GL/glew.h>
+#include <cmath>
 
 class Matx4f {
 public:
@@ -103,12 +104,13 @@ public:
                       0.0f, 0.0f, 0.0f, 1.0f);
     }
 
-    static Matx4f perspective(float fov, float aspect, float near, float far) {
-		float tanHalfFov = tan(fov / 2.0f); // Convert fov from degrees to radians
-        return Matx4f(1.0f / (aspect * tanHalfFov), 0.0f, 0.0f, 0.0f,
-                      0.0f, 1.0f / tanHalfFov, 0.0f, 0.0f,
-                      0.0f, 0.0f, -(far + near) / (far - near), -2.0f * far * near / (far - near),
-                      0.0f, 0.0f, -1.0f, 0.0f);
+    static Matx4f perspective(float fov) {
+		float tanHalfFov = tan(fov * 3.141592653589793 / 360.0f); // Convert fov from degrees to radians
+		float f = 1.0f / tanHalfFov;
+        return Matx4f(f   , 0.0f, 0.0f, 0.0f,
+                      0.0f, f   , 0.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f);
 	}
 
     const float* data() const {

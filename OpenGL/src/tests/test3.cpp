@@ -12,11 +12,11 @@ const float WINDW_SIZE_Y = 1080.0f; // Define the window height
 
 namespace test {
 	test3::test3()
-		:m_Translation(WINDW_SIZE_X / 2.0f, WINDW_SIZE_Y / 2.0f, 0.0f),
+		:m_Translation(0.0f, 0.0f, 0.0f),
 		m_Rotation(0.0f),
 		m_Scaling(1.0f, 1.0f, 1.0f),
 		m_QuadPosition(Vec2(0.0f, 0.0f)),
-		m_Proj(Matx4f::orthographic(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -1000.0f, 1000.0f)),
+		m_Proj(Matx4f::perspective(90.0f)),
 		m_View(Matx4f::translation(Vec3(0.0f, 0.0f, 0.0f)))
 	{
 
@@ -34,25 +34,12 @@ namespace test {
 		};*/
 
 		unsigned int indices[] = {
-			// Define the indices for the cube
-			// Front face
-			0, 1, 2,
-			2, 3, 0,
-			// Back face
-			4 ,5, 6,
-			6, 7, 4,
-			// Left face
-			0, 3, 7,
-			7, 4, 0,
-			// Right face
-			1, 5, 6,
-			6, 2, 1,
-			// Top face
-			3, 2, 6,
-			6, 7, 3,
-			// Bottom face
-			0, 4, 5,
-			5, 1, 0	
+			0, 1, 2,     2, 3, 0,    // Front face
+			4, 5, 6,     6, 7, 4,    // Back face
+			8, 9, 10,    10, 11, 8,  // Left face
+			12, 13, 14,  14, 15, 12, // Right face
+			16, 17, 18,  18, 19, 16, // Top face
+			20, 21, 22,  22, 23, 20  // Bottom face
 		};
 
 		m_VAO = std::make_unique<VertexArray>(); // Create a Vertex Array Object (VAO) to hold the vertex attributes
@@ -83,24 +70,52 @@ namespace test {
 
 	}
 
-	std::array<Vertex3, 8> test3::CreateCube(float x, float y, float size) {
-		std::array<Vertex3, 8> vertices = {
-			Vertex3{ {x, y, 0.0f},				  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 0.0f },
-			Vertex3{ {x + size, y, 0.0f},		  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 0.0f },
-			Vertex3{ {x + size, y + size, 0.0f},  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 0.0f },
-			Vertex3{ {x, y + size, 0.0f},		  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 0.0f },
-			// Back face vertices
-			Vertex3{ {x, y, size},				  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 0.0f },
-			Vertex3{ {x + size, y, size},		  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 0.0f },
-			Vertex3{ {x + size, y + size, size},  {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 0.0f },
-			Vertex3{ {x, y + size, size},		  {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 0.0f }
+	std::array<Vertex3, 24> test3::CreateCube(float x, float y, float z, float size) {
+		// We define 24 vertices, 4 for each of the 6 faces.
+		// This allows each face to have its own color, texture, and normal vector.
+		std::array<Vertex3, 24> vertices = {
+			// Face 1: Front (looking towards positive Z) - Red, Texture 0
+			Vertex3{ {x,        y,        z + size}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 0.0f }, // Bottom-left
+			Vertex3{ {x + size, y,        z + size}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 0.0f }, // Bottom-right
+			Vertex3{ {x + size, y + size, z + size}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 0.0f }, // Top-right
+			Vertex3{ {x,        y + size, z + size}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 0.0f }, // Top-left
+
+			// Face 2: Back (looking towards negative Z) - Green, Texture 1
+			Vertex3{ {x + size, y,        z       }, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 1.0f }, // Bottom-left
+			Vertex3{ {x,        y,        z       }, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 1.0f }, // Bottom-right
+			Vertex3{ {x,        y + size, z       }, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 1.0f }, // Top-right
+			Vertex3{ {x + size, y + size, z       }, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 1.0f }, // Top-left
+
+			// Face 3: Left (looking towards negative X) - Blue
+			Vertex3{ {x,        y,        z       }, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 0.0f }, // Bottom-left
+			Vertex3{ {x,        y,        z + size}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 0.0f }, // Bottom-right
+			Vertex3{ {x,        y + size, z + size}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 0.0f }, // Top-right
+			Vertex3{ {x,        y + size, z       }, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 0.0f }, // Top-left
+
+			// Face 4: Right (looking towards positive X) - Yellow
+			Vertex3{ {x + size, y,        z + size}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 1.0f }, // Bottom-left
+			Vertex3{ {x + size, y,        z       }, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 1.0f }, // Bottom-right
+			Vertex3{ {x + size, y + size, z       }, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 1.0f }, // Top-right
+			Vertex3{ {x + size, y + size, z + size}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 1.0f }, // Top-left
+
+			// Face 5: Top (looking towards positive Y) - Cyan
+			Vertex3{ {x,        y + size, z + size}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 0.0f }, // Bottom-left
+			Vertex3{ {x + size, y + size, z + size}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 0.0f }, // Bottom-right
+			Vertex3{ {x + size, y + size, z       }, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 0.0f }, // Top-right
+			Vertex3{ {x,        y + size, z       }, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 0.0f }, // Top-left
+
+			// Face 6: Bottom (looking towards negative Y) - Magenta
+			Vertex3{ {x,        y,        z       }, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 1.0f }, // Bottom-left
+			Vertex3{ {x + size, y,        z       }, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 1.0f }, // Bottom-right
+			Vertex3{ {x + size, y,        z + size}, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 1.0f }, // Top-right
+			Vertex3{ {x,        y,        z + size}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 1.0f }  // Top-left
 		};
-		return vertices; // Return the array of vertices
+		return vertices;
 	}
 
 	void test3::OnUpdate(float deltaTime) {
 		// Set dynamic vertex buffer
-		auto vertices = CreateCube(m_QuadPosition.x, m_QuadPosition.y, 100.0f);
+		auto vertices = CreateCube(m_QuadPosition.x, m_QuadPosition.y, 0.0f, 100.0f);
 
 		m_VBO->SetData(vertices.data(), vertices.size() * sizeof(Vertex3), 0);
 	}
