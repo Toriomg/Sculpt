@@ -44,9 +44,12 @@ namespace test {
 		Vec3 m_Scaling;
 		float m_scalar = 1;
 
-		Vec2 m_QuadPosition;
+		Vec3 m_QuadPosition;
+		float m_FOV = 90.0f;
+		float m_NearClip = 0.1f;
+		float m_FarClip = 1000.0f;
 
-		static std::array<Vertex3, 24> CreateCube(float x, float y, float z, float textureID);
+		static std::array<Vertex3, 24> CreateCube(float x, float y, float z, float size);
 	};
 
 };

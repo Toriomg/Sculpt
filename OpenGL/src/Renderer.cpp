@@ -15,6 +15,7 @@ bool GLLogCall(const char* function, const char* file, int line) {
 }
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const {
+    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     shader.Bind(); // Bind the shader program
     va.Bind(); // Bind the Vertex Array Object (VAO)
     ib.Bind(); // Bind the Index Buffer Object (IBO)

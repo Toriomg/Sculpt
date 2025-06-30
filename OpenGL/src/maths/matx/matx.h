@@ -104,14 +104,23 @@ public:
                       0.0f, 0.0f, 0.0f, 1.0f);
     }
 
-    static Matx4f perspective(float fov) {
-		float tanHalfFov = tan(fov * 3.141592653589793 / 360.0f); // Convert fov from degrees to radians
-		float f = 1.0f / tanHalfFov;
-        return Matx4f(f   , 0.0f, 0.0f, 0.0f,
-                      0.0f, f   , 0.0f, 0.0f,
-                      0.0f, 0.0f, 1.0f, 0.0f,
-                      0.0f, 0.0f, 1.0f, 0.0f);
-	}
+    static Matx4f perspective(float fov, float aspectRatio, float near, float far) {
+        float tanHalfFov = tan(fov * 3.141592653589793f / 360.0f);
+        float f = 1.0f / tanHalfFov;
+
+        float A = -(far + near) / (far - near);
+        float B = -(2.0f * far * near) / (far - near);
+        if (aspectRatio == 0.0f) {
+            aspectRatio = 1.0f; // Prevent division by zero
+		}
+
+        return Matx4f(
+            f / aspectRatio, 0.0f, 0.0f, 0.0f,
+            0.0f, f, 0.0f, 0.0f,
+            0.0f, 0.0f, A, B,
+            0.0f, 0.0f, -1.0f, 0.0f
+        );
+    }
 
     const float* data() const {
         return &m[0][0];
