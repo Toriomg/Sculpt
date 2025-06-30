@@ -38,7 +38,6 @@ namespace test {
 		std::unique_ptr<Texture> m_Texture1;
 		std::unique_ptr<Texture> m_Texture2;
 
-		Matx4f m_Proj, m_View;
 		Vec3 m_Translation;
 		float m_Rotation;
 		Vec3 m_Scaling;
@@ -48,6 +47,8 @@ namespace test {
 		float m_FOV = 90.0f;
 		float m_NearClip = 0.1f;
 		float m_FarClip = 1000.0f;
+
+		Vec3 m_CameraPosition;
 
 		static std::array<Vertex3, 24> CreateCube(float x, float y, float z, float size);
 	};

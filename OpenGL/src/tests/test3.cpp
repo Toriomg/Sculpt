@@ -15,11 +15,9 @@ namespace test {
 		:m_Translation(0.0f, 0.0f, 0.0f),
 		m_Rotation(0.0f),
 		m_Scaling(1.0f, 1.0f, 1.0f),
+		m_CameraPosition(0.0f, 0.0f, -10.0f),
 
-		m_QuadPosition(Vec3(0.0f, 0.0f, -50.0f)),
-		//m_Proj(Matx4f::orthographic(-WINDW_SIZE_X / 2.0f, WINDW_SIZE_X / 2.0f, -WINDW_SIZE_Y / 2.0f, WINDW_SIZE_Y / 2.0f, -1000.0f, 1000.0f)),
-		m_Proj(Matx4f::perspective(m_FOV, WINDW_SIZE_X / WINDW_SIZE_Y, m_NearClip, m_FarClip)),
-		m_View(Matx4f::translation(Vec3(0.0f, 0.0f, -200.0f)))
+		m_QuadPosition(Vec3(0.0f, 0.0f, -250.0f))
 	{
 
 		/*float positions[] = {
@@ -126,11 +124,14 @@ namespace test {
 		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // Set the clear color
 		GLCall(glClear(GL_COLOR_BUFFER_BIT)); // Clear the color buffer
 
+		Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling);
+		Matx4f view = Matx4f::rotationY(M_PI) * Matx4f::translation(m_CameraPosition * -1.0f); // Rotated to see the positive Z direction
+		Matx4f projection = Matx4f::perspective(m_FOV, WINDW_SIZE_X / WINDW_SIZE_Y, m_NearClip, m_FarClip);
+
 		Renderer renderer; // Create a Renderer object to handle drawing
 		{
-			m_Proj = Matx4f::perspective(m_FOV, WINDW_SIZE_X / WINDW_SIZE_Y, m_NearClip, m_FarClip);
-			Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling*m_scalar);
-			Matx4f mvp = m_Proj * m_View * model;
+
+			Matx4f mvp = projection * view * model;
 			m_Shader->Bind();
 			m_Shader->SetUniformMat4fm("u_MVP", mvp);
 			// Draw the object using the Renderer
@@ -141,9 +142,9 @@ namespace test {
 		ImGui::Text("Batch Rendering"); // Display text in the ImGui window
 		ImGui::DragFloat3("Quad Position", &m_QuadPosition.x, 10);
 		ImGui::Text("\nCamera Transformations");
-		ImGui::DragFloat3("Camera Translation", &m_Translation.x, 5.0f);
+		ImGui::DragFloat3("Camera Translation", &m_CameraPosition.x, 5.0f);
 		ImGui::DragFloat("Camera Rotation", &m_Rotation, 0.5f);
-		ImGui::DragFloat("Camera Scaling", &m_scalar, 0.01f);
+		ImGui::DragFloat("Camera Scalar", &m_scalar, 0.01f);
 		ImGui::DragFloat3("Camera Scaling", &m_Scaling.x, 0.01f);
 		ImGui::Text("\nCamera Settings");
 		ImGui::DragFloat("Camera FOV", &m_FOV, 0.5f);

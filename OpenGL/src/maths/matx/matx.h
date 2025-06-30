@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <cmath>
 
+#define M_PI 3.141592653589793f
+
 class Matx4f {
 public:
     float m[4][4];
@@ -105,7 +107,7 @@ public:
     }
 
     static Matx4f perspective(float fov, float aspectRatio, float near, float far) {
-        float tanHalfFov = tan(fov * 3.141592653589793f / 360.0f);
+        float tanHalfFov = tan(fov * M_PI / 360.0f);
         float f = 1.0f / tanHalfFov;
 
         float A = -(far + near) / (far - near);
