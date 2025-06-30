@@ -4,12 +4,14 @@
 
 #include "test3.h"
 #include "../Renderer.h"
+#include "../InputManager.h"
 
 #include "imgui/imgui.h"
 
+extern struct MouseState g_MouseState;
 
-const float WINDW_SIZE_X = 1260.0f; // Define the window width
-const float WINDW_SIZE_Y = 1080.0f; // Define the window height
+const float WINDW_SIZE_X = 1960.0f*0.75f; // Define the window width
+const float WINDW_SIZE_Y = 1080.0f*0.75f; // Define the window height
 
 namespace test {
 	test3::test3()
@@ -160,6 +162,24 @@ namespace test {
 
 	void test3::OnInput(GLFWwindow* window, float deltaTime) {
 		m_Camera.OnInput(window, deltaTime);
+		// Process mouse input using the global state from the header
+		m_Camera.ProcessMouseMovement(g_MouseState.x_offset, g_MouseState.y_offset);
+
+		// Reset the offset
+		g_MouseState.x_offset = 0.0f;
+		g_MouseState.y_offset = 0.0f;
+
+		// A key to release the mouse cursor (e.g., to use the ImGui menu)
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+		// A key to re-capture the mouse
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+			// Only recapture if the ImGui window is not being hovered
+			if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !ImGui::IsAnyItemHovered()) {
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			}
+		}
 	}
 
 	void test3::OnImGuiRender() {
@@ -182,6 +202,7 @@ namespace test {
 		}
 		ImGui::DragFloat("Camera Near Clip", &m_Camera.m_NearClip, 0.1f);
 		ImGui::DragFloat("Camera Far Clip", &m_Camera.m_FarClip, 10.0f);
+		ImGui::DragFloat("Camera Speed", &m_Camera.m_Speed, 5.0f);
 		ImGui::Separator();
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
