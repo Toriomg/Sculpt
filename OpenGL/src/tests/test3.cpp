@@ -15,9 +15,11 @@ namespace test {
 		:m_Translation(0.0f, 0.0f, 0.0f),
 		m_Rotation(0.0f),
 		m_Scaling(1.0f, 1.0f, 1.0f),
-		m_QuadPosition(Vec2(0.0f, 0.0f)),
-		m_Proj(Matx4f::perspective(90.0f)),
-		m_View(Matx4f::translation(Vec3(0.0f, 0.0f, 0.0f)))
+
+		m_QuadPosition(Vec3(0.0f, 0.0f, -50.0f)),
+		//m_Proj(Matx4f::orthographic(-WINDW_SIZE_X / 2.0f, WINDW_SIZE_X / 2.0f, -WINDW_SIZE_Y / 2.0f, WINDW_SIZE_Y / 2.0f, -1000.0f, 1000.0f)),
+		m_Proj(Matx4f::perspective(m_FOV, WINDW_SIZE_X / WINDW_SIZE_Y, m_NearClip, m_FarClip)),
+		m_View(Matx4f::translation(Vec3(0.0f, 0.0f, -200.0f)))
 	{
 
 		/*float positions[] = {
@@ -115,7 +117,7 @@ namespace test {
 
 	void test3::OnUpdate(float deltaTime) {
 		// Set dynamic vertex buffer
-		auto vertices = CreateCube(m_QuadPosition.x, m_QuadPosition.y, 0.0f, 100.0f);
+		auto vertices = CreateCube(m_QuadPosition.x, m_QuadPosition.y, m_QuadPosition.z, 50.0f);
 
 		m_VBO->SetData(vertices.data(), vertices.size() * sizeof(Vertex3), 0);
 	}
@@ -126,8 +128,9 @@ namespace test {
 
 		Renderer renderer; // Create a Renderer object to handle drawing
 		{
-			Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationX(m_Rotation) * Matx4f::scaling(m_Scaling*m_scalar);
-			Matx4f mvp = m_Proj * model * m_View;
+			m_Proj = Matx4f::perspective(m_FOV, WINDW_SIZE_X / WINDW_SIZE_Y, m_NearClip, m_FarClip);
+			Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling*m_scalar);
+			Matx4f mvp = m_Proj * m_View * model;
 			m_Shader->Bind();
 			m_Shader->SetUniformMat4fm("u_MVP", mvp);
 			// Draw the object using the Renderer
@@ -136,10 +139,17 @@ namespace test {
 	}
 	void test3::OnImGuiRender() {
 		ImGui::Text("Batch Rendering"); // Display text in the ImGui window
-		ImGui::DragFloat2("Quad Position", &m_QuadPosition.x, 10);
-		ImGui::DragFloat3("Camera Translation", &m_Translation.x, 10.0f);
+		ImGui::DragFloat3("Quad Position", &m_QuadPosition.x, 10);
+		ImGui::Text("\nCamera Transformations");
+		ImGui::DragFloat3("Camera Translation", &m_Translation.x, 5.0f);
 		ImGui::DragFloat("Camera Rotation", &m_Rotation, 0.5f);
 		ImGui::DragFloat("Camera Scaling", &m_scalar, 0.01f);
+		ImGui::DragFloat3("Camera Scaling", &m_Scaling.x, 0.01f);
+		ImGui::Text("\nCamera Settings");
+		ImGui::DragFloat("Camera FOV", &m_FOV, 0.5f);
+		ImGui::DragFloat("Camera Near Clip", &m_NearClip, 0.1f);
+		ImGui::DragFloat("Camera Far Clip", &m_FarClip, 0.1f);
+
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 }

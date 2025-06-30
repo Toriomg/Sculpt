@@ -86,8 +86,9 @@ int main(void)
         testMenu->RegisterTest<test::test3>("Batch Rendering with my maths");
 
 		glEnable(GL_CULL_FACE); // Enable face culling to improve performance
-		glFrontFace(GL_CW); // Set the front face to counter-clockwise
+		glFrontFace(GL_CCW); // Set the front face to counter-clockwise
         glCullFace(GL_BACK); // Cull back faces to avoid rendering them
+        GLCall(glEnable(GL_DEPTH_TEST));
 
         while (!glfwWindowShouldClose(window))
         {
