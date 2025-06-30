@@ -23,5 +23,5 @@ public:
 	Matx4f GetViewMatrix() const;
 	Matx4f GetProjectionMatrix(bool CameraPersEnabled) const;
 private:
-	float m_Speed = 1.0f;
+	float m_Speed = 20.0f;
 };

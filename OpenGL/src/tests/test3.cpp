@@ -168,9 +168,9 @@ namespace test {
 		ImGui::DragFloat3("Quad Position 2", &m_QuadPosition2.x, 10);
 		ImGui::Text("\nCamera Transformations");
 		ImGui::DragFloat3("Camera Translation", &m_Camera.m_Position.x, 5.0f);
-		ImGui::DragFloat("Camera Rotation", &m_Rotation, 0.5f);
-		ImGui::DragFloat("Camera Scalar", &m_scalar, 0.01f);
-		ImGui::DragFloat3("Camera Scaling", &m_Scaling.x, 0.01f);
+		ImGui::DragFloat("Transform Rotation", &m_Rotation, 0.5f);
+		ImGui::DragFloat("Transform Scalar", &m_scalar, 0.01f);
+		ImGui::DragFloat3("Transform Scaling", &m_Scaling.x, 0.01f);
 		ImGui::Text("\nCamera Settings");
 		ImGui::Checkbox("Camera Perspective Enabled", &m_CameraPersEnabled);
 		if (m_CameraPersEnabled) {
