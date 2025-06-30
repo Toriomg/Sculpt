@@ -5,6 +5,10 @@
 
 #define M_PI 3.141592653589793f
 
+static inline float radians(float degrees) {
+    return degrees * M_PI / 180.0f;
+}
+
 class Matx4f {
 public:
     float m[4][4];
@@ -65,6 +69,7 @@ public:
     }
 
     static Matx4f rotationX(float angle) {
+		radians(angle);
         return Matx4f(1.0f, 0.0f, 0.0f, 0.0f,
                       0.0f, cos(angle), -sin(angle), 0.0f,
                       0.0f, sin(angle), cos(angle), 0.0f,
@@ -72,6 +77,7 @@ public:
 	}
 
     static Matx4f rotationY(float angle) {
+        radians(angle);
         return Matx4f(cos(angle), 0.0f, sin(angle), 0.0f,
                       0.0f, 1.0f, 0.0f, 0.0f,
                       -sin(angle), 0.0f, cos(angle), 0.0f,
@@ -79,10 +85,25 @@ public:
 	}
 
     static Matx4f rotationZ(float angle){
+        radians(angle);
         return Matx4f(cos(angle),-sin(angle), 0.0f, 0.0f,
                       sin(angle), cos(angle), 0.0f, 0.0f,
                       0.0f      , 0.0f      , 1.0f, 0.0f,
 			          0.0f      , 0.0f      , 0.0f, 1.0f);
+    }
+
+    static Matx4f rotation(const Vec3& axis, float angle) {
+        float c = cos(angle);
+        float s = sin(angle);
+        float t = 1.0f - c;
+        return Matx4f(t * axis.x * axis.x + c, t * axis.x * axis.y - s * axis.z, t * axis.x * axis.z + s * axis.y, 0.0f,
+                      t * axis.x * axis.y + s * axis.z, t * axis.y * axis.y + c, t * axis.y * axis.z - s * axis.x, 0.0f,
+                      t * axis.x * axis.z - s * axis.y, t * axis.y * axis.z + s * axis.x, t * axis.z * axis.z + c, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+    static Matx4f rotation(float angleX, float angleY, float angleZ) {
+        return rotationZ(angleZ) * rotationY(angleY) * rotationX(angleX);
     }
 
     static Matx4f scaling(const Vec3& vec) {
@@ -97,6 +118,16 @@ public:
                       0.0f, scalar, 0.0f, 0.0f,
                       0.0f, 0.0f, scalar, 0.0f,
                       0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+    static Matx4f lookAt(const Vec3& Position, const Vec3& target, const Vec3& up) {
+        Vec3 N = target.normalize();
+        Vec3 U = up.crossProduct(N).normalize();
+        Vec3 V = N.crossProduct(U);
+        return Matx4f(U.x, U.y, U.z, -Position.x,
+                      V.x, V.y, V.z, -Position.y,
+                      N.x, N.y, N.z, Position.z,
+			          0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
     static Matx4f orthographic(float left, float right, float bottom, float top, float near, float far) {

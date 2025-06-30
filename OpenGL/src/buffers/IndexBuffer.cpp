@@ -2,7 +2,7 @@
 #include "../Renderer.h"
 
 IndexBuffer::IndexBuffer(const unsigned int* data, unsigned int count)
-	: m_Count(count) // Initialize the count of indices
+	: m_Count(count/sizeof(unsigned int)) // Initialize the count of indices
 {
 	GLCall(glGenBuffers(1, &m_RendererID)); // Generate a buffer ID
 	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID)); // Bind the buffer to the GL_ARRAY_BUFFER target

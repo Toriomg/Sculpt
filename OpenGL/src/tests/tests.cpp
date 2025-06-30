@@ -18,6 +18,9 @@ namespace test {
 	void Test::OnImGuiRender() {
 	}
 
+	void Test::OnInput(GLFWwindow* window, float deltaTime) {
+	}
+
 	TestMenu::TestMenu(Test*& currentTestPointer)
 		: m_CurrentTest(currentTestPointer) {
 
