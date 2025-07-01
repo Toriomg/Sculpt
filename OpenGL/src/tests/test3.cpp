@@ -20,7 +20,8 @@ namespace test {
 		m_Scaling(1.0f, 1.0f, 1.0f),
 
 		m_QuadPosition(Vec3(50.0f, 0.0f, 0.0f)),
-		m_QuadPosition2(Vec3(100.0f, 0.0f, 0.0f))
+		m_QuadPosition2(Vec3(100.0f, 0.0f, 0.0f)),
+		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y)
 	{
 		
 		const unsigned int indices[] = {
@@ -73,8 +74,6 @@ namespace test {
 
 		int samplers[2] = { 0,1 };
 		m_Shader->SetUniform1iv("u_Textures", samplers, sizeof(samplers));
-
-		m_Camera.SetAspectRatio(WINDW_SIZE_X / WINDW_SIZE_Y);
 	}
 
 	test3::~test3() {
@@ -125,6 +124,8 @@ namespace test {
 	}
 
 	void test3::OnUpdate(float deltaTime) {
+		m_Camera.OnUpdate(deltaTime, g_MouseState); // Update the camera state based on input and delta time
+
 		// Set dynamic vertex buffer
 		auto q0 = CreateCube(m_QuadPosition.x, m_QuadPosition.y, m_QuadPosition.z, 10);   // Cubo pequeño 1
 		auto q1 = CreateCube(-25, -25, -25, 50); // Cubo GRANDE (origen del triángulo)
@@ -163,7 +164,7 @@ namespace test {
 	void test3::OnInput(GLFWwindow* window, float deltaTime) {
 		m_Camera.OnInput(window, deltaTime);
 		// Process mouse input using the global state from the header
-		m_Camera.ProcessMouseMovement(g_MouseState.x_offset, g_MouseState.y_offset);
+		m_Camera.OnMouse(g_MouseState.x_offset, g_MouseState.y_offset);
 
 		// Reset the offset
 		g_MouseState.x_offset = 0.0f;
@@ -177,20 +178,26 @@ namespace test {
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 			// Only recapture if the ImGui window is not being hovered
 			if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !ImGui::IsAnyItemHovered()) {
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			}
 		}
 	}
 
 	void test3::OnImGuiRender() {
-		ImGui::Text("Batch Rendering"); // Display text in the ImGui window
+		ImGui::DragFloat3("Camera TARGET", &m_Camera.m_Target.x, 5.0f);
+		ImGui::DragFloat3("Camera UP", &m_Camera.m_Up.x, 5.0f);
+		ImGui::DragFloat("Yaw", &m_Camera.m_Yaw, 0.01f);
+		ImGui::DragFloat("Pitch", &m_Camera.m_Pitch, 0.01f);
+		ImGui::Separator();
 		ImGui::DragFloat3("Quad Position", &m_QuadPosition.x, 10);
 		ImGui::DragFloat3("Quad Position 2", &m_QuadPosition2.x, 10);
+		ImGui::Separator();
 		ImGui::Text("\nCamera Transformations");
 		ImGui::DragFloat3("Camera Translation", &m_Camera.m_Position.x, 5.0f);
 		ImGui::DragFloat("Transform Rotation", &m_Rotation, 0.5f);
 		ImGui::DragFloat("Transform Scalar", &m_scalar, 0.01f);
 		ImGui::DragFloat3("Transform Scaling", &m_Scaling.x, 0.01f);
+		ImGui::Separator();
 		ImGui::Text("\nCamera Settings");
 		ImGui::Checkbox("Camera Perspective Enabled", &m_CameraPersEnabled);
 		if (m_CameraPersEnabled) {
