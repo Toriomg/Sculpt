@@ -124,7 +124,7 @@ namespace test {
 	}
 
 	void test3::OnUpdate(float deltaTime) {
-		m_Camera.OnUpdate(deltaTime, g_MouseState); // Update the camera state based on input and delta time
+		m_Camera.OnUpdate(deltaTime); // Update the camera state based on input and delta time
 
 		// Set dynamic vertex buffer
 		auto q0 = CreateCube(m_QuadPosition.x, m_QuadPosition.y, m_QuadPosition.z, 10);   // Cubo pequeño 1
@@ -164,11 +164,7 @@ namespace test {
 	void test3::OnInput(GLFWwindow* window, float deltaTime) {
 		m_Camera.OnInput(window, deltaTime);
 		// Process mouse input using the global state from the header
-		//m_Camera.OnMouse(g_MouseState.x_offset, g_MouseState.y_offset);
-
-		// Reset the offset
-		g_MouseState.x_offset = 0.0f;
-		g_MouseState.y_offset = 0.0f;
+		m_Camera.OnMouse(g_MouseState.lastX, g_MouseState.lastY);
 
 		// A key to release the mouse cursor (e.g., to use the ImGui menu)
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
