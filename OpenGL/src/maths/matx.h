@@ -128,7 +128,7 @@ public:
                       V.x, V.y, V.z, 0.0f,
                       N.x, N.y, N.z, 0.0f,
 			          0.0f, 0.0f, 0.0f, 1.0f);
-		Matx4f B = Matx4f::translation(Vec3(-Pos.x, -Pos.y, Pos.z));
+		Matx4f B = Matx4f::translation(Vec3(-Pos.x, -Pos.y, -Pos.z));
 		return A * B;
 	}
 

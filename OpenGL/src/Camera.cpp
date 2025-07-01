@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-static int MARGIN = 10.0f; // Margen para detectar los bordes de la ventana
-static float EDGE_SPEED = 50.0f; // Paso de movimiento en los bordes
+static int MARGIN = 20.0f; // Margen para detectar los bordes de la ventana
+static float EDGE_SPEED = 40.0f; // Paso de movimiento en los bordes
 
 Camera::Camera(float windowWidth, float windowHeight)
     : m_Position(0.0f, 0.0f, -100.0f),  // Posición inicial de la cámara
@@ -18,12 +18,9 @@ Camera::Camera(float windowWidth, float windowHeight)
 	m_WindowHeight = windowHeight;
 	m_AspectRatio = windowWidth / windowHeight; // Calculamos el aspecto de la ventana
 
-    Vec3 Targetnew = Vec3(m_Target.x, 0.0f, m_Target.z).normalize();
-	// Calculamos el ángulo de yaw en radianes y lo convertimos a grados
-	float yaw_radians = atan2(Targetnew.x, Targetnew.z); // atan2(y, x) gives the angle in radians
-    m_Yaw = 0.0f;
-     
+    m_Yaw = 100.00f;
     m_Pitch = 0.0f;
+    //this->OnUpdate(0.0f);
 }
 
 void Camera::SetPosition(const Vec3& position) {
@@ -34,59 +31,64 @@ void Camera::SetSpeed(float speed) {
 	m_Speed = speed;
 }
 
-void Camera::OnUpdate(float deltaTime, const MouseState& mouseState) {
+void Camera::OnUpdate(float deltaTime) {
 	float deltaYaw = 0.0f;
 	float deltaPitch = 0.0f;
+    if (m_OnLeftEdge) {
+		deltaYaw += EDGE_SPEED * deltaTime; // Y aumenta para mirar a la derecha
+	} else if (m_OnRightEdge) {
+        deltaYaw -= EDGE_SPEED * deltaTime; // Y disminuye para mirar a la izquierda
+	} else if (m_OnUpperEdge) {
+        deltaPitch -= EDGE_SPEED * deltaTime; // Y aumenta para mirar arriba
+    } else if (m_OnLowerEdge) {
+        deltaPitch += EDGE_SPEED * deltaTime; // Y disminuye para mirar abajo
+	}
+    m_Yaw += deltaYaw;
+    m_Pitch += deltaPitch;
 
-    if (mouseState.lastX <= MARGIN) deltaYaw -= EDGE_SPEED * deltaTime;
-    if (mouseState.lastX >= m_WindowWidth - MARGIN) deltaYaw += EDGE_SPEED * deltaTime;
-	if (mouseState.lastY <= MARGIN) m_OnUpperEdge = true; // Y aumenta para mirar arriba
-    if (mouseState.lastY >= m_WindowHeight - MARGIN) deltaPitch -= EDGE_SPEED * deltaTime; // Y disminuye para mirar abajo
-
-    if (deltaYaw != 0.0f || deltaPitch != 0.0f) {
-        m_Yaw += deltaYaw;
-        m_Pitch += deltaPitch;
-        if (m_Pitch > 89.0f) {
-            m_Pitch = 89.0f;
-        }
-        else if (m_Pitch < -89.0f) {
-            m_Pitch = -89.0f;
-        }
-	    Vec3 Yaxis(0.0f, 1.0f, 0.0f);
-
-        // yaw rotation
-        Vec3 View(1.0f, 0.0f, 0.0f);
-        View = rotateVec3(View, Yaxis, m_Yaw);
-	    View.normalize();
-
-	    // pitch rotation
-	    Vec3 right = View.crossProduct(Yaxis).normalize().normalize();
-	    View = rotateVec3(View, right, m_Pitch);
-
-	    m_Target = View.normalize();
-        m_Up = right.crossProduct(m_Target).normalize();
+    if (m_Pitch > 89.0f) {
+        m_Pitch = 89.0f;
+    }
+    else if (m_Pitch < -89.0f) {
+        m_Pitch = -89.0f;
     }
 
+	Vec3 Yaxis(0.0f, 1.0f, 0.0f);
+
+    float yawInRadians = m_Yaw * (3.14159265f / 180.0f);
+    float pitchInRadians = m_Pitch * (3.14159265f / 180.0f);
+
+    // yaw rotation
+    Vec3 View(1.0f, 0.0f, 0.0f);
+    View = rotateVec3(View, Yaxis, yawInRadians);
+	View.normalize();
+
+	// pitch rotation
+	Vec3 right = View.crossProduct(Yaxis).normalize().normalize();
+	View = rotateVec3(View, right, pitchInRadians);
+
+	m_Target = View.normalize();
+    m_Up = right.crossProduct(m_Target).normalize();
 }
 
 void Camera::OnInput(GLFWwindow* window, float deltaTime) {
-    // Calculamos el vector "derecha" para el movimiento lateral (strafe)
-    Vec3 right = m_Up.crossProduct(m_Target).normalize();
+    Vec3 worldUp(0.0f, 1.0f, 0.0f);
+    Vec3 right = m_Target.crossProduct(worldUp).normalize();
 
     // Movimiento hacia adelante/atrás
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        m_Position += m_Target * m_Speed * deltaTime;
+        m_Position -= m_Target * m_Speed * deltaTime;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        m_Position -= m_Target * m_Speed * deltaTime;
+        m_Position += m_Target * m_Speed * deltaTime;
     }
 
     // Movimiento lateral (strafe)
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        m_Position -= right * m_Speed * deltaTime;
+        m_Position += right * m_Speed * deltaTime;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        m_Position += right * m_Speed * deltaTime;
+        m_Position -= right * m_Speed * deltaTime;
     }
 
     // Movimiento vertical
@@ -98,27 +100,12 @@ void Camera::OnInput(GLFWwindow* window, float deltaTime) {
     }
 }
 
-void Camera::OnMouse(float xoffset, float yoffset, bool constrainPitch) {
-    m_Yaw += xoffset * m_MouseSensitivity;
-    //m_Pitch += yoffset * m_MouseSensitivity;
+void Camera::OnMouse(float lastX, float lastY, bool constrainPitch) {
+    m_OnLeftEdge = (lastX <= MARGIN);
+    m_OnRightEdge = (lastX >= m_WindowWidth - MARGIN);
+    m_OnUpperEdge = (lastY <= MARGIN);
+    m_OnLowerEdge = (lastY >= m_WindowHeight - MARGIN);
 
-    if (m_Pitch > 89.0f) m_Pitch = 89.0f;
-    if (m_Pitch < -89.0f) m_Pitch = -89.0f;
-
-     Vec3 Yaxis(0.0f, 1.0f, 0.0f);
-
-        // yaw rotation
-        Vec3 View(1.0f, 0.0f, 0.0f);
-        View = rotateVec3(View, Yaxis, m_Yaw);
-        View.normalize();
-
-        // pitch rotation
-        Vec3 right = View.crossProduct(Yaxis).normalize().normalize();
-        View = rotateVec3(View, right, m_Pitch);
-
-        m_Target = View.normalize();
-        m_Up = right.crossProduct(m_Target).normalize();
-    
 }
 
 Matx4f Camera::GetViewMatrix() const {

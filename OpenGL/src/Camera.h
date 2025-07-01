@@ -31,7 +31,7 @@ public:
 
 	void SetPosition(const Vec3& position);
 	void SetSpeed(float speed);
-	void OnUpdate(float deltaTime, const MouseState& mouseState);
+	void OnUpdate(float deltaTime);
 	void OnInput(GLFWwindow* window, float deltaTime);
 	void OnMouse(float xoffset, float yoffset, bool constrainPitch = true);
 

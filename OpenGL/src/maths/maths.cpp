@@ -5,7 +5,7 @@ Vec3 rotateVec3(const Vec3& v, const Vec3& axis, float angle) {
     Quaternion conjugateQ = rotationQ.conjugate();
 
     // Represent the vector 'v' to be rotated as a pure quaternion
-    Quaternion p(v.x, v.y, v.z, 0.0f);
+    Quaternion p(0.0f, v.x, v.y, v.z);
 
     // Apply the rotation formula: p' = q * p * q_conjugate
     Quaternion p_rotated = rotationQ * p * conjugateQ;
