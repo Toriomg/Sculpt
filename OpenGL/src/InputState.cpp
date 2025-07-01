@@ -27,6 +27,6 @@ void InitializeInput(GLFWwindow* window) {
 
     // Configura el modo del cursor y registra el callback.
     // Toda la lógica de inicialización de input está ahora aquí.
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     glfwSetCursorPosCallback(window, mouse_callback);
 }

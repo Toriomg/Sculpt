@@ -1,20 +1,20 @@
 #pragma once
 #include "vec3.h"
 
-class Quat {
+class Quaternion {
 public:
 	float w, x, y, z;
 
-	Quat() {
+	Quaternion() {
 		w = 1.0f;
 		x = 0.0f;
 		y = 0.0f;
 		z = 0.0f;
 	}
 
-	Quat(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
+	Quaternion(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
 
-	Quat(const Vec3& axis, float angle) {
+	Quaternion(const Vec3& axis, float angle) {
 		float halfAngle = angle * 0.5f;
 		float s = sin(halfAngle);
 		w = cos(halfAngle);
@@ -27,16 +27,25 @@ public:
 		return Vec3(x, y, z);
 	}
 
-	Quat conjugate(const Quat& q) const {
-		return Quat(q.w, -q.x, -q.y, -q.z);
+	Quaternion conjugate() const {
+		return Quaternion(w, -x, -y, -z);
 	}
 
-	Quat operator*(const Quat& q) const {
-		return Quat(
+	Quaternion operator*(const Quaternion& q) const {
+		return Quaternion(
 			w * q.w - x * q.x - y * q.y - z * q.z,
 			w * q.x + x * q.w + y * q.z - z * q.y,
 			w * q.y - x * q.z + y * q.w + z * q.x,
 			w * q.z + x * q.y - y * q.x + z * q.w
+		);
+	}
+
+	Quaternion operator*(const Vec3& v) const {
+		return Quaternion(
+			-w * v.x - x * v.y - y * v.z,
+			w * v.x + x * v.y + y * v.z,
+			w * v.y - x * v.x + y * v.z,
+			w * v.z + x * v.x - y * v.y
 		);
 	}
 
