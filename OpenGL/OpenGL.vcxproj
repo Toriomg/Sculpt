@@ -164,6 +164,7 @@
   <ItemGroup>
     <None Include="res\shaders\BasicTexture.shader" />
     <None Include="res\shaders\BasicColor.shader" />
+    <None Include="res\shaders\Square.Shader" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />
@@ -309,7 +310,7 @@
     <ClInclude Include="src\InputManager.h" />
     <ClInclude Include="src\maths\maths.h" />
     <ClInclude Include="src\maths\matx.h" />
-    <ClInclude Include="src\maths\quat.h" />
+    <ClInclude Include="src\maths\quaternion.h" />
     <ClInclude Include="src\maths\vec2.h" />
     <ClInclude Include="src\maths\vec3.h" />
     <ClInclude Include="src\Renderer.h" />

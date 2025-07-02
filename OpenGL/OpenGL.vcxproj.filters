@@ -508,6 +508,7 @@
       <Filter>Archivos de encabezado</Filter>
     </None>
     <None Include="res\shaders\BasicColor.shader" />
+    <None Include="res\shaders\Square.Shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Renderer.h">
@@ -1458,7 +1459,7 @@
     <ClInclude Include="src\Camera.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\maths\quat.h">
+    <ClInclude Include="src\maths\quaternion.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\InputManager.h">
