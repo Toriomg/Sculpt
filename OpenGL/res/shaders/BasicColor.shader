@@ -12,8 +12,11 @@ out vec4 v_Color;
 out vec2 v_TexCoord;
 out float v_TexIndex;
 
+
 void main()
 {
+	int Index = Indices[gl_VertexID];
+	vec4 vPos = vec4(Pos[Index], 1.0);
 	gl_Position = u_MVP * vec4(position, 1.0);
 	v_Color = color;
 	v_TexCoord = texCoord;
