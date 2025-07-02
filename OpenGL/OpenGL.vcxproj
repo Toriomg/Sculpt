@@ -140,6 +140,7 @@
     <ClCompile Include="src\InputState.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\maths\maths.cpp" />
+    <ClCompile Include="src\Obj\inf_grid.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\tests\test3.cpp" />
@@ -164,7 +165,9 @@
   <ItemGroup>
     <None Include="res\shaders\BasicTexture.shader" />
     <None Include="res\shaders\BasicColor.shader" />
+    <None Include="res\shaders\frag\grid.frag" />
     <None Include="res\shaders\Square.Shader" />
+    <None Include="res\shaders\vert\grid.vert" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />
@@ -313,6 +316,11 @@
     <ClInclude Include="src\maths\quaternion.h" />
     <ClInclude Include="src\maths\vec2.h" />
     <ClInclude Include="src\maths\vec3.h" />
+    <ClInclude Include="src\Obj\inf_grid.h" />
+    <ClInclude Include="src\Obj\Object.h" />
+    <ClInclude Include="src\Obj\RenderObj\MeshObj\Cube.h" />
+    <ClInclude Include="src\Obj\RenderObj\MeshObj\MeshObject.h" />
+    <ClInclude Include="src\Obj\RenderObj\RenderableObject.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\tests\test3.h" />
