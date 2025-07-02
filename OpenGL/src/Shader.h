@@ -32,6 +32,7 @@ public:
 	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 	void SetUniformMat4fm(const std::string& name, const Matx4f& matrix);
 private:
+	static std::string ReadFile(const std::string& filepath);
 	ShaderProgramSource ParseShader(const std::string& filepath);
 	unsigned int CompileShader(const std::string& source, unsigned int type);
 	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);

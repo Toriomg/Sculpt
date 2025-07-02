@@ -21,7 +21,8 @@ namespace test {
 
 		m_QuadPosition(Vec3(50.0f, 0.0f, 0.0f)),
 		m_QuadPosition2(Vec3(100.0f, 0.0f, 0.0f)),
-		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y)
+		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y),
+		m_Grid()
 	{
 		
 		const unsigned int indices[] = {
@@ -143,13 +144,14 @@ namespace test {
 
 	void test3::OnRender() {
 		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // Set the clear color
-		GLCall(glClear(GL_COLOR_BUFFER_BIT)); // Clear the color buffer
+		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // Clear the color buffer
 
 		Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling * m_scalar);
 		// Rotated to see the positive Z direction
 		Matx4f view = m_Camera.GetViewMatrix();
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
 
+			m_Grid.OnRender(m_Camera);
 		Renderer renderer; // Create a Renderer object to handle drawing
 		{
 

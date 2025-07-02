@@ -17,11 +17,32 @@ Shader::Shader(const std::string& filepath)
 
 Shader::Shader(const std::string& vertFilepath, const std::string& fragFilepath) {
 	/*Builder function for two separate vertex and fragment shaders files*/
-	m_RendererID = CreateShader(vertFilepath, fragFilepath); // Create the shader program
+	std::string vertexSource = ReadFile(vertFilepath);
+	std::string fragmentSource = ReadFile(fragFilepath);
+
+	// Check if reading was successful before proceeding
+	if (vertexSource.empty() || fragmentSource.empty()) {
+		m_RendererID = 0; // Mark this shader as invalid
+		return;
+	}
+
+	// Pass the actual shader source code to CreateShader
+	m_RendererID = CreateShader(vertexSource, fragmentSource);
 }
 
 Shader::~Shader() {
 	GLCall(glDeleteProgram(m_RendererID)); // Delete the shader program
+}
+
+std::string Shader::ReadFile(const std::string& filepath) {
+	std::ifstream file(filepath);
+	if (!file.is_open()) {
+		std::cerr << "Error: Could not open shader file: " << filepath << std::endl;
+		return ""; // Return empty string on failure
+	}
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	return buffer.str();
 }
 
 ShaderProgramSource Shader::ParseShader(const std::string& filepath) {
@@ -56,6 +77,7 @@ ShaderProgramSource Shader::ParseShader(const std::string& filepath) {
 
 	return { ss[0].str(), ss[1].str() }; // Return the vertex and fragment shader sources as a ShaderProgramSource struct
 }
+
 unsigned int Shader::CompileShader(const std::string& source, unsigned int type) {
 	unsigned int id = glCreateShader(type); // Create a shader object of the specified type
 	const char* src = source.c_str(); // Convert the source string to a C-style string
@@ -81,6 +103,7 @@ unsigned int Shader::CompileShader(const std::string& source, unsigned int type)
 }
 
 unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
+	/*Must pass the parsed shader not the filepath*/
 	unsigned int program = glCreateProgram(); // Create a shader program
 	unsigned int vs = CompileShader(vertexShader, GL_VERTEX_SHADER); // Compile the vertex shader
 	unsigned int fs = CompileShader(fragmentShader, GL_FRAGMENT_SHADER); // Compile the vertex shader

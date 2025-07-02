@@ -141,6 +141,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\maths\maths.cpp" />
     <ClCompile Include="src\Obj\inf_grid.cpp" />
+    <ClCompile Include="src\Obj\Object.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\tests\test3.cpp" />

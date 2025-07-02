@@ -22,7 +22,7 @@ void main()
     vec3 groundPos = u_cameraPos + direction * t;
     float dist = length(groundPos - u_cameraPos);
     
-    float lineThickness = 0.01;
+    float lineThickness = 100.01;
     float minorLine = grid(groundPos.xz, lineThickness);
     float majorLine = grid(groundPos.xz / 10.0, lineThickness * 2.0);
     
