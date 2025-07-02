@@ -12,6 +12,7 @@
 #include "../buffers/IndexBuffer.h"
 #include "../buffers/VertexBufferLayout.h"
 #include "../Texture.h"
+#include "../Obj/inf_grid.h"
 
 struct Vertex3 {
 	float Pos[3];
@@ -41,6 +42,7 @@ namespace test {
 		std::unique_ptr<Texture> m_Texture1;
 		std::unique_ptr<Texture> m_Texture2;
 		Camera m_Camera;
+		InfGrid m_Grid;
 
 		Vec3 m_Translation;
 		float m_Rotation;

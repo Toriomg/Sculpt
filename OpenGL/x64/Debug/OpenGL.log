@@ -1,46 +1,15 @@
-﻿  IndexBuffer.cpp
-  main.cpp
-  inf_grid.cpp
-  Renderer.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,35): error C2661: 'Shader::Shader': ninguna función sobrecargada acepta 2 argumentos
-  (compilando archivo de origen "src/Obj/inf_grid.cpp")
-      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,35):
-      al hacer coincidir la lista de argumentos '(const char [18], const char [18])'
-      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,35):
-      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
-          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Obj\inf_grid.cpp(4,18):
-          Vea la referencia a la creación de una instancia de la función plantilla "std::unique_ptr<Shader,std::default_delete<Shader>> std::make_unique<Shader,const char(&)[18],const char(&)[18],0>(const char (&)[18],const char (&)[18])" que se está compilando
-  
-  Shader.cpp
+﻿  inf_grid.cpp
   test3.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(167,52): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(167,32): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(169,52): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(169,32): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
   (compilando archivo de origen "src/tests/test3.cpp")
       C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
       el contexto de creación de instancias de la plantilla (el más antiguo primero) es
-          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(63,16):
+          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(64,16):
           Vea la referencia a la creación de una instancia de la función plantilla "std::unique_ptr<IndexBuffer,std::default_delete<IndexBuffer>> std::make_unique<IndexBuffer,const unsigned int(&)[108],size_t,0>(const unsigned int (&)[108],size_t &&)" que se está compilando
   
-  Texture.cpp
-  TestBatchRendering.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
-  (compilando archivo de origen "src/tests/TestBatchRendering.cpp")
-      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
-      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
-          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestBatchRendering.cpp(53,16):
-          Vea la referencia a la creación de una instancia de la función plantilla "std::unique_ptr<IndexBuffer,std::default_delete<IndexBuffer>> std::make_unique<IndexBuffer,unsigned int(&)[12],size_t,0>(unsigned int (&)[12],size_t &&)" que se está compilando
-  
-  TestClearColor.cpp
-  TestTexture2D.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
-  (compilando archivo de origen "src/tests/TestTexture2D.cpp")
-      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
-      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
-          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestTexture2D.cpp(33,16):
-          Vea la referencia a la creación de una instancia de la función plantilla "std::unique_ptr<VertexBuffer,std::default_delete<VertexBuffer>> std::make_unique<VertexBuffer,float(&)[20],size_t,bool,0>(float (&)[20],size_t &&,bool &&)" que se está compilando
-  
-  VertexArray.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\buffers\VertexArray.cpp(21,97): warning C4312: 'conversión de tipo': conversión de 'unsigned int' a 'const void *' de mayor tamaño
-  VertexBuffer.cpp
   Generando código...
+  OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
+  "pwsh.exe" no se reconoce como un comando interno o externo,
+  programa o archivo por lotes ejecutable.
