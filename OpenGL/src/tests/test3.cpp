@@ -64,7 +64,7 @@ namespace test {
 			sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
 
 		// Parse the shader file
-		m_Shader = std::make_unique<Shader>("res/shaders/Square.shader"); // Create a Shader object with the shader file path	
+		m_Shader = std::make_unique<Shader>("res/shaders/BasicColor.shader"); // Create a Shader object with the shader file path	
 		m_Shader->Bind(); // Bind the shader program
 
 		m_Texture1 = std::make_unique<Texture>("res/textures/texture1.png"); // Load the first texture
@@ -73,7 +73,7 @@ namespace test {
 		m_Texture2->Bind(1); // Bind the second texture to texture unit 1
 
 		int samplers[2] = { 0,1 };
-		//m_Shader->SetUniform1iv("u_Textures", samplers, sizeof(samplers));
+		m_Shader->SetUniform1iv("u_Textures", samplers, sizeof(samplers));
 	}
 
 	test3::~test3() {

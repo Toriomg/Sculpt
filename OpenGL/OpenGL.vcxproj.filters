@@ -90,6 +90,9 @@
     <ClCompile Include="src\maths\maths.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="src\Obj\inf_grid.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\BasicTexture.shader" />
@@ -509,6 +512,8 @@
     </None>
     <None Include="res\shaders\BasicColor.shader" />
     <None Include="res\shaders\Square.Shader" />
+    <None Include="res\shaders\frag\grid.frag" />
+    <None Include="res\shaders\vert\grid.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Renderer.h">
@@ -1463,6 +1468,21 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\InputManager.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Obj\Object.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Obj\inf_grid.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Obj\RenderObj\MeshObj\MeshObject.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Obj\RenderObj\RenderableObject.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Obj\RenderObj\MeshObj\Cube.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
