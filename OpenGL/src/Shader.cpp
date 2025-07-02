@@ -10,8 +10,14 @@
 Shader::Shader(const std::string& filepath) 
 	: m_FilePath(filepath), m_RendererID(0)
 {
+	/*Builder function for a single vertex and fragment shaders file*/
 	ShaderProgramSource source = ParseShader(filepath); // Parse the shader fill
 	m_RendererID = CreateShader(source.VertexSource, source.FragmentSource); // Create the shader program
+}
+
+Shader::Shader(const std::string& vertFilepath, const std::string& fragFilepath) {
+	/*Builder function for two separate vertex and fragment shaders files*/
+	m_RendererID = CreateShader(vertFilepath, fragFilepath); // Create the shader program
 }
 
 Shader::~Shader() {
