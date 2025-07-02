@@ -4,7 +4,7 @@ static int MARGIN = 20.0f; // Margen para detectar los bordes de la ventana
 static float EDGE_SPEED = 40.0f; // Paso de movimiento en los bordes
 
 Camera::Camera(float windowWidth, float windowHeight)
-    : m_Position(0.0f, 0.0f, -100.0f),  // Posición inicial de la cámara
+    : m_Position(0.0f, 10.0f, -100.0f),  // Posición inicial de la cámara
     m_Target(0.0f, 0.0f, 1.0f),     // Mirando hacia adelante en el eje Z positivo (local)
     m_Up(0.0f, 1.0f, 0.0f),              // Velocidad de movimiento
     m_FOV(90.0f),

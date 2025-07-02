@@ -1,8 +1,7 @@
 #include "inf_grid.h"
 
 InfGrid::InfGrid() {
-	m_Shader = std::make_unique<Shader>("res/shaders/vert/grid.vert", "res/shaders/frag/grid.frag");
-    m_VAO = std::make_unique<VertexArray>();
+	m_Shader = std::make_unique<Shader>("res/shaders/vert/grid.vs", "res/shaders/frag/grid.fs");
 }
 
 InfGrid::~InfGrid() {
@@ -15,8 +14,11 @@ void InfGrid::OnRender(const Camera& camera) const {
     }
 
     // The grid should not block objects behind it, so we disable depth writing.
-    //glDepthFunc(GL_LEQUAL);
-    //glDepthMask(GL_FALSE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     m_Shader->Bind();
 
@@ -25,14 +27,10 @@ void InfGrid::OnRender(const Camera& camera) const {
     m_Shader->SetUniformMat4fm("u_projection", camera.GetProjectionMatrix(true));
     m_Shader->SetUniform3f("u_cameraPos", camera.m_Position.x, camera.m_Position.y, camera.m_Position.z);
 
-    // Ujbind the VAO.
-    m_VAO->Unbind();
-
     // Make the draw call.
-    // We tell OpenGL to draw 6 vertices. The vertex shader will generate them on-the-fly.
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // Clean up state for the next object to render.
-    //glDepthMask(GL_TRUE);
-    //glDepthFunc(GL_LESS); // Re-enable depth testing!
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
 }
