@@ -106,6 +106,10 @@ void Shader::SetUniform1iv(const std::string& name, const int* array, int size) 
 	GLCall(glUniform1iv(GetUniformLocation(name), size, array)); // Set an array of integer uniform variables in the shader
 }
 
+void Shader::SetUniform3f(const std::string& name, float v0, float v1, float v2) {
+	GLCall(glUniform3f(GetUniformLocation(name), v0, v1, v2)); // Set a 3D float uniform variable in the shader
+}
+
 void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3) {
 	GLCall(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3)); // Set a 4D float uniform variable in the shader
 }
