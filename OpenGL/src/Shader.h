@@ -18,6 +18,7 @@ private:
 	mutable std::unordered_map<std::string, GLint> m_UniformLocationCache; // Cache for uniform locations
 public:
 	Shader(const std::string& filepath);
+	Shader(const std::string& vertFilepath, const std::string& fragFilepath);
 	~Shader();
 
 	void Bind() const;

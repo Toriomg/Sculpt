@@ -2,12 +2,10 @@
 
 InfGrid::InfGrid() {
 	m_Shader = std::make_unique<Shader>("shaders/grid.vert", "shaders/grid.frag");
-	glGenVertexArrays(1, &m_VaoID);
+    m_VAO = std::make_unique<VertexArray>();
 }
 
 InfGrid::~InfGrid() {
-	glDeleteVertexArrays(1, &m_VaoID);
-	// m_Shader is a unique_ptr, so it's automatically deleted.
 }
 
 void InfGrid::OnRender(const Camera& camera) const {
@@ -19,7 +17,7 @@ void InfGrid::OnRender(const Camera& camera) const {
     // The grid should not block objects behind it, so we disable depth writing.
     glDisable(GL_DEPTH_TEST);
 
-    m_Shader->use();
+    m_Shader->Bind();
 
     // Set the shader uniforms with data from the camera.
     m_Shader->SetUniformMat4fm("u_view", camera.GetViewMatrix());
@@ -27,13 +25,13 @@ void InfGrid::OnRender(const Camera& camera) const {
     m_Shader->SetUniform3f("u_cameraPos", camera.m_Position.x, camera.m_Position.y, camera.m_Position.z);
 
     // Bind the VAO.
-    glBindVertexArray(m_VaoID);
+	m_VAO->Bind();
 
     // Make the draw call.
     // We tell OpenGL to draw 6 vertices. The vertex shader will generate them on-the-fly.
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // Clean up state for the next object to render.
-    glBindVertexArray(0);
+    m_VAO->Bind();
     glEnable(GL_DEPTH_TEST); // Re-enable depth testing!
 }
