@@ -515,8 +515,8 @@
     </None>
     <None Include="res\shaders\BasicColor.shader" />
     <None Include="res\shaders\Square.Shader" />
-    <None Include="res\shaders\frag\grid.frag" />
-    <None Include="res\shaders\vert\grid.vert" />
+    <None Include="res\shaders\frag\grid.fs" />
+    <None Include="res\shaders\vert\grid.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Renderer.h">

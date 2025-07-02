@@ -19,9 +19,11 @@ const int indices[6] = int[6](
 
 void main()
 {
-    // Unproject the screen-space quad vertex to find its position on the far plane in world space
+    // 1. Unproject the screen-space vertex to find its position on the far plane.
     vec4 pos = inverse(u_projection) * vec4(vertices[indices[gl_VertexID]].xy, 1.0, 1.0);
+    // 2. Transform that position from camera space to world space.
     pos = inverse(u_view) * pos;
+    // 3. Pass the calculated world position to the fragment shader.
     v_worldPos = pos.xyz / pos.w;
 
     // We output the clip-space position directly to create a full-screen quad
