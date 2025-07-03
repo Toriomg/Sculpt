@@ -4,9 +4,10 @@ in vec3 v_worldPos;
 uniform vec3 u_cameraPos;
 out vec4 FragColor;
 
-float grid(vec2 coord, float thickness) {
+float grid(vec2 coord, float width) {
+    vec2 fw = fwidth(coord);
     vec2 grid_uv = fract(coord);
-    vec2 line = step(vec2(thickness), grid_uv) - step(vec2(1.0 - thickness), grid_uv);
+    vec2 line = smoothstep(fw * width, vec2(0.0), grid_uv) - smoothstep(vec2(1.0) - fw * width, vec2(1.0), grid_uv);
     return 1.0 - max(line.x, line.y);
 }
 
@@ -22,16 +23,15 @@ void main()
     vec3 groundPos = u_cameraPos + direction * t;
     float dist = length(groundPos - u_cameraPos);
     
-    float lineThickness = 0.01;
-    float minorLine = grid(groundPos.xz, lineThickness);
-    float majorLine = grid(groundPos.xz / 10.0, lineThickness * 2.0);
+    float minorLine = grid(groundPos.xz, 1.0); 
+    float majorLine = grid(groundPos.xz / 10.0, 1.5);
     
     vec3 gridColor = vec3(0.5);
     float gridLines = max(minorLine, majorLine);
     vec3 finalColor = gridColor * gridLines;
 
     float fogFactor = 1.0 - exp(-dist * 0.005);
-    vec4 fogColor = vec4(0.1, 0.1, 0.1, 1.0); // Background color
+    vec4 fogColor = vec4(0.2f, 0.3f, 0.3f, 1.0f); // Background color
 
     FragColor = mix(vec4(finalColor, gridLines), fogColor, fogFactor);
 }
