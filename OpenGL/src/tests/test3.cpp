@@ -151,6 +151,7 @@ namespace test {
 		Matx4f view = m_Camera.GetViewMatrix();
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
 
+		m_Grid.OnRender(m_Camera);
 		Renderer renderer; // Create a Renderer object to handle drawing
 		{
 
@@ -159,7 +160,6 @@ namespace test {
 			m_Shader->SetUniformMat4fm("u_MVP", mvp);
 			// Draw the object using the Renderer
 			renderer.Draw(*m_VAO, *m_IBO, *m_Shader);
-			m_Grid.OnRender(m_Camera);
 		}
 	}
 
