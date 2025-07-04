@@ -1496,5 +1496,8 @@
     <Image Include="res\textures\texture2.png">
       <Filter>Archivos de recursos</Filter>
     </Image>
+    <Image Include="res\Screenshots\Captura de pantalla 2025-07-04 165916.png">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
   </ItemGroup>
 </Project>
