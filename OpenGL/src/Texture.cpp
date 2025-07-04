@@ -1,11 +1,17 @@
 #include "Texture.h"
+#include <iostream>
 #include "stb_image/stb_image.h"
 
 Texture::Texture(const std::string& path) 
 	: m_RendererID(0), m_FilePath(path), m_LocalBuffer(nullptr), m_Width(0), m_Height(0), m_BPP(0)
 {
 	stbi_set_flip_vertically_on_load(1); // Flip the image vertically to match OpenGL's texture coordinate system
-	m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4); // Load the image with 4 channels (RGBA)
+	unsigned char* textureData = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4); // Load the image with 4 channels (RGBA)
+	if (!textureData) {
+		std::cerr << "Failed to load texture: " << path << std::endl;
+		return; // Handle error if the texture fails to load
+	}
+	m_LocalBuffer = textureData;
 
 	GLCall(glGenTextures(1, &m_RendererID));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
