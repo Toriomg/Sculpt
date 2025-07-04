@@ -25,7 +25,7 @@ void main()
     
     // Calculate visibility for the finer grids based on their screen-space size
     float tiny_vis = smoothstep(0.3, 0.1, max(fwidth(groundPos.xz).x, fwidth(groundPos.xz).y));
-    float mid_vis = smoothstep(1.5, 0.7, max(fwidth(groundPos.xz / 10.0).x, fwidth(groundPos.xz / 10.0).y));
+    float mid_vis = smoothstep(1.25, 0.7, max(fwidth(groundPos.xz / 10.0).x, fwidth(groundPos.xz / 10.0).y));
 
     // Calculate the intensity of each grid level and multiply by its visibility
     // If visibility is 0, the intensity becomes 0.
