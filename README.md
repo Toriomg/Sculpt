@@ -6,7 +6,7 @@
 
 <h2>Project Screenshots:</h2>
 
-<img src="    OpenGL/OpenGL/res/Screenshots/screenshot1.png" alt="project-screenshot" width="1462" height="805/">
+<img src="OpenGL/res/Screenshots/screenshot1.png" alt="project-screenshot" width="1462" height="805/">
 
   
   
