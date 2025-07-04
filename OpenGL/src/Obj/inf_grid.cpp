@@ -7,7 +7,7 @@ InfGrid::InfGrid() {
 InfGrid::~InfGrid() {
 }
 
-void InfGrid::OnRender(const Camera& camera) const {
+void InfGrid::OnRender(const Camera& camera, bool CameraPersEnabled) const {
     // Don't render if it's not supposed to be visible.
     if (!m_IsVisible) {
         return;
@@ -24,7 +24,7 @@ void InfGrid::OnRender(const Camera& camera) const {
 
     // Set the shader uniforms with data from the camera.
     m_Shader->SetUniformMat4fm("u_view", camera.GetViewMatrix());
-    m_Shader->SetUniformMat4fm("u_projection", camera.GetProjectionMatrix(true));
+    m_Shader->SetUniformMat4fm("u_projection", camera.GetProjectionMatrix(CameraPersEnabled));
     m_Shader->SetUniform3f("u_cameraPos", camera.m_Position.x, camera.m_Position.y, camera.m_Position.z);
 
     // Make the draw call.
