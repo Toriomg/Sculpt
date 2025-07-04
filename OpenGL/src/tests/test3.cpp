@@ -157,7 +157,7 @@ namespace test {
 
 			Matx4f mvp = projection * view * model;
 			m_Shader->Bind();
-			m_Shader->SetUniformMat4fm("u_MVP", mvp);
+			m_Shader->SetUniformMat4f("u_MVP", mvp);
 			// Draw the object using the Renderer
 			renderer.Draw(*m_VAO, *m_IBO, *m_Shader);
 		}

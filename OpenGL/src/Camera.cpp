@@ -20,7 +20,7 @@ Camera::Camera(float windowWidth, float windowHeight)
 
     m_Yaw = 100.00f;
     m_Pitch = 0.0f;
-    //this->OnUpdate(0.0f);
+    this->OnUpdate(0.0f);
 }
 
 void Camera::SetPosition(const Vec3& position) {

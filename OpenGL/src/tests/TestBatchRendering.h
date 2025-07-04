@@ -9,6 +9,7 @@
 #include "../buffers/IndexBuffer.h"
 #include "../buffers/VertexBufferLayout.h"
 #include "../Texture.h"
+#include "../maths/maths.h"
 
 struct Vertex {
 	float Pos[3];
@@ -37,10 +38,10 @@ namespace test {
 		std::unique_ptr<Texture> m_Texture1;
 		std::unique_ptr<Texture> m_Texture2;
 
-		glm::mat4 m_Proj, m_View;
-		glm::vec3 m_Translation;
+		Matx4f m_Proj, m_View;
+		Vec3 m_Translation;
 
-		glm::vec2 m_QuadPosition;
+		Vec2 m_QuadPosition;
 
 		static std::array<Vertex, 4> CreateQuad(float x, float y, float textureID);
 	};

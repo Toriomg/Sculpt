@@ -8,6 +8,7 @@
 #include "../buffers/IndexBuffer.h"
 #include "../buffers/VertexBufferLayout.h"
 #include "../Texture.h"
+#include "../maths/maths.h"
 
 namespace test {
 
@@ -28,8 +29,8 @@ namespace test {
 		std::unique_ptr<Shader> m_Shader;
 		std::unique_ptr<Texture> m_Texture;
 
-		glm::mat4 m_Proj, m_View;
-		glm::vec3 m_TranslationA, m_TranslationB;
+		Matx4f m_Proj, m_View;
+		Vec3 m_TranslationA, m_TranslationB;
 	};
 
 };
