@@ -634,6 +634,7 @@
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\Screenshots\Captura de pantalla 2025-07-04 165916.png" />
     <Image Include="res\textures\texture1.png" />
     <Image Include="res\textures\texture2.png" />
   </ItemGroup>

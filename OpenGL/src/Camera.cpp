@@ -1,5 +1,4 @@
 #include "Camera.h"
-#include <iostream>
 
 static int MARGIN = 20.0f; // Margen para detectar los bordes de la ventana
 static float EDGE_SPEED = 40.0f; // Paso de movimiento en los bordes
@@ -79,7 +78,6 @@ void Camera::OnInput(GLFWwindow* window, float deltaTime) {
     forwardMovementVector = forwardMovementVector.normalize(); // Re-normalize to maintain consistent speed
 
     Vec3 rightMovementVector = m_Target.crossProduct(worldUp).normalize();
-    std::cout << forwardMovementVector.length() << std::endl;
     // Movimiento hacia adelante/atrás
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         m_Position -= forwardMovementVector * m_Speed * deltaTime;
