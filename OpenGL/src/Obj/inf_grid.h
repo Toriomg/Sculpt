@@ -10,7 +10,7 @@ public:
     virtual ~InfGrid();
 
     // The core rendering logic for the grid.
-    void OnRender(const Camera& camera) const;
+    void OnRender(const Camera& camera, bool CameraPersEnabled) const;
 
 private:
     // The grid owns its own specific shader.

@@ -151,7 +151,7 @@ namespace test {
 		Matx4f view = m_Camera.GetViewMatrix();
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
 
-		m_Grid.OnRender(m_Camera);
+		m_Grid.OnRender(m_Camera, m_CameraPersEnabled);
 		Renderer renderer; // Create a Renderer object to handle drawing
 		{
 
