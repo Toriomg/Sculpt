@@ -13,8 +13,6 @@ C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestBatchRendering.cpp;C:\U
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestClearColor.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\TestClearColor.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\tests.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\tests.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestTexture2D.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\TestTexture2D.obj
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\vendor\glm\detail\glm.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\glm.obj
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\vendor\glm\glm.cppm;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\glm.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\vendor\imgui\backends\imgui_impl_glfw.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\imgui_impl_glfw.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\vendor\imgui\backends\imgui_impl_opengl3.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\imgui_impl_opengl3.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\vendor\imgui\imgui.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\imgui.obj

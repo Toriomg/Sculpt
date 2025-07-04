@@ -23,8 +23,8 @@ void InfGrid::OnRender(const Camera& camera, bool CameraPersEnabled) const {
     m_Shader->Bind();
 
     // Set the shader uniforms with data from the camera.
-    m_Shader->SetUniformMat4fm("u_view", camera.GetViewMatrix());
-    m_Shader->SetUniformMat4fm("u_projection", camera.GetProjectionMatrix(CameraPersEnabled));
+    m_Shader->SetUniformMat4f("u_view", camera.GetViewMatrix());
+    m_Shader->SetUniformMat4f("u_projection", camera.GetProjectionMatrix(CameraPersEnabled));
     m_Shader->SetUniform3f("u_cameraPos", camera.m_Position.x, camera.m_Position.y, camera.m_Position.z);
 
     // Make the draw call.

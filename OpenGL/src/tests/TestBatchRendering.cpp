@@ -6,8 +6,6 @@
 
 #include "imgui/imgui.h"
 
-#include "glm/glm.hpp" // Include GLM for vector and matrix operations
-#include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
 
 const float WINDW_SIZE_X = 960.0f; // Define the window width
 const float WINDW_SIZE_Y = 540.0f; // Define the window height
@@ -15,9 +13,9 @@ const float WINDW_SIZE_Y = 540.0f; // Define the window height
 namespace test {
 	TestBatchRendering::TestBatchRendering()
 		:m_Translation(200.0f, 200.0f, 0.0f),
-		m_QuadPosition(glm::vec2(0.0f, 0.0f)),
-		m_Proj(glm::ortho(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -10.0f, 10.0f)),
-		m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)))
+		m_QuadPosition(Vec2(0.0f, 0.0f)),
+		m_Proj(Matx4f::orthographic(0.0f, WINDW_SIZE_X, 0.0f, WINDW_SIZE_Y, -10.0f, 10.0f)),
+		m_View(Matx4f::translation(Vec3(0.0f, 0.0f, 0.0f)))
 	{
 		
 		/*float positions[] = {
@@ -107,8 +105,8 @@ namespace test {
 
 		Renderer renderer; // Create a Renderer object to handle drawing
 		{
-			glm::mat4 model = glm::translate(glm::mat4(1.0f), m_Translation);
-			glm::mat4 mvp = m_Proj * m_View * model;
+			Matx4f model = Matx4f::translation(m_Translation);
+			Matx4f mvp = m_Proj * m_View * model;
 			m_Shader->Bind();
 			m_Shader->SetUniformMat4f("u_MVP", mvp);
 			// Draw the object using the Renderer

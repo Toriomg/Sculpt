@@ -22,9 +22,6 @@
 #include "tests/TestBatchRendering.h"
 #include "tests/test3.h"
 
-#include "glm/glm.hpp" // Include GLM for vector and matrix operations
-#include "glm/gtc/matrix_transform.hpp" // Include GLM for matrix transformations
-
 #include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
