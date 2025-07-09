@@ -1,5 +1,5 @@
 #pragma once
-#include "maths/maths.h"
+#include "../Math/maths.h"
 #include <GLFW/glfw3.h> // Necesario para el control de teclado
 #include "InputManager.h"
 

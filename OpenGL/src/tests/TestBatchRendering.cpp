@@ -2,7 +2,6 @@
 #include <cstring>
 
 #include "TestBatchRendering.h"
-#include "../Renderer.h"
 
 #include "imgui/imgui.h"
 

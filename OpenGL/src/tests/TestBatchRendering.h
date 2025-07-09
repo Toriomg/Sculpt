@@ -4,13 +4,6 @@
 
 #include "Tests.h"
 
-#include "../buffers/VertexBuffer.h"
-#include "../buffers/VertexArray.h"
-#include "../buffers/IndexBuffer.h"
-#include "../buffers/VertexBufferLayout.h"
-#include "../Texture.h"
-#include "../maths/maths.h"
-
 struct Vertex {
 	float Pos[3];
 	float Color[4];

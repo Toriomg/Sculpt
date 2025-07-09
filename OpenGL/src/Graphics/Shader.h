@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "maths/maths.h"
+#include "../Math/maths.h"
 
 struct ShaderProgramSource {
 	std::string VertexSource; // Source code for the vertex shader

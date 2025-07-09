@@ -5,15 +5,6 @@
 
 #include "Tests.h"
 
-#include "../Camera.h"
-#include "../maths/maths.h"
-#include "../buffers/VertexBuffer.h"
-#include "../buffers/VertexArray.h"
-#include "../buffers/IndexBuffer.h"
-#include "../buffers/VertexBufferLayout.h"
-#include "../Texture.h"
-#include "../Obj/inf_grid.h"
-
 struct Vertex3 {
 	float Pos[3];
 	float Color[4];

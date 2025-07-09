@@ -7,6 +7,16 @@
 #include <functional>
 #include <vector>
 
+
+#include "../Core/Camera.h"
+#include "../Math/maths.h"
+#include "../Graphics/VertexBuffer.h"
+#include "../Graphics/VertexArray.h"
+#include "../Graphics/IndexBuffer.h"
+#include "../Graphics/VertexBufferLayout.h"
+#include "../Graphics/Texture.h"
+#include "../Editor/inf_grid.h"
+
 namespace test {
 
 	class Test {

@@ -3,8 +3,8 @@
 
 
 #include "test3.h"
-#include "../Renderer.h"
-#include "../InputManager.h"
+#include "../Graphics/Renderer.h"
+#include "../Core/InputManager.h"
 
 #include "imgui/imgui.h"
 

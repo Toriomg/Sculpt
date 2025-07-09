@@ -2,8 +2,8 @@
 
 #include <GL/glew.h> // Include GLEW for OpenGL function pointers
 
-#include "buffers/VertexArray.h"
-#include "buffers/IndexBuffer.h"
+#include "VertexArray.h"
+#include "IndexBuffer.h"
 #include "Shader.h"
 
 // Macro to assert conditions, triggering a breakpoint if false
