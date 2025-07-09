@@ -1,5 +1,5 @@
-// src/Core/Application.cpp
 #include "Application.h"
+#include "Time.h"
 
 // --- All the includes that were in main.cpp ---
 #include <GL/glew.h>
@@ -66,6 +66,9 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
     // --- Setup ImGui ---
     m_EditorUI = std::make_unique<EditorUI>(m_Window);
 
+	// --- Setup Time ---
+	Time::Init(); // Initialize the time system for frame timing
+
     // --- Setup Test Framework ---
     m_TestMenu = new test::TestMenu(m_CurrentTest);
     m_CurrentTest = m_TestMenu;
@@ -78,12 +81,9 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 
 void Application::Run()
 {
-    float lastTime = 0.0f;
     while (!glfwWindowShouldClose(m_Window))
     {
-        float currentTime = (float)glfwGetTime();
-        float deltaTime = currentTime - lastTime;
-        lastTime = currentTime;
+		Time::Update(); // Update the time for the current frame
 
         /* Render here */
         m_Renderer.Clear();
@@ -91,9 +91,9 @@ void Application::Run()
         m_EditorUI->BeginFrame();
 
         if (m_CurrentTest) {
-            m_CurrentTest->OnUpdate(deltaTime);
+            m_CurrentTest->OnUpdate(Time::GetDeltaTime());
             m_CurrentTest->OnRender();
-            m_CurrentTest->OnInput(m_Window, deltaTime);
+            m_CurrentTest->OnInput(m_Window, Time::GetDeltaTime());
 
             ImGui::Begin("Test Menu");
             // If the current test is not the menu, show the "back" button
@@ -102,6 +102,7 @@ void Application::Run()
                 m_CurrentTest = m_TestMenu; // Go back to the menu
             }
             m_CurrentTest->OnImGuiRender();
+			ImGui::Text("FPS: %.1f", Time::GetFPS());
             ImGui::End();
         }
 
