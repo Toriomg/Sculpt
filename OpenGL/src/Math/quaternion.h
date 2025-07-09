@@ -53,4 +53,7 @@ public:
 		return sqrt(w * w + x * x + y * y + z * z);
 	}
 
+	static Quaternion identity() {
+		return Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+	}
 };
