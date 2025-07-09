@@ -4,6 +4,7 @@
 
 #include "../Graphics/Renderer.h"
 #include "../tests/tests.h" // For test::Test and test::TestMenu
+#include "../Editor/EditorUI.h" // For EditorUI
 
 // Forward declare GLFWwindow to avoid including glfw3.h in the header.
 // This is good practice to keep headers clean and reduce compile times.
@@ -24,6 +25,7 @@ private:
 private:
     GLFWwindow* m_Window;
     std::string m_AppName;
+    std::unique_ptr<EditorUI> m_EditorUI;
     unsigned int m_Width, m_Height;
 
     Renderer m_Renderer;
