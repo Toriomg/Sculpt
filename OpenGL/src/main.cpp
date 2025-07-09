@@ -7,15 +7,14 @@
 #include <string>
 #include <sstream>
 
-#include "Renderer.h" // Include the Renderer header for GLCall macro
-
-#include "buffers/VertexBuffer.h"
-#include "buffers/VertexBufferLayout.h"
-#include "buffers/IndexBuffer.h"
-#include "buffers/VertexArray.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "InputManager.h"
+#include "Graphics/Renderer.h" // Include the Renderer header for GLCall macro
+#include "Graphics/VertexBuffer.h"
+#include "Graphics/VertexBufferLayout.h"
+#include "Graphics/IndexBuffer.h"
+#include "Graphics/VertexArray.h"
+#include "Graphics/Shader.h"
+#include "Graphics/Texture.h"
+#include "Core/InputManager.h"
 
 #include "tests/TestClearColor.h"
 #include "tests/TestTexture2D.h"

@@ -9,9 +9,6 @@ InfGrid::~InfGrid() {
 
 void InfGrid::OnRender(const Camera& camera, bool CameraPersEnabled) const {
     // Don't render if it's not supposed to be visible.
-    if (!m_IsVisible) {
-        return;
-    }
 
     // The grid should not block objects behind it, so we disable depth writing.
     glDisable(GL_DEPTH_TEST);

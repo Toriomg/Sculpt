@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Object.h"
-#include "../buffers/VertexArray.h"
 #include <memory>
+#include "../Core/Camera.h"
+#include "../Graphics/VertexArray.h"
+#include "../Graphics/Shader.h"
 
-class InfGrid : public Object {
+class InfGrid {
 public:
     InfGrid();
     virtual ~InfGrid();

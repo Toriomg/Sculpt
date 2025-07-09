@@ -1,7 +1,7 @@
 #pragma once
-#include "../Shader.h"
-#include "../Texture.h"
-#include "../Camera.h"
+#include "../Graphics/Shader.h"
+#include "../Graphics/Texture.h"
+#include "../Core/Camera.h"
 
 class Object {
 	public:
