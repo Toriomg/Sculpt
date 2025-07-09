@@ -64,12 +64,7 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
     GLCall(glCullFace(GL_BACK));
 
     // --- Setup ImGui ---
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
+    m_EditorUI = std::make_unique<EditorUI>(m_Window);
 
     // --- Setup Test Framework ---
     m_TestMenu = new test::TestMenu(m_CurrentTest);
@@ -93,9 +88,7 @@ void Application::Run()
         /* Render here */
         m_Renderer.Clear();
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        m_EditorUI->BeginFrame();
 
         if (m_CurrentTest) {
             m_CurrentTest->OnUpdate(deltaTime);
@@ -112,8 +105,8 @@ void Application::Run()
             ImGui::End();
         }
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // Render the ImGui frame
+        m_EditorUI->EndFrame();
 
         glfwSwapBuffers(m_Window);
         glfwPollEvents();
@@ -128,9 +121,6 @@ void Application::Cleanup()
         delete m_CurrentTest;
     delete m_TestMenu;
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 
     glfwDestroyWindow(m_Window);
     glfwTerminate();

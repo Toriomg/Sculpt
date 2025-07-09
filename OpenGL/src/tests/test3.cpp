@@ -182,33 +182,22 @@ namespace test {
 	}
 
 	void test3::OnImGuiRender() {
-		ImGui::DragFloat3("Camera TARGET", &m_Camera.m_Target.x, 5.0f);
-		ImGui::DragFloat3("Camera UP", &m_Camera.m_Up.x, 5.0f);
-		ImGui::DragFloat("Yaw", &m_Camera.m_Yaw, 0.01f);
-		ImGui::DragFloat("Pitch", &m_Camera.m_Pitch, 0.01f);
+		m_Camera.OnImGuiRender(m_CameraPersEnabled);
+
+		ImGui::Text("Scene Object Controls");
+		// These controls are specific to this test scene
+		ImGui::DragFloat3("Cube 1 Position", &m_QuadPosition.x, 1.0f);
+		ImGui::DragFloat3("Cube 2 Position", &m_QuadPosition2.x, 1.0f);
+
 		ImGui::Separator();
-		ImGui::DragFloat3("Quad Position", &m_QuadPosition.x, 10);
-		ImGui::DragFloat3("Quad Position 2", &m_QuadPosition2.x, 10);
+		ImGui::Text("Global Transform Controls");
+		ImGui::DragFloat3("Model Translation", &m_Translation.x, 0.1f);
+		ImGui::DragFloat("Model Rotation", &m_Rotation, 0.5f);
+		ImGui::DragFloat3("Model Scaling", &m_Scaling.x, 0.01f);
+		ImGui::DragFloat("Scalar Multiplier", &m_scalar, 0.01f);
+
 		ImGui::Separator();
-		ImGui::Text("\nCamera Transformations");
-		ImGui::DragFloat3("Camera Translation", &m_Camera.m_Position.x, 5.0f);
-		ImGui::DragFloat("Transform Rotation", &m_Rotation, 0.5f);
-		ImGui::DragFloat("Transform Scalar", &m_scalar, 0.01f);
-		ImGui::DragFloat3("Transform Scaling", &m_Scaling.x, 0.01f);
-		ImGui::Separator();
-		ImGui::Text("\nCamera Settings");
-		ImGui::Checkbox("Camera Perspective Enabled", &m_CameraPersEnabled);
-		if (m_CameraPersEnabled) {
-			ImGui::Text("Camera Perspective Mode Enabled");
-			ImGui::DragFloat("Camera FOV", &m_Camera.m_FOV, 0.5f);
-		} else {
-			ImGui::Text("Camera Orthographic Mode Enabled");
-			ImGui::DragFloat("Ortho Scale (Zoom)", &m_Camera.m_OrthoScale, 1.0f, 1.0f, 1000.0f);
-		}
-		ImGui::DragFloat("Camera Near Clip", &m_Camera.m_NearClip, 0.1f);
-		ImGui::DragFloat("Camera Far Clip", &m_Camera.m_FarClip, 10.0f);
-		ImGui::DragFloat("Camera Speed", &m_Camera.m_Speed, 5.0f);
-		ImGui::Separator();
+		ImGui::Text("Performance");
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 }

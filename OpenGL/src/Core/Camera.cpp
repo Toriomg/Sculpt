@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "imgui/imgui.h"
 
 static int MARGIN = 20.0f; // Margen para detectar los bordes de la ventana
 static float EDGE_SPEED = 40.0f; // Paso de movimiento en los bordes
@@ -109,6 +110,28 @@ void Camera::OnMouse(float lastX, float lastY, bool constrainPitch) {
     m_OnUpperEdge = (lastY <= MARGIN);
     m_OnLowerEdge = (lastY >= m_WindowHeight - MARGIN);
 
+}
+
+void Camera::OnImGuiRender(bool CameraPersEnabled) {
+    // This contains all the UI code that was previously in test3.cpp
+    ImGui::Text("Camera Controls");
+    ImGui::DragFloat3("Position", &m_Position.x, 0.1f);
+    ImGui::DragFloat3("Target", &m_Target.x, 0.1f);
+    ImGui::DragFloat("Yaw", &m_Yaw, 1.0f);
+    ImGui::DragFloat("Pitch", &m_Pitch, 1.0f);
+    ImGui::Separator();
+    ImGui::Text("Camera Settings");
+    ImGui::Checkbox("Perspective", &CameraPersEnabled);
+    if (CameraPersEnabled) {
+        ImGui::DragFloat("FOV", &m_FOV, 0.5f, 1.0f, 120.0f);
+    }
+    else {
+        ImGui::DragFloat("Ortho Scale", &m_OrthoScale, 1.0f, 1.0f, 1000.0f);
+    }
+    ImGui::DragFloat("Near Clip", &m_NearClip, 0.1f);
+    ImGui::DragFloat("Far Clip", &m_FarClip, 10.0f);
+    ImGui::DragFloat("Move Speed", &m_Speed, 0.5f);
+    ImGui::Separator();
 }
 
 Matx4f Camera::GetViewMatrix() const {
