@@ -1,7 +1,6 @@
 ﻿  test3.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(137,94): warning C4267: 'argumento': conversión de 'size_t' a 'int'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(155,52): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(155,32): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(161,52): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(161,32): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(476,82): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
   (compilando archivo de origen "src/tests/test3.cpp")
       C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(476,82):

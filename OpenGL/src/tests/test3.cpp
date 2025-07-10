@@ -118,6 +118,8 @@ namespace test {
 
 		Matx4f view = m_Camera.GetViewMatrix();
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
+		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling * m_scalar);
+
 
 		std::cout << "debug line1" << std::endl;
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
@@ -134,17 +136,21 @@ namespace test {
 				for (int i = 0; i < meshRenderer->Textures.size(); ++i) {
 					meshRenderer->Textures[i]->Bind(i);
 				}
-				meshRenderer->m_Shader->SetUniform1iv("u_Textures", samplers, meshRenderer->Textures.size());
+				meshRenderer->m_Shader->SetUniform1iv("u_Textures", samplers, 2);
 
-				Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling * m_scalar);
+				Matx4f model = Matx4f::translation(go->transform.position) *
+					/* You would add rotation from go->transform.rotation here if it exists */
+					Matx4f::scaling(go->transform.scale);
+
+				// 2. Combine the object's model matrix with the global transforms
+				// The order matters: global_transform * model applies the object's transform first, then the global one.
+				Matx4f mvp = projection * view * global_transform * model;
 
 				// 3. Set the MVP uniform
-				Matx4f mvp = projection * view * model;
 				meshRenderer->m_Shader->SetUniformMat4f("u_MVP", mvp);
-				std::cout << "debug line4" << std::endl;
+
 				// 4. Draw
 				m_Renderer.Draw(*meshRenderer->m_VAO, *meshRenderer->m_IBO, *meshRenderer->m_Shader);
-				std::cout << "debug line5" << std::endl;
 			}
 		}
 	}
