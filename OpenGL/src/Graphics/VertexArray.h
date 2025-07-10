@@ -7,9 +7,9 @@ class VertexBufferLayout;
 class VertexArray {
 	// A VertexArray is an OpenGL object that encapsulates the vertex buffer and its layout.
 private:
-	unsigned int m_RendererID;
 public:
 	VertexArray();
+	unsigned int m_RendererID;
 	~VertexArray();
 
 	void AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout);
