@@ -1,9 +1,26 @@
-﻿  GameObject.cpp
-  Scene.cpp
-  Generando código...
-glew32s.lib(glew.obj) : warning LNK4099: no se encontró PDB 'vc120.pdb' con 'glew32s.lib(glew.obj)' o en 'C:\Users\Hector\source\repos\OpenGL\x64\Debug\vc120.pdb'; se vinculará el objeto sin tener en cuenta información de depuración
-LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
-LINK : warning LNK4098: la biblioteca predeterminada'LIBCMT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+﻿  test3.cpp
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(137,94): warning C4267: 'argumento': conversión de 'size_t' a 'int'; posible pérdida de datos
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(155,52): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(155,32): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(476,82): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
+  (compilando archivo de origen "src/tests/test3.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(476,82):
+      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
+          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(71,19):
+          Vea la referencia a la creación de una instancia de la función plantilla "std::shared_ptr<VertexBuffer> std::make_shared<VertexBuffer,Vertex3(&)[24],size_t,bool>(Vertex3 (&)[24],size_t &&,bool &&)" que se está compilando
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(2913,46):
+          Vea la referencia a la creación de una instancia de la función plantilla "std::_Ref_count_obj2<VertexBuffer>::_Ref_count_obj2<Vertex3(&)[24],_Ty,bool>(Vertex3 (&)[24],_Ty &&,bool &&)" que se está compilando
+          with
+          [
+              _Ty=size_t
+          ]
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(2100,18):
+          Vea la referencia a la creación de una instancia de la función plantilla "void std::_Construct_in_place<_Ty,Vertex3(&)[24],unsigned __int64,bool>(_Ty &,Vertex3 (&)[24],unsigned __int64 &&,bool &&) noexcept(false)" que se está compilando
+          with
+          [
+              _Ty=VertexBuffer
+          ]
+  
   OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
   "pwsh.exe" no se reconoce como un comando interno o externo,
   programa o archivo por lotes ejecutable.

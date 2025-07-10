@@ -3,7 +3,6 @@
 
 
 #include "test3.h"
-#include "../Graphics/Renderer.h"
 #include "../Core/InputManager.h"
 
 #include "imgui/imgui.h"
@@ -18,148 +17,135 @@ namespace test {
 		:m_Translation(0.0f, 0.0f, 0.0f),
 		m_Rotation(0.0f),
 		m_Scaling(1.0f, 1.0f, 1.0f),
-
-		m_QuadPosition(Vec3(50.0f, 0.0f, 0.0f)),
-		m_QuadPosition2(Vec3(100.0f, 0.0f, 0.0f)),
 		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y),
 		m_Grid()
 	{
-		
-		const unsigned int indices[] = {
-			// Cube 0 (Original)
-			0, 1, 2,    2, 3, 0,    // Front
-			4, 5, 6,    6, 7, 4,    // Back
-			8, 9, 10,   10, 11, 8,  // Left
-			12, 13, 14, 14, 15, 12, // Right
-			16, 17, 18, 18, 19, 16, // Top
-			20, 21, 22, 22, 23, 20, // Bottom
 
-			// Cube 1 (Offset = +24)
-			24, 25, 26,    26, 27, 24,
-			28, 29, 30,    30, 31, 28,
-			32, 33, 34,    34, 35, 32,
-			36, 37, 38,    38, 39, 36,
-			40, 41, 42,    42, 43, 40,
-			44, 45, 46,    46, 47, 44,
+		auto shader = std::make_shared<Shader>("res/shaders/BasicColor.shader");
+		auto texture1 = std::make_shared<Texture>("res/textures/texture1.png");
+		auto texture2 = std::make_shared<Texture>("res/textures/texture2.png");
 
-			// Cube 2 (Offset = +48)
-			48, 49, 50,    50, 51, 48,
-			52, 53, 54,    54, 55, 52,
-			56, 57, 58,    58, 59, 56,
-			60, 61, 62,    62, 63, 60,
-			64, 65, 66,    66, 67, 64,
-			68, 69, 70,    70, 71, 68
+		float s = 1.0f;
+		Vertex3 cubeVertices[] = {
+			// Positions      // Colors         // Tex Coords  // Tex ID
+			// Face 1: Front
+			{{0, 0, s}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 0.0f},
+			{{s, 0, s}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 0.0f},
+			{{s, s, s}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 0.0f},
+			{{0, s, s}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 0.0f},
+			// Face 2: Back
+			{{s, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 1.0f},
+			{{0, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 1.0f},
+			{{0, s, 0}, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 1.0f},
+			{{s, s, 0}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 1.0f},
+			// Face 3: Left
+			{{0, 0, 0}, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 0.0f},
+			{{0, 0, s}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 0.0f},
+			{{0, s, s}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 0.0f},
+			{{0, s, 0}, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 0.0f},
+			// Face 4: Right
+			{{s, 0, s}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 1.0f},
+			{{s, 0, 0}, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 1.0f},
+			{{s, s, 0}, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 1.0f},
+			{{s, s, s}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 1.0f},
+			// Face 5: Top
+			{{0, s, s}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 0.0f},
+			{{s, s, s}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 0.0f},
+			{{s, s, 0}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 0.0f},
+			{{0, s, 0}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 0.0f},
+			// Face 6: Bottom
+			{{0, 0, 0}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 1.0f},
+			{{s, 0, 0}, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 1.0f},
+			{{s, 0, s}, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 1.0f},
+			{{0, 0, s}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 1.0f}
 		};
-		
+		unsigned int cubeIndices[] = {
+			0, 1, 2,    2, 3, 0,
+			4, 5, 6,    6, 7, 4,
+			8, 9, 10,   10, 11, 8,
+			12, 13, 14, 14, 15, 12,
+			16, 17, 18, 18, 19, 16,
+			20, 21, 22, 22, 23, 20
+		};
 
-		m_VAO = std::make_unique<VertexArray>(); // Create a Vertex Array Object (VAO) to hold the vertex attributes
-		m_VBO = std::make_unique<VertexBuffer>(nullptr, static_cast<unsigned int>(sizeof(Vertex3) * 1024), false); // Create a Vertex Buffer Object (VBO) with the vertex data
+		auto vbo = std::make_shared<VertexBuffer>(cubeVertices, sizeof(cubeVertices), false);
 		VertexBufferLayout layout;
 		layout.Push<float>(3); // position: x, y, z
 		layout.Push<float>(4); // color: r, g, b, a
 		layout.Push<float>(2); // texture coordinates: u, v
 		layout.Push<float>(1); // texture index: used for texture binding
 
-		m_VAO->AddBuffer(*m_VBO, layout);
-		m_IBO = std::make_unique<IndexBuffer>(indices,
-			sizeof(indices)); // Create an Index Buffer Object (IBO) with the index data
+		// Create Vertex Array Object (VAO) and Index Buffer Object (IBO)
+		auto vao = std::make_shared<VertexArray>();
+		vao->AddBuffer(*vbo, layout);
+		auto ibo = std::make_shared<IndexBuffer>(cubeIndices, sizeof(cubeIndices) / sizeof(unsigned int));
 
-		// Parse the shader file
-		m_Shader = std::make_unique<Shader>("res/shaders/BasicColor.shader"); // Create a Shader object with the shader file path	
-		m_Shader->Bind(); // Bind the shader program
+		// Create GameObjects and Add Components
+		m_Cube1 = m_Scene.CreateGameObject("Small Cube 1");
+		m_Cube1->transform.position = { 50.0f, 0.0f, 0.0f };
+		m_Cube1->transform.scale = { 10.0f, 10.0f, 10.0f };
+		auto& mrc1 = *m_Cube1->AddComponent<MeshRendererComponent>(vao, ibo, shader);
+		mrc1.AddTexture(texture1);
 
-		m_Texture1 = std::make_unique<Texture>("res/textures/texture1.png"); // Load the first texture
-		m_Texture2 = std::make_unique<Texture>("res/textures/texture2.png"); // Load the second texture
-		m_Texture1->Bind(0); // Bind the first texture to texture unit 0
-		m_Texture2->Bind(1); // Bind the second texture to texture unit 1
+		m_Cube2 = m_Scene.CreateGameObject("Small Cube 2");
+		m_Cube2->transform.position = { 100.0f, 0.0f, 0.0f };
+		m_Cube2->transform.scale = { 5.0f, 5.0f, 5.0f };
+		auto& mrc2 = *m_Cube2->AddComponent<MeshRendererComponent>(vao, ibo, shader); // RE-USING the same mesh and shader!
+		mrc2.AddTexture(texture2);
 
-		int samplers[2] = { 0,1 };
-		m_Shader->SetUniform1iv("u_Textures", samplers, sizeof(samplers));
+		m_LargeCube = m_Scene.CreateGameObject("Large Center Cube");
+		m_LargeCube->transform.position = { -25.0f, -25.0f, -25.0f };
+		m_LargeCube->transform.scale = { 50.0f, 50.0f, 50.0f };
+		auto& mrc3 = *m_LargeCube->AddComponent<MeshRendererComponent>(vao, ibo, shader); // RE-USING again!
+		mrc3.AddTexture(texture1);
+		mrc3.AddTexture(texture2);
 	}
 
 	test3::~test3() {
 
 	}
 
-	std::array<Vertex3, 24> test3::CreateCube(float x, float y, float z, float size) {
-		// We define 24 vertices, 4 for each of the 6 faces.
-		// This allows each face to have its own color, texture, and normal vector.
-		std::array<Vertex3, 24> vertices = {
-			// Face 1: Front (looking towards positive Z) - Red, Texture 0
-			Vertex3{ {x,        y,        z + size}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 0.0f }, // Bottom-left
-			Vertex3{ {x + size, y,        z + size}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 0.0f }, // Bottom-right
-			Vertex3{ {x + size, y + size, z + size}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 0.0f }, // Top-right
-			Vertex3{ {x,        y + size, z + size}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 0.0f }, // Top-left
-
-			// Face 2: Back (looking towards negative Z) - Green, Texture 1
-			Vertex3{ {x + size, y,        z       }, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 1.0f }, // Bottom-left
-			Vertex3{ {x,        y,        z       }, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 1.0f }, // Bottom-right
-			Vertex3{ {x,        y + size, z       }, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 1.0f }, // Top-right
-			Vertex3{ {x + size, y + size, z       }, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 1.0f }, // Top-left
-
-			// Face 3: Left (looking towards negative X) - Blue
-			Vertex3{ {x,        y,        z       }, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 0.0f }, // Bottom-left
-			Vertex3{ {x,        y,        z + size}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 0.0f }, // Bottom-right
-			Vertex3{ {x,        y + size, z + size}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 0.0f }, // Top-right
-			Vertex3{ {x,        y + size, z       }, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 0.0f }, // Top-left
-
-			// Face 4: Right (looking towards positive X) - Yellow
-			Vertex3{ {x + size, y,        z + size}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 1.0f }, // Bottom-left
-			Vertex3{ {x + size, y,        z       }, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 1.0f }, // Bottom-right
-			Vertex3{ {x + size, y + size, z       }, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 1.0f }, // Top-right
-			Vertex3{ {x + size, y + size, z + size}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 1.0f }, // Top-left
-
-			// Face 5: Top (looking towards positive Y) - Cyan
-			Vertex3{ {x,        y + size, z + size}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 0.0f }, // Bottom-left
-			Vertex3{ {x + size, y + size, z + size}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 0.0f }, // Bottom-right
-			Vertex3{ {x + size, y + size, z       }, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 0.0f }, // Top-right
-			Vertex3{ {x,        y + size, z       }, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 0.0f }, // Top-left
-
-			// Face 6: Bottom (looking towards negative Y) - Magenta
-			Vertex3{ {x,        y,        z       }, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 1.0f }, // Bottom-left
-			Vertex3{ {x + size, y,        z       }, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 1.0f }, // Bottom-right
-			Vertex3{ {x + size, y,        z + size}, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 1.0f }, // Top-right
-			Vertex3{ {x,        y,        z + size}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 1.0f }  // Top-left
-		};
-		return vertices;
-	}
-
 	void test3::OnUpdate(float deltaTime) {
-		m_Camera.OnUpdate(deltaTime); // Update the camera state based on input and delta time
-
-		// Set dynamic vertex buffer
-		auto q0 = CreateCube(m_QuadPosition.x, m_QuadPosition.y, m_QuadPosition.z, 10);   // Cubo pequeño 1
-		auto q1 = CreateCube(-25, -25, -25, 50); // Cubo GRANDE (origen del triángulo)
-		auto q2 = CreateCube(m_QuadPosition2.x, m_QuadPosition2.y, m_QuadPosition2.z, 5);  // Cubo pequeño 2 (fuera de vista)
-		
-		Vertex3 vertices[24*3];
-
-		memcpy(vertices, q0.data(), q0.size() * sizeof(Vertex3));
-		memcpy(vertices + q0.size(), q1.data(), q1.size() * sizeof(Vertex3));
-		memcpy(vertices + q0.size() + q1.size(), q2.data(), q2.size() * sizeof(Vertex3));
-
-		m_VBO->SetData(vertices, sizeof(vertices), 0);
-		//m_VBO->SetData(vertices.data(), vertices.size() * sizeof(Vertex3), 0);
+		m_Camera.OnUpdate(deltaTime);
+		m_Scene.OnUpdate(deltaTime);
 	}
 
 	void test3::OnRender() {
-		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // Set the clear color
+		GLCall(glClearColor(0.7f, 0.5f, 0.5f, 1.0f)); // Set the clear color
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // Clear the color buffer
 
-		Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling * m_scalar);
-		// Rotated to see the positive Z direction
+		m_Grid.OnRender(m_Camera, m_CameraPersEnabled);
+
 		Matx4f view = m_Camera.GetViewMatrix();
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
 
-		m_Grid.OnRender(m_Camera, m_CameraPersEnabled);
-		Renderer renderer; // Create a Renderer object to handle drawing
-		{
+		std::cout << "debug line1" << std::endl;
+		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
+			std::cout << "debug line2" << std::endl;
+			if (!go->m_IsVisible) continue;
 
-			Matx4f mvp = projection * view * model;
-			m_Shader->Bind();
-			m_Shader->SetUniformMat4f("u_MVP", mvp);
-			// Draw the object using the Renderer
-			renderer.Draw(*m_VAO, *m_IBO, *m_Shader);
+			// Get the required components
+			MeshRendererComponent* meshRenderer = go->GetComponent<MeshRendererComponent>();
+			if (meshRenderer) {
+				meshRenderer->m_Shader->Bind();
+				std::cout << "debug line3" << std::endl;
+				// Bind textures
+				int samplers[2] = { 0, 1 }; // Max textures
+				for (int i = 0; i < meshRenderer->Textures.size(); ++i) {
+					meshRenderer->Textures[i]->Bind(i);
+				}
+				meshRenderer->m_Shader->SetUniform1iv("u_Textures", samplers, meshRenderer->Textures.size());
+
+				Matx4f model = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling * m_scalar);
+
+				// 3. Set the MVP uniform
+				Matx4f mvp = projection * view * model;
+				meshRenderer->m_Shader->SetUniformMat4f("u_MVP", mvp);
+				std::cout << "debug line4" << std::endl;
+				// 4. Draw
+				m_Renderer.Draw(*meshRenderer->m_VAO, *meshRenderer->m_IBO, *meshRenderer->m_Shader);
+				std::cout << "debug line5" << std::endl;
+			}
 		}
 	}
 
@@ -167,18 +153,6 @@ namespace test {
 		m_Camera.OnInput(window, deltaTime);
 		// Process mouse input using the global state from the header
 		m_Camera.OnMouse(g_MouseState.lastX, g_MouseState.lastY);
-
-		// A key to release the mouse cursor (e.g., to use the ImGui menu)
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		}
-		// A key to re-capture the mouse
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-			// Only recapture if the ImGui window is not being hovered
-			if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !ImGui::IsAnyItemHovered()) {
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			}
-		}
 	}
 
 	void test3::OnImGuiRender() {
@@ -186,8 +160,8 @@ namespace test {
 
 		ImGui::Text("Scene Object Controls");
 		// These controls are specific to this test scene
-		ImGui::DragFloat3("Cube 1 Position", &m_QuadPosition.x, 1.0f);
-		ImGui::DragFloat3("Cube 2 Position", &m_QuadPosition2.x, 1.0f);
+		ImGui::DragFloat3("Cube 1 Position", &m_Cube1->transform.position.x, 1.0f);
+		ImGui::DragFloat3("Cube 2 Position", &m_Cube2->transform.position.x, 1.0f);
 
 		ImGui::Separator();
 		ImGui::Text("Global Transform Controls");

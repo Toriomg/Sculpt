@@ -7,8 +7,8 @@ C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\InputState.cpp;C:\Users\Hect
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\main.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\main.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Math\maths.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\maths.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Editor\inf_grid.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\inf_grid.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Scene\Components\MeshRendererComponent.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\MeshRendererComponent.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Scene\GameObject.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\GameObject.obj
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Scene\Object.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Object.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Renderer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Renderer.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Shader.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Shader.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Scene\Scene.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Scene.obj
