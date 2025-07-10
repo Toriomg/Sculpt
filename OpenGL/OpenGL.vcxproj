@@ -144,8 +144,8 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Math\maths.cpp" />
     <ClCompile Include="src\Editor\inf_grid.cpp" />
+    <ClCompile Include="src\Scene\Components\MeshRendererComponent.cpp" />
     <ClCompile Include="src\Scene\GameObject.cpp" />
-    <ClCompile Include="src\Scene\Object.cpp" />
     <ClCompile Include="src\Graphics\Renderer.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
@@ -180,6 +180,7 @@
     <ClInclude Include="src\Graphics\IndexBuffer.h" />
     <ClInclude Include="src\Core\Camera.h" />
     <ClInclude Include="src\Core\InputManager.h" />
+    <ClInclude Include="src\Graphics\Vertex.h" />
     <ClInclude Include="src\Math\maths.h" />
     <ClInclude Include="src\Math\matx.h" />
     <ClInclude Include="src\Math\quaternion.h" />
@@ -187,8 +188,8 @@
     <ClInclude Include="src\Math\vec3.h" />
     <ClInclude Include="src\Editor\inf_grid.h" />
     <ClInclude Include="src\Scene\Components\Component.h" />
+    <ClInclude Include="src\Scene\Components\MeshRendererComponent.h" />
     <ClInclude Include="src\Scene\GameObject.h" />
-    <ClInclude Include="src\Scene\Object.h" />
     <ClInclude Include="src\Graphics\Renderer.h" />
     <ClInclude Include="src\Graphics\Shader.h" />
     <ClInclude Include="src\Scene\Scene.h" />

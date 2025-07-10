@@ -3,6 +3,10 @@
 #include <array>
 #include <GLFW/glfw3.h>
 
+#include "../Scene/Scene.h"
+#include "../Scene/GameObject.h"
+#include "../Scene/Components/MeshRendererComponent.h" 
+#include "../Graphics/Renderer.h"
 #include "Tests.h"
 
 struct Vertex3 {
@@ -26,12 +30,14 @@ namespace test {
 		void OnInput(GLFWwindow* window, float deltaTime) override;
 
 	private:
-		std::unique_ptr<VertexArray> m_VAO;
-		std::unique_ptr<VertexBuffer> m_VBO;
-		std::unique_ptr<IndexBuffer> m_IBO;
-		std::unique_ptr<Shader> m_Shader;
-		std::unique_ptr<Texture> m_Texture1;
-		std::unique_ptr<Texture> m_Texture2;
+		Scene m_Scene;
+		Renderer m_Renderer;
+
+		// Pointers to the GameObjects
+		GameObject* m_Cube1;
+		GameObject* m_Cube2;
+		GameObject* m_LargeCube;
+
 		Camera m_Camera;
 		InfGrid m_Grid;
 
@@ -39,13 +45,6 @@ namespace test {
 		float m_Rotation;
 		Vec3 m_Scaling;
 		float m_scalar = 1;
-
-		Vec3 m_QuadPosition;
-		Vec3 m_QuadPosition2;
-
 		bool m_CameraPersEnabled = true;
-
-		static std::array<Vertex3, 24> CreateCube(float x, float y, float z, float size);
 	};
-
 };
