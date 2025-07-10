@@ -13,9 +13,9 @@ struct ShaderProgramSource {
 class Shader {
 private:
 	std::string m_FilePath;
-	unsigned int m_RendererID;
 	mutable std::unordered_map<std::string, GLint> m_UniformLocationCache; // Cache for uniform locations
 public:
+	unsigned int m_RendererID;
 	Shader(const std::string& filepath);
 	Shader(const std::string& vertFilepath, const std::string& fragFilepath);
 	~Shader();
