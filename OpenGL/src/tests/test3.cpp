@@ -21,7 +21,7 @@ namespace test {
 		m_Grid()
 	{
 
-		auto shader = std::make_shared<Shader>("res/shaders/BasicColor.shader");
+		m_Shader = std::make_shared<Shader>("res/shaders/BasicColor.shader");
 		auto texture1 = std::make_shared<Texture>("res/textures/texture1.png");
 		auto texture2 = std::make_shared<Texture>("res/textures/texture2.png");
 
@@ -76,27 +76,27 @@ namespace test {
 		layout.Push<float>(1); // texture index: used for texture binding
 
 		// Create Vertex Array Object (VAO) and Index Buffer Object (IBO)
-		auto vao = std::make_shared<VertexArray>();
-		vao->AddBuffer(*vbo, layout);
-		auto ibo = std::make_shared<IndexBuffer>(cubeIndices, sizeof(cubeIndices) / sizeof(unsigned int));
+		m_VAO = std::make_shared<VertexArray>();
+		m_VAO->AddBufferPtr(vbo, layout);
+		m_IBO = std::make_shared<IndexBuffer>(cubeIndices, sizeof(cubeIndices) / sizeof(unsigned int));
 
 		// Create GameObjects and Add Components
 		m_Cube1 = m_Scene.CreateGameObject("Small Cube 1");
 		m_Cube1->transform.position = { 50.0f, 0.0f, 0.0f };
 		m_Cube1->transform.scale = { 10.0f, 10.0f, 10.0f };
-		auto& mrc1 = *m_Cube1->AddComponent<MeshRendererComponent>(vao, ibo, shader);
+		auto& mrc1 = *m_Cube1->AddComponent<MeshRendererComponent>(m_VAO, m_IBO, m_Shader);
 		mrc1.AddTexture(texture1);
 
 		m_Cube2 = m_Scene.CreateGameObject("Small Cube 2");
 		m_Cube2->transform.position = { 100.0f, 0.0f, 0.0f };
 		m_Cube2->transform.scale = { 5.0f, 5.0f, 5.0f };
-		auto& mrc2 = *m_Cube2->AddComponent<MeshRendererComponent>(vao, ibo, shader); // RE-USING the same mesh and shader!
+		auto& mrc2 = *m_Cube2->AddComponent<MeshRendererComponent>(m_VAO, m_IBO, m_Shader);
 		mrc2.AddTexture(texture2);
 
 		m_LargeCube = m_Scene.CreateGameObject("Large Center Cube");
 		m_LargeCube->transform.position = { -25.0f, -25.0f, -25.0f };
 		m_LargeCube->transform.scale = { 50.0f, 50.0f, 50.0f };
-		auto& mrc3 = *m_LargeCube->AddComponent<MeshRendererComponent>(vao, ibo, shader); // RE-USING again!
+		auto& mrc3 = *m_LargeCube->AddComponent<MeshRendererComponent>(m_VAO, m_IBO, m_Shader);
 		mrc3.AddTexture(texture1);
 		mrc3.AddTexture(texture2);
 	}
@@ -121,16 +121,13 @@ namespace test {
 		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling * m_scalar);
 
 
-		std::cout << "debug line1" << std::endl;
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
-			std::cout << "debug line2" << std::endl;
 			if (!go->m_IsVisible) continue;
 
 			// Get the required components
 			MeshRendererComponent* meshRenderer = go->GetComponent<MeshRendererComponent>();
 			if (meshRenderer) {
 				meshRenderer->m_Shader->Bind();
-				std::cout << "debug line3" << std::endl;
 				// Bind textures
 				int samplers[2] = { 0, 1 }; // Max textures
 				for (int i = 0; i < meshRenderer->Textures.size(); ++i) {
@@ -148,7 +145,6 @@ namespace test {
 
 				// 3. Set the MVP uniform
 				meshRenderer->m_Shader->SetUniformMat4f("u_MVP", mvp);
-				std::cout << "debug line4" << std::endl;
 				std::cout << "VAO ID: " << meshRenderer->m_VAO->m_RendererID
 					<< ", IBO ID: " << meshRenderer->m_IBO->m_RendererID
 					<< ", Shader ID: " << meshRenderer->m_Shader->m_RendererID << std::endl;
@@ -161,7 +157,6 @@ namespace test {
 					std::cerr << "Error: IndexBuffer vacío" << std::endl;
 				}
 				m_Renderer.Draw(*meshRenderer->m_VAO, *meshRenderer->m_IBO, *meshRenderer->m_Shader);
-				std::cout << "debug line5" << std::endl;
 			}
 		}
 	}
