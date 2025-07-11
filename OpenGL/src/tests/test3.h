@@ -32,7 +32,9 @@ namespace test {
 	private:
 		Scene m_Scene;
 		Renderer m_Renderer;
-		std::shared_ptr<VertexBuffer> m_VBO;
+		std::shared_ptr<VertexArray> m_VAO;
+		std::shared_ptr<IndexBuffer> m_IBO;
+		std::shared_ptr<Shader> m_Shader;
 
 		// Pointers to the GameObjects
 		GameObject* m_Cube1;
