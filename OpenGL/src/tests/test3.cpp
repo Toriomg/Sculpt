@@ -145,10 +145,6 @@ namespace test {
 
 				// 3. Set the MVP uniform
 				meshRenderer->m_Shader->SetUniformMat4f("u_MVP", mvp);
-				std::cout << "VAO ID: " << meshRenderer->m_VAO->m_RendererID
-					<< ", IBO ID: " << meshRenderer->m_IBO->m_RendererID
-					<< ", Shader ID: " << meshRenderer->m_Shader->m_RendererID << std::endl;
-				std::cout << "IBO Count: " << meshRenderer->m_IBO->GetCount() << std::endl;
 				// 4. Draw
 				if (!meshRenderer->m_VAO || !meshRenderer->m_IBO || !meshRenderer->m_Shader) {
 					std::cerr << "Error: VAO, IBO o Shader no inicializados" << std::endl;

@@ -1,7 +1,6 @@
-﻿  Application.cpp
-  test3.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(167,52): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(167,32): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+﻿  test3.cpp
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(163,52): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(163,32): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(476,82): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
   (compilando archivo de origen "src/tests/test3.cpp")
       C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(476,82):
@@ -21,10 +20,6 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.3520
               _Ty=VertexBuffer
           ]
   
-  Generando código...
-glew32s.lib(glew.obj) : warning LNK4099: no se encontró PDB 'vc120.pdb' con 'glew32s.lib(glew.obj)' o en 'C:\Users\Hector\source\repos\OpenGL\x64\Debug\vc120.pdb'; se vinculará el objeto sin tener en cuenta información de depuración
-LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
-LINK : warning LNK4098: la biblioteca predeterminada'LIBCMT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
   OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
   "pwsh.exe" no se reconoce como un comando interno o externo,
   programa o archivo por lotes ejecutable.
