@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "InputManager.h" // Assuming this is in Core now
+#include "InputManager.h"
 
 // Test implementations
 #include "../tests/TestClearColor.h"

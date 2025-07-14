@@ -23,6 +23,7 @@ public:
 	float m_MouseSensitivity;
 
 	//flags
+	bool m_MouseWheelPressed = false;
 	bool m_OnUpperEdge = false;
 	bool m_OnLowerEdge = false;
 	bool m_OnLeftEdge = false;
@@ -33,7 +34,7 @@ public:
 	void SetSpeed(float speed);
 	void OnUpdate(float deltaTime);
 	void OnInput(GLFWwindow* window, float deltaTime);
-	void OnMouse(float xoffset, float yoffset, bool constrainPitch = true);
+	void OnMouse(float xOffset, float yOffset, float deltaTime);
 	void OnImGuiRender(bool& CameraPersEnabled);
 
 	Matx4f GetViewMatrix() const;

@@ -13,6 +13,8 @@ struct MouseState {
 
 extern MouseState g_MouseState;
 
+void ResetMouseOffset();
+
 void InitializeInput(GLFWwindow* window);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);

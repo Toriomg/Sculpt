@@ -13,7 +13,7 @@ Camera::Camera(float windowWidth, float windowHeight)
     m_AspectRatio(16.0f / 9.0f),    // Un valor por defecto
     m_NearClip(0.1f),
     m_FarClip(1000.0f),
-    m_MouseSensitivity(0.1f)
+    m_MouseSensitivity(20.0f)
 {
 	m_WindowWidth = windowWidth;
 	m_WindowHeight = windowHeight;
@@ -33,26 +33,7 @@ void Camera::SetSpeed(float speed) {
 }
 
 void Camera::OnUpdate(float deltaTime) {
-	float deltaYaw = 0.0f;
-	float deltaPitch = 0.0f;
-    if (m_OnLeftEdge) {
-		deltaYaw += EDGE_SPEED * deltaTime; // Y aumenta para mirar a la derecha
-	} else if (m_OnRightEdge) {
-        deltaYaw -= EDGE_SPEED * deltaTime; // Y disminuye para mirar a la izquierda
-	} else if (m_OnUpperEdge) {
-        deltaPitch -= EDGE_SPEED * deltaTime; // Y aumenta para mirar arriba
-    } else if (m_OnLowerEdge) {
-        deltaPitch += EDGE_SPEED * deltaTime; // Y disminuye para mirar abajo
-	}
-    m_Yaw += deltaYaw;
-    m_Pitch += deltaPitch;
-
-    if (m_Pitch > 89.0f) {
-        m_Pitch = 89.0f;
-    }
-    else if (m_Pitch < -89.0f) {
-        m_Pitch = -89.0f;
-    }
+	
 
 	Vec3 Yaxis(0.0f, 1.0f, 0.0f);
 
@@ -102,14 +83,28 @@ void Camera::OnInput(GLFWwindow* window, float deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         m_Position.y -= m_Speed * deltaTime;
     }
+
+	m_MouseWheelPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS;
 }
 
-void Camera::OnMouse(float lastX, float lastY, bool constrainPitch) {
-    m_OnLeftEdge = (lastX <= MARGIN);
-    m_OnRightEdge = (lastX >= m_WindowWidth - MARGIN);
-    m_OnUpperEdge = (lastY <= MARGIN);
-    m_OnLowerEdge = (lastY >= m_WindowHeight - MARGIN);
+void Camera::OnMouse(float xOffset, float yOffset, float deltaTime) {
+    if (m_MouseWheelPressed) {
+        float deltaYaw = 0.0f;
+        float deltaPitch = 0.0f;
 
+        deltaYaw -= xOffset * deltaTime * m_MouseSensitivity;
+        deltaPitch -= yOffset * deltaTime * m_MouseSensitivity;
+
+        m_Yaw += deltaYaw;
+        m_Pitch += deltaPitch;
+
+        if (m_Pitch > 89.0f) {
+            m_Pitch = 89.0f;
+        }
+        else if (m_Pitch < -89.0f) {
+            m_Pitch = -89.0f;
+        }
+    }
 }
 
 void Camera::OnImGuiRender(bool& CameraPersEnabled) {
@@ -119,6 +114,7 @@ void Camera::OnImGuiRender(bool& CameraPersEnabled) {
     ImGui::DragFloat3("Target", &m_Target.x, 0.1f);
     ImGui::DragFloat("Yaw", &m_Yaw, 1.0f);
     ImGui::DragFloat("Pitch", &m_Pitch, 1.0f, -89.0f, 89.0f);
+    ImGui::DragFloat("Sensitivity", &m_MouseSensitivity, 0.1f);
     ImGui::Separator();
     ImGui::Text("Camera Settings");
     ImGui::Checkbox("Perspective", &CameraPersEnabled);
