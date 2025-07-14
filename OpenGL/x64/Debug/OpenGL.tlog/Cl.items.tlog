@@ -4,6 +4,7 @@ C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Editor\EditorUI.cpp;C:\Users\Hect
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Buffers\IndexBuffer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\IndexBuffer.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\Camera.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Camera.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\InputState.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\InputState.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Loaders\ModelLoader.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\ModelLoader.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Shading\Material.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Material.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Geometry\Mesh.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Mesh.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\main.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\main.obj

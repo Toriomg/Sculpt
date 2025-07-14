@@ -118,12 +118,12 @@ void Camera::OnImGuiRender(bool& CameraPersEnabled) {
     ImGui::DragFloat3("Position", &m_Position.x, 0.1f);
     ImGui::DragFloat3("Target", &m_Target.x, 0.1f);
     ImGui::DragFloat("Yaw", &m_Yaw, 1.0f);
-    ImGui::DragFloat("Pitch", &m_Pitch, 1.0f);
+    ImGui::DragFloat("Pitch", &m_Pitch, 1.0f, -89.0f, 89.0f);
     ImGui::Separator();
     ImGui::Text("Camera Settings");
     ImGui::Checkbox("Perspective", &CameraPersEnabled);
     if (CameraPersEnabled) {
-        ImGui::DragFloat("FOV", &m_FOV, 0.5f, 1.0f, 120.0f);
+        ImGui::DragFloat("FOV", &m_FOV, 0.5f);
     }
     else {
         ImGui::DragFloat("Ortho Scale", &m_OrthoScale, 1.0f, 1.0f, 1000.0f);
