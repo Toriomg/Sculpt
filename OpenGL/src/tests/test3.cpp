@@ -22,7 +22,7 @@ namespace test {
 		m_CameraPersEnabled(true)
 	{
 
-		m_Shader = std::make_shared<Shader>("res/shaders/BasicColor.shader");
+		auto shader = std::make_shared<Shader>("res/shaders/BasicColor.shader");
 		auto texture1 = std::make_shared<Texture>("res/textures/texture1.png");
 		auto texture2 = std::make_shared<Texture>("res/textures/texture2.png");
 
@@ -69,44 +69,41 @@ namespace test {
 			20, 21, 22, 22, 23, 20
 		};
 
-		auto vbo = std::make_shared<VertexBuffer>(cubeVertices, sizeof(cubeVertices), false);
-		VertexBufferLayout layout;
-		layout.Push<float>(3); // position: x, y, z
-		layout.Push<float>(4); // color: r, g, b, a
-		layout.Push<float>(2); // texture coordinates: u, v
-		layout.Push<float>(1); // texture index: used for texture binding
+		// Create ONE mesh, which will be shared by all cubes.
+		m_CubeMesh = std::make_shared<Mesh>(cubeVertices, sizeof(cubeVertices), cubeIndices, sizeof(cubeIndices) / sizeof(unsigned int));
 
-		// Create Vertex Array Object (VAO) and Index Buffer Object (IBO)
-		m_VAO = std::make_shared<VertexArray>();
-		m_VAO->AddBufferPtr(vbo, layout);
-		m_IBO = std::make_shared<IndexBuffer>(cubeIndices, sizeof(cubeIndices) / sizeof(unsigned int));
+		// Create two different materials.
+		m_Material1 = std::make_shared<Material>(shader);
+		m_Material1->AddTexture(texture1);
+
+		m_Material2 = std::make_shared<Material>(shader);
+		m_Material2->AddTexture(texture2);
+
+		auto multiTextureMaterial = std::make_shared<Material>(shader);
+		multiTextureMaterial->AddTexture(texture1);
+		multiTextureMaterial->AddTexture(texture2);
+
 
 		// Create GameObjects and Add Components
 		m_Cube1 = m_Scene.CreateGameObject("Small Cube 1");
 		m_Cube1->transform.position = { 50.0f, 0.0f, 0.0f };
 		m_Cube1->transform.scale = { 10.0f, 10.0f, 10.0f };
-		auto& mrc1 = *m_Cube1->AddComponent<MeshRendererComponent>(m_VAO, m_IBO, m_Shader);
-		mrc1.AddTexture(texture1);
+		m_Cube1->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material1);
 
 		m_Cube2 = m_Scene.CreateGameObject("Small Cube 2");
 		m_Cube2->transform.position = { 100.0f, 0.0f, 0.0f };
 		m_Cube2->transform.scale = { 5.0f, 5.0f, 5.0f };
-		auto& mrc2 = *m_Cube2->AddComponent<MeshRendererComponent>(m_VAO, m_IBO, m_Shader);
-		mrc2.AddTexture(texture2);
+		m_Cube2->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material2);
 
 		m_LargeCube = m_Scene.CreateGameObject("Large Center Cube");
 		m_LargeCube->transform.position = { -25.0f, -25.0f, -25.0f };
 		m_LargeCube->transform.scale = { 50.0f, 50.0f, 50.0f };
-		auto& mrc3 = *m_LargeCube->AddComponent<MeshRendererComponent>(m_VAO, m_IBO, m_Shader);
-		mrc3.AddTexture(texture1);
-		mrc3.AddTexture(texture2);
+		m_LargeCube->AddComponent<MeshRendererComponent>(m_CubeMesh, multiTextureMaterial);
 
 		m_Cube4 = m_Scene.CreateGameObject("cube4");
 		m_Cube4->transform.position = { -125.0f, 125.0f, 125.0f };
 		m_Cube4->transform.scale = { 20.0f, 10.0f, 5.0f };
-		auto& mrc4 = *m_Cube4->AddComponent<MeshRendererComponent>(m_VAO, m_IBO, m_Shader);
-		mrc4.AddTexture(texture1);
-		mrc4.AddTexture(texture2);
+		m_Cube4->AddComponent<MeshRendererComponent>(m_CubeMesh, multiTextureMaterial);
 	}
 
 	test3::~test3() {
@@ -135,32 +132,19 @@ namespace test {
 			// Get the required components
 			MeshRendererComponent* meshRenderer = go->GetComponent<MeshRendererComponent>();
 			if (meshRenderer) {
-				meshRenderer->m_Shader->Bind();
-				// Bind textures
-				int samplers[2] = { 0, 1 }; // Max textures
-				for (int i = 0; i < meshRenderer->Textures.size(); ++i) {
-					meshRenderer->Textures[i]->Bind(i);
-				}
-				meshRenderer->m_Shader->SetUniform1iv("u_Textures", samplers, 2);
+				auto& material = meshRenderer->m_Material;
+				auto& mesh = meshRenderer->m_Mesh;
 
-				Matx4f model = Matx4f::translation(go->transform.position) *
-					/* You would add rotation from go->transform.rotation here if it exists */
-					Matx4f::scaling(go->transform.scale);
+				material->Bind();
 
-				// 2. Combine the object's model matrix with the global transforms
-				// The order matters: global_transform * model applies the object's transform first, then the global one.
+				Matx4f model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale);
 				Matx4f mvp = projection * view * global_transform * model;
 
-				// 3. Set the MVP uniform
-				meshRenderer->m_Shader->SetUniformMat4f("u_MVP", mvp);
-				// 4. Draw
-				if (!meshRenderer->m_VAO || !meshRenderer->m_IBO || !meshRenderer->m_Shader) {
-					std::cerr << "Error: VAO, IBO o Shader no inicializados" << std::endl;
-				}
-				if (meshRenderer->m_IBO->GetCount() == 0) {
-					std::cerr << "Error: IndexBuffer vacío" << std::endl;
-				}
-				m_Renderer.Draw(*meshRenderer->m_VAO, *meshRenderer->m_IBO, *meshRenderer->m_Shader);
+				// 3. Set the MVP uniform (the material already bound the shader)
+				material->m_Shader->SetUniformMat4f("u_MVP", mvp);
+
+				// 4. Draw the mesh
+				m_Renderer.Draw(mesh->GetVAO(), mesh->GetIBO(), *material->m_Shader);
 			}
 		}
 	}

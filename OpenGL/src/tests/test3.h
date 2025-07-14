@@ -36,6 +36,10 @@ namespace test {
 		std::shared_ptr<IndexBuffer> m_IBO;
 		std::shared_ptr<Shader> m_Shader;
 
+		std::shared_ptr<Mesh> m_CubeMesh;
+		std::shared_ptr<Material> m_Material1;
+		std::shared_ptr<Material> m_Material2;
+
 		// Pointers to the GameObjects
 		GameObject* m_Cube1;
 		GameObject* m_Cube2;
