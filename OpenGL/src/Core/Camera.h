@@ -34,7 +34,7 @@ public:
 	void OnUpdate(float deltaTime);
 	void OnInput(GLFWwindow* window, float deltaTime);
 	void OnMouse(float xoffset, float yoffset, bool constrainPitch = true);
-	void OnImGuiRender(bool CameraPersEnabled);
+	void OnImGuiRender(bool& CameraPersEnabled);
 
 	Matx4f GetViewMatrix() const;
 	Matx4f GetProjectionMatrix(bool CameraPersEnabled) const;

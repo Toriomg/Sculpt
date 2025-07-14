@@ -40,6 +40,7 @@ namespace test {
 		GameObject* m_Cube1;
 		GameObject* m_Cube2;
 		GameObject* m_LargeCube;
+		GameObject* m_Cube4;
 
 		Camera m_Camera;
 		InfGrid m_Grid;
@@ -48,6 +49,6 @@ namespace test {
 		float m_Rotation;
 		Vec3 m_Scaling;
 		float m_scalar = 1;
-		bool m_CameraPersEnabled = true;
+		bool m_CameraPersEnabled;
 	};
 };

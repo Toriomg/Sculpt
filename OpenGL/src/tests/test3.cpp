@@ -18,7 +18,8 @@ namespace test {
 		m_Rotation(0.0f),
 		m_Scaling(1.0f, 1.0f, 1.0f),
 		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y),
-		m_Grid()
+		m_Grid(),
+		m_CameraPersEnabled(true)
 	{
 
 		m_Shader = std::make_shared<Shader>("res/shaders/BasicColor.shader");
@@ -99,6 +100,13 @@ namespace test {
 		auto& mrc3 = *m_LargeCube->AddComponent<MeshRendererComponent>(m_VAO, m_IBO, m_Shader);
 		mrc3.AddTexture(texture1);
 		mrc3.AddTexture(texture2);
+
+		m_Cube4 = m_Scene.CreateGameObject("cube4");
+		m_Cube4->transform.position = { -125.0f, 125.0f, 125.0f };
+		m_Cube4->transform.scale = { 20.0f, 10.0f, 5.0f };
+		auto& mrc4 = *m_Cube4->AddComponent<MeshRendererComponent>(m_VAO, m_IBO, m_Shader);
+		mrc4.AddTexture(texture1);
+		mrc4.AddTexture(texture2);
 	}
 
 	test3::~test3() {

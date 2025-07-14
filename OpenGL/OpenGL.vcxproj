@@ -141,6 +141,8 @@
     <ClCompile Include="src\Graphics\IndexBuffer.cpp" />
     <ClCompile Include="src\Core\Camera.cpp" />
     <ClCompile Include="src\Core\InputState.cpp" />
+    <ClCompile Include="src\Graphics\Material.cpp" />
+    <ClCompile Include="src\Graphics\Mesh.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Math\maths.cpp" />
     <ClCompile Include="src\Editor\inf_grid.cpp" />
@@ -180,6 +182,8 @@
     <ClInclude Include="src\Graphics\IndexBuffer.h" />
     <ClInclude Include="src\Core\Camera.h" />
     <ClInclude Include="src\Core\InputManager.h" />
+    <ClInclude Include="src\Graphics\Material.h" />
+    <ClInclude Include="src\Graphics\Mesh.h" />
     <ClInclude Include="src\Graphics\Vertex.h" />
     <ClInclude Include="src\Math\maths.h" />
     <ClInclude Include="src\Math\matx.h" />
@@ -187,6 +191,7 @@
     <ClInclude Include="src\Math\vec2.h" />
     <ClInclude Include="src\Math\vec3.h" />
     <ClInclude Include="src\Editor\inf_grid.h" />
+    <ClInclude Include="src\Math\vec4.h" />
     <ClInclude Include="src\Scene\Components\Component.h" />
     <ClInclude Include="src\Scene\Components\MeshRendererComponent.h" />
     <ClInclude Include="src\Scene\GameObject.h" />
