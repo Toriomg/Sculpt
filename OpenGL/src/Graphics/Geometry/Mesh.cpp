@@ -1,9 +1,9 @@
 #include "Mesh.h"
 
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "VertexBufferLayout.h"
+#include "../Buffers/VertexBuffer.h"
+#include "../Buffers/IndexBuffer.h"
+#include "../Buffers/VertexArray.h"
+#include "../Buffers/VertexBufferLayout.h"
 
 
 
