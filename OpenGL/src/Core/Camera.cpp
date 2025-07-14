@@ -112,7 +112,7 @@ void Camera::OnMouse(float lastX, float lastY, bool constrainPitch) {
 
 }
 
-void Camera::OnImGuiRender(bool CameraPersEnabled) {
+void Camera::OnImGuiRender(bool& CameraPersEnabled) {
     // This contains all the UI code that was previously in test3.cpp
     ImGui::Text("Camera Controls");
     ImGui::DragFloat3("Position", &m_Position.x, 0.1f);
