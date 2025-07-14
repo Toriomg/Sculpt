@@ -1,15 +1,9 @@
 #include "MeshRendererComponent.h"
 
 MeshRendererComponent::MeshRendererComponent(
-    std::shared_ptr<VertexArray> vao,
-    std::shared_ptr<IndexBuffer> ibo,
-    std::shared_ptr<Shader> shader)
-    : m_VAO(vao), m_IBO(ibo), m_Shader(shader)
+    const std::shared_ptr<Mesh>& mesh,
+    const std::shared_ptr<Material>& material)
+    : m_Mesh(mesh), m_Material(material)
 {
     // The member variables are initialized in the initializer list.
-}
-
-void MeshRendererComponent::AddTexture(std::shared_ptr<Texture> texture)
-{
-    Textures.push_back(texture);
 }

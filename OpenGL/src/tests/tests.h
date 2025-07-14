@@ -16,6 +16,8 @@
 #include "../Graphics/VertexBufferLayout.h"
 #include "../Graphics/Texture.h"
 #include "../Editor/inf_grid.h"
+#include "../Graphics/Mesh.h"
+#include "../Graphics/Material.h"
 
 namespace test {
 

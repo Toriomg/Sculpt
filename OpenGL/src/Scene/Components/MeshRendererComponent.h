@@ -17,10 +17,6 @@ public:
         const std::shared_ptr<Material>& material
     );
 
-    // Add textures to the component after creation.
-    void AddTexture(std::shared_ptr<Texture> texture);
-
-    // Public members for the main Renderer to access.
     std::shared_ptr<Mesh> m_Mesh;
     std::shared_ptr<Material> m_Material;
 
