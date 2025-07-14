@@ -2,8 +2,11 @@
 
 MouseState g_MouseState;
 
+void ResetMouseOffset() {
+    g_MouseState.x_offset = 0.0f;
+    g_MouseState.y_offset = 0.0f;
+}
 
-// Nota: Es una función normal, no necesita ser parte de una clase para funcionar como callback.
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (g_MouseState.firstMouse) {
         g_MouseState.lastX = xpos;

@@ -152,7 +152,8 @@ namespace test {
 	void test3::OnInput(GLFWwindow* window, float deltaTime) {
 		m_Camera.OnInput(window, deltaTime);
 		// Process mouse input using the global state from the header
-		m_Camera.OnMouse(g_MouseState.lastX, g_MouseState.lastY);
+		m_Camera.OnMouse(g_MouseState.x_offset, g_MouseState.y_offset, deltaTime);
+		ResetMouseOffset();
 	}
 
 	void test3::OnImGuiRender() {
