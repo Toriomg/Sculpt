@@ -2,8 +2,8 @@
 
 #include <memory>
 #include "../Core/Camera.h"
-#include "../Graphics/VertexArray.h"
-#include "../Graphics/Shader.h"
+#include "../Graphics/Buffers/VertexArray.h"
+#include "../Graphics/Shading/Shader.h"
 
 class InfGrid {
 public:

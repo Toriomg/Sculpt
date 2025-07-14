@@ -10,14 +10,14 @@
 
 #include "../Core/Camera.h"
 #include "../Math/maths.h"
-#include "../Graphics/VertexBuffer.h"
-#include "../Graphics/VertexArray.h"
-#include "../Graphics/IndexBuffer.h"
-#include "../Graphics/VertexBufferLayout.h"
-#include "../Graphics/Texture.h"
+#include "../Graphics/Buffers/VertexBuffer.h"
+#include "../Graphics/Buffers/VertexArray.h"
+#include "../Graphics/Buffers/IndexBuffer.h"
+#include "../Graphics/Buffers/VertexBufferLayout.h"
+#include "../Graphics/Shading/Texture.h"
 #include "../Editor/inf_grid.h"
-#include "../Graphics/Mesh.h"
-#include "../Graphics/Material.h"
+#include "../Graphics/Geometry/Mesh.h"
+#include "../Graphics/Shading/Material.h"
 
 namespace test {
 

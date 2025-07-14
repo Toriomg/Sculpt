@@ -3,7 +3,7 @@
 #include <vector>
 #include <GL/glew.h>
 
-#include "Renderer.h"
+#include "../Renderer.h"
 
 struct VertexBufferElement {
 	// Represents a single element in the vertex buffer layout
