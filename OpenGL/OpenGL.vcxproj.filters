@@ -264,4 +264,7 @@
       <Filter>Archivos de recursos</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="res\models\dragon\dragon.obj" />
+  </ItemGroup>
 </Project>

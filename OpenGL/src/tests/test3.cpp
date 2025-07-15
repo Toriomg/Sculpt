@@ -6,6 +6,7 @@
 #include "../Core/InputManager.h"
 
 #include "imgui/imgui.h"
+#include "../Graphics/Loaders/ModelLoader.h"
 
 extern struct MouseState g_MouseState;
 
