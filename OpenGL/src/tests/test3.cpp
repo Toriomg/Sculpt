@@ -7,6 +7,7 @@
 
 #include "imgui/imgui.h"
 #include "../Graphics/Loaders/ModelLoader.h"
+#include "../Graphics/Geometry/Vertex.h"
 
 extern struct MouseState g_MouseState;
 
@@ -29,38 +30,43 @@ namespace test {
 		auto texture2 = std::make_shared<Texture>("res/textures/texture2.png");
 
 		float s = 1.0f;
-		Vertex3 cubeVertices[] = {
-			// Positions      // Colors         // Tex Coords  // Tex ID
-			// Face 1: Front
-			{{0, 0, s}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 0.0f},
-			{{s, 0, s}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 0.0f},
-			{{s, s, s}, {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 0.0f},
-			{{0, s, s}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 0.0f},
-			// Face 2: Back
-			{{s, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 1.0f},
-			{{0, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 1.0f},
-			{{0, s, 0}, {0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 1.0f},
-			{{s, s, 0}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 1.0f},
-			// Face 3: Left
-			{{0, 0, 0}, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 0.0f},
-			{{0, 0, s}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 0.0f},
-			{{0, s, s}, {0.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 0.0f},
-			{{0, s, 0}, {0.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 0.0f},
-			// Face 4: Right
-			{{s, 0, s}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, 1.0f},
-			{{s, 0, 0}, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, 1.0f},
-			{{s, s, 0}, {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, 1.0f},
-			{{s, s, s}, {1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, 1.0f},
-			// Face 5: Top
-			{{0, s, s}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 0.0f},
-			{{s, s, s}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 0.0f},
-			{{s, s, 0}, {0.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 0.0f},
-			{{0, s, 0}, {0.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 0.0f},
-			// Face 6: Bottom
-			{{0, 0, 0}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, 1.0f},
-			{{s, 0, 0}, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, 1.0f},
-			{{s, 0, s}, {1.0f, 0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, 1.0f},
-			{{0, 0, s}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, 1.0f}
+		Vertex cubeVertices[] = {
+			// positions          // texture coords (u, v, w) // normals (nx, ny, nz)
+			// Face 1: Front (+Z)
+			Vertex(0.0f, 0.0f, s,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f),
+			Vertex(s,    0.0f, s,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f),
+			Vertex(s,    s,    s,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f, 1.0f),
+			Vertex(0.0f, s,    s,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f, 1.0f),
+
+			// Face 2: Back (-Z)
+			Vertex(s,    0.0f, 0.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, -1.0f),
+			Vertex(0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f, -1.0f),
+			Vertex(0.0f, s,    0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f, -1.0f),
+			Vertex(s,    s,    0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f, -1.0f),
+
+			// Face 3: Left (-X)
+			Vertex(0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+			Vertex(0.0f, 0.0f, s,     1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+			Vertex(0.0f, s,    s,     1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+			Vertex(0.0f, s,    0.0f,  0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+
+			// Face 4: Right (+X)
+			Vertex(s, 0.0f, s,     0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f),
+			Vertex(s, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f),
+			Vertex(s, s,    0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 0.0f, 0.0f),
+			Vertex(s, s,    s,     0.0f, 1.0f, 0.0f,  1.0f, 0.0f, 0.0f),
+
+			// Face 5: Top (+Y)
+			Vertex(0.0f, s, s,     0.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f),
+			Vertex(s,    s, s,     1.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f),
+			Vertex(s,    s, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f),
+			Vertex(0.0f, s, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f),
+
+			// Face 6: Bottom (-Y)
+			Vertex(0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f, 0.0f),
+			Vertex(s,    0.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, -1.0f, 0.0f),
+			Vertex(s,    0.0f, s,     1.0f, 1.0f, 0.0f,  0.0f, -1.0f, 0.0f),
+			Vertex(0.0f, 0.0f, s,     0.0f, 1.0f, 0.0f,  0.0f, -1.0f, 0.0f)
 		};
 		unsigned int cubeIndices[] = {
 			0, 1, 2,    2, 3, 0,
@@ -135,7 +141,7 @@ namespace test {
 
 		Matx4f view = m_Camera.GetViewMatrix();
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
-		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation) * Matx4f::scaling(m_Scaling * m_scalar);
+		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation* 180.0 / M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
 
 
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
