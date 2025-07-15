@@ -93,7 +93,7 @@ void Camera::OnMouse(float xOffset, float yOffset, float deltaTime) {
         float deltaPitch = 0.0f;
 
         deltaYaw -= xOffset * deltaTime * m_MouseSensitivity;
-        deltaPitch += yOffset * deltaTime * m_MouseSensitivity;
+        deltaPitch -= yOffset * deltaTime * m_MouseSensitivity;
 
         m_Yaw += deltaYaw;
         m_Pitch += deltaPitch;
