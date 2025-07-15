@@ -1,9 +1,11 @@
 #pragma once
 #include <memory>
 
-class VertexArray;
-class VertexBuffer;
-class IndexBuffer;
+
+#include "../Buffers/VertexArray.h"
+#include "../Buffers/VertexBuffer.h"
+#include "../Buffers/IndexBuffer.h"
+#include "../Buffers/VertexBufferLayout.h"
 
 // Represents the geometry of an object ready to be rendered.
 // It owns the GPU buffers (VBO, IBO, VAO).
@@ -12,7 +14,7 @@ class Mesh
 public:
     // Constructor takes raw vertex and index data and creates the GPU buffers.
     Mesh(const void* vertices, unsigned int vertexSize, const unsigned int* indices, unsigned int indexCount);
-    ~Mesh() = default;
+    ~Mesh();
 
     // Meshes are not meant to be copied, as that would duplicate GPU resources.
     // We delete the copy constructor and copy assignment operator.

@@ -2,9 +2,7 @@
 
 #include "ModelLoader.h"
 
-#include "../Geometry/Vertex.h"
-#include "../Geometry/Mesh.h"
-#include "../Shading/Material.h"
+
 
 struct IndicesFace {
     unsigned int vertex = 0;
@@ -12,7 +10,7 @@ struct IndicesFace {
     unsigned int normal = 0;
 };
 
-void ModelLoader::parseFile(std::string& filepath, std::vector<Vec3>& temp_positions, std::vector<Vec2>& temp_tex_coords, std::vector<Vec3>& temp_normals, std::vector<std::string>& face_lines) {
+void parseFile(const std::string& filepath, std::vector<Vec3>& temp_positions, std::vector<Vec2>& temp_tex_coords, std::vector<Vec3>& temp_normals, std::vector<std::string>& face_lines) {
     std::ifstream inputFile(filepath);
     if (!inputFile.is_open()) {
         std::cerr << "Error: Could not open the file." << std::endl;
@@ -52,14 +50,30 @@ void ModelLoader::parseFile(std::string& filepath, std::vector<Vec3>& temp_posit
     inputFile.close();
 }
 
-Mesh ModelLoader::LoadModel(std::string& filepath) {
+IndicesFace parseVertexDefinition(const std::string& vertex_def) {
+    IndicesFace indices;
+    std::istringstream iss(vertex_def);
+    std::string v_str, t_str, n_str;
+
+    std::getline(iss, v_str, '/');
+    std::getline(iss, t_str, '/');
+    std::getline(iss, n_str);
+
+    if (!v_str.empty()) indices.vertex = std::stoi(v_str);
+    if (!t_str.empty()) indices.textCord = std::stoi(t_str);
+    if (!n_str.empty()) indices.normal = std::stoi(n_str);
+
+    return indices;
+}
+
+std::shared_ptr<Mesh> LoadModel(const std::string& filepath){
 	// Vector to hold temporary data
     std::vector<Vec3> temp_positions;
     std::vector<Vec2> temp_tex_coords;
     std::vector<Vec3> temp_normals;
     std::vector<std::string> face_lines;
 
-    ModelLoader::parseFile(filepath, temp_positions, temp_tex_coords, temp_normals, face_lines);
+    parseFile(filepath, temp_positions, temp_tex_coords, temp_normals, face_lines);
 
 	// Now process the collected data
     std::vector<Vertex> final_vertices;
@@ -78,25 +92,18 @@ Mesh ModelLoader::LoadModel(std::string& filepath) {
             }
             else {
 				// CACHE MISS
-                IndicesFace indices;
-                std::stringstream v_ss(vertex_def);
-                char slash;
+                IndicesFace indices = parseVertexDefinition(vertex_def);
 
-                v_ss >> indices.vertex >> slash >> indices.textCord >> slash >> indices.normal;
-
-                // Los índices en .obj son 1-based, los de C++ son 0-based.
-                indices.vertex--;
-                indices.textCord--;
-                indices.normal--;
-
+                // Los índices en .obj son 1-based, los de C++ son 0-based
                 Vertex new_vertex;
-                new_vertex.pos = Vec3(temp_positions[indices.vertex]);
-
-                if (indices.textCord < temp_tex_coords.size()) {
-                    new_vertex.texCoord = temp_tex_coords[indices.textCord];
+                if (indices.vertex > 0) {
+                    new_vertex.pos = temp_positions[indices.vertex - 1];
                 }
-                if (indices.normal < temp_normals.size()) {
-                     new_vertex.normal = temp_normals[indices.normal];
+                if (indices.textCord > 0) {
+                    new_vertex.texCoord = temp_tex_coords[indices.textCord - 1];
+                }
+                if (indices.normal > 0) {
+                    new_vertex.normal = temp_normals[indices.normal - 1];
                 }
 
                 // Add to the buffer
@@ -111,5 +118,9 @@ Mesh ModelLoader::LoadModel(std::string& filepath) {
         }
     }
 
-    outMesh = Mesh(const void* final_vertices.data(), unsigned int final_vertices.size() * sizeof(Vertex), const unsigned int* final_indices.data(), unsigned int final_indices.size());
+    return std::make_shared<Mesh>(final_vertices.data(),
+        static_cast<unsigned int>(final_vertices.size() * sizeof(Vertex)),
+        final_indices.data(),
+        static_cast<unsigned int>(final_indices.size())
+    );
 }

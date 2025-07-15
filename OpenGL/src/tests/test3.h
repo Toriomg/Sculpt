@@ -39,12 +39,14 @@ namespace test {
 		std::shared_ptr<Mesh> m_CubeMesh;
 		std::shared_ptr<Material> m_Material1;
 		std::shared_ptr<Material> m_Material2;
+		std::shared_ptr<Material> m_Material3;
 
 		// Pointers to the GameObjects
 		GameObject* m_Cube1;
 		GameObject* m_Cube2;
 		GameObject* m_LargeCube;
 		GameObject* m_Cube4;
+		GameObject* m_Monkey;
 
 		Camera m_Camera;
 		InfGrid m_Grid;

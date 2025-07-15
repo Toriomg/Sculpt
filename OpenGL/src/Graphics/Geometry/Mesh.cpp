@@ -1,9 +1,6 @@
 #include "Mesh.h"
 
-#include "../Buffers/VertexBuffer.h"
-#include "../Buffers/IndexBuffer.h"
-#include "../Buffers/VertexArray.h"
-#include "../Buffers/VertexBufferLayout.h"
+
 
 
 
@@ -30,3 +27,5 @@ Mesh::Mesh(const void* vertices, unsigned int vertexSize, const unsigned int* in
     //    as long as this Mesh object.
     m_VAO->AddBuffer(*m_VBO, layout);
 }
+
+Mesh::~Mesh() = default;

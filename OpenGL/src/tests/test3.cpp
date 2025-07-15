@@ -24,6 +24,7 @@ namespace test {
 	{
 
 		auto shader = std::make_shared<Shader>("res/shaders/BasicColor.shader");
+		auto shaderMonkey = std::make_shared<Shader>("res/shaders/BasicColor.shader");
 		auto texture1 = std::make_shared<Texture>("res/textures/texture1.png");
 		auto texture2 = std::make_shared<Texture>("res/textures/texture2.png");
 
@@ -80,6 +81,8 @@ namespace test {
 		m_Material2 = std::make_shared<Material>(shader);
 		m_Material2->AddTexture(texture2);
 
+		m_Material3 = std::make_shared<Material>(shaderMonkey);
+
 		auto multiTextureMaterial = std::make_shared<Material>(shader);
 		multiTextureMaterial->AddTexture(texture1);
 		multiTextureMaterial->AddTexture(texture2);
@@ -106,9 +109,13 @@ namespace test {
 		m_Cube4->transform.scale = { 20.0f, 10.0f, 5.0f };
 		m_Cube4->AddComponent<MeshRendererComponent>(m_CubeMesh, multiTextureMaterial);
 
-		std::string dragonPath = "res/models/monkey.obj";
-		std::shared_ptr<Mesh> outMeshes;
-		ModelLoader::LoadModel(dragonPath, outMeshes);
+		std::string monkeyPath = "res/models/monkey.obj";
+		auto meshMonkey = LoadModel(monkeyPath);
+
+		m_Monkey = m_Scene.CreateGameObject("Monkey");
+		m_Monkey->transform.position = { -125.0f, 125.0f, 125.0f };
+		m_Monkey->transform.scale = { 40.0f, 40.0f, 40.0f };
+		m_Monkey->AddComponent<MeshRendererComponent>(meshMonkey, m_Material1);
 	}
 
 	test3::~test3() {
