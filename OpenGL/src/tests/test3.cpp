@@ -96,32 +96,41 @@ namespace test {
 
 		// Create GameObjects and Add Components
 		m_Cube1 = m_Scene.CreateGameObject("Small Cube 1");
-		m_Cube1->transform.position = { 50.0f, 0.0f, 0.0f };
+		m_Cube1->transform.position = { -50.0f, 0.0f, 0.0f };
 		m_Cube1->transform.scale = { 10.0f, 10.0f, 10.0f };
 		m_Cube1->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material1);
 
 		m_Cube2 = m_Scene.CreateGameObject("Small Cube 2");
-		m_Cube2->transform.position = { 100.0f, 0.0f, 0.0f };
+		m_Cube2->transform.position = { -100.0f, 0.0f, 0.0f };
 		m_Cube2->transform.scale = { 5.0f, 5.0f, 5.0f };
 		m_Cube2->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material2);
 
 		m_LargeCube = m_Scene.CreateGameObject("Large Center Cube");
 		m_LargeCube->transform.position = { -25.0f, -25.0f, -25.0f };
 		m_LargeCube->transform.scale = { 50.0f, 50.0f, 50.0f };
-		m_LargeCube->AddComponent<MeshRendererComponent>(m_CubeMesh, multiTextureMaterial);
+		m_LargeCube->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material1);
 
 		m_Cube4 = m_Scene.CreateGameObject("cube4");
 		m_Cube4->transform.position = { -125.0f, 125.0f, 125.0f };
 		m_Cube4->transform.scale = { 20.0f, 10.0f, 5.0f };
-		m_Cube4->AddComponent<MeshRendererComponent>(m_CubeMesh, multiTextureMaterial);
-
+		m_Cube4->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material1);
+		
+		std::cout << "1" << std::endl;
 		std::string monkeyPath = "res/models/monkey.obj";
 		auto meshMonkey = LoadModel(monkeyPath);
-
+		std::cout << "2" << std::endl;
+		if (meshMonkey)
+		{
 		m_Monkey = m_Scene.CreateGameObject("Monkey");
-		m_Monkey->transform.position = { -125.0f, 125.0f, 125.0f };
+		m_Monkey->transform.position = { 125.0f, 10.0f, 0.0f };
 		m_Monkey->transform.scale = { 40.0f, 40.0f, 40.0f };
+		m_Monkey->transform.rotation = Quaternion(90.0f, 1.0f, 0.0f, 0.0f);
 		m_Monkey->AddComponent<MeshRendererComponent>(meshMonkey, m_Material1);
+		}
+		else
+		{
+			std::cerr << "Could not load model. Skipping GameObject creation." << std::endl;
+		}
 	}
 
 	test3::~test3() {
@@ -141,7 +150,7 @@ namespace test {
 
 		Matx4f view = m_Camera.GetViewMatrix();
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
-		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation* 180.0 / M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
+		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
 
 
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
