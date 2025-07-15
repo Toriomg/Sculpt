@@ -3,7 +3,7 @@
 
 class Vertex{
 public:
-	Vec3 position; // x, y, z
-	Vec2 texCoord; // u, v
+	Vec3 pos; // x, y, z
+	Vec3 texCoord; // u, v
 	Vec3 normal;   // nx, ny, nz
 };
