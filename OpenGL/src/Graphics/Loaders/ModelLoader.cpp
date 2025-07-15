@@ -2,6 +2,9 @@
 
 #include "ModelLoader.h"
 
+#include "../Geometry/Vertex.h"
+#include "../Geometry/Mesh.h"
+#include "../Shading/Material.h"
 
 struct IndicesFace {
     unsigned int vertex = 0;
@@ -9,19 +12,17 @@ struct IndicesFace {
     unsigned int normal = 0;
 };
 
-bool ModelLoader::parseFile(std::string& filepath, std::vector<Vec3>& temp_positions, std::vector<Vec2>& temp_tex_coords, std::vector<Vec3>& temp_normals, std::vector<std::string>& face_lines) {
+void ModelLoader::parseFile(std::string& filepath, std::vector<Vec3>& temp_positions, std::vector<Vec2>& temp_tex_coords, std::vector<Vec3>& temp_normals, std::vector<std::string>& face_lines) {
     std::ifstream inputFile(filepath);
     if (!inputFile.is_open()) {
         std::cerr << "Error: Could not open the file." << std::endl;
         inputFile.close();
-        return false; // Indicate an error
     }
     std::string line;
     // Read the file line by line
     while (std::getline(inputFile, line)) {
         // Process each line
         std::string firstWord = line.substr(0, line.find(" "));
-        std::cout << "Processing line: " << firstWord << std::endl;
         if (firstWord == "v") {
             // Vertex position
             Vec3 position;
@@ -49,18 +50,16 @@ bool ModelLoader::parseFile(std::string& filepath, std::vector<Vec3>& temp_posit
         }
     }
     inputFile.close();
-	return true; // Indicate success
 }
 
-bool ModelLoader::LoadModel(std::string& filepath, std::shared_ptr<Mesh> outMesh) {
+Mesh ModelLoader::LoadModel(std::string& filepath) {
+	// Vector to hold temporary data
     std::vector<Vec3> temp_positions;
     std::vector<Vec2> temp_tex_coords;
     std::vector<Vec3> temp_normals;
     std::vector<std::string> face_lines;
 
-    if (!ModelLoader::parseFile(filepath, temp_positions, temp_tex_coords, temp_normals, face_lines)) {
-		return false; // Indicate an error
-    }
+    ModelLoader::parseFile(filepath, temp_positions, temp_tex_coords, temp_normals, face_lines);
 
 	// Now process the collected data
     std::vector<Vertex> final_vertices;
@@ -111,6 +110,6 @@ bool ModelLoader::LoadModel(std::string& filepath, std::shared_ptr<Mesh> outMesh
             }
         }
     }
-            
-    return true;
+
+    outMesh = Mesh(const void* final_vertices.data(), unsigned int final_vertices.size() * sizeof(Vertex), const unsigned int* final_indices.data(), unsigned int final_indices.size());
 }
