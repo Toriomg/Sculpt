@@ -11,6 +11,7 @@ public:
     ~Scene();
 
     GameObject* CreateGameObject(const std::string& name = "GameObject");
+
     const std::vector<std::unique_ptr<GameObject>>& GetAllGameObjects() const {
         return m_GameObjects;
     }

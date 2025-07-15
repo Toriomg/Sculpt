@@ -10,17 +10,27 @@ struct IndicesFace {
     unsigned int normal = 0;
 };
 
-void parseFile(const std::string& filepath, std::vector<Vec3>& temp_positions, std::vector<Vec2>& temp_tex_coords, std::vector<Vec3>& temp_normals, std::vector<std::string>& face_lines) {
+void parseFile(const std::string& filepath, std::vector<Vec3>& temp_positions, std::vector<Vec3>& temp_tex_coords, std::vector<Vec3>& temp_normals, std::vector<std::string>& face_lines) {
+    std::cout << "" << "Parsing model file: " << filepath << std::endl;
+
     std::ifstream inputFile(filepath);
-    if (!inputFile.is_open()) {
-        std::cerr << "Error: Could not open the file." << std::endl;
-        inputFile.close();
-    }
     std::string line;
+
     // Read the file line by line
     while (std::getline(inputFile, line)) {
+
+        if (!line.empty()) {
+            line.erase(0, line.find_first_not_of(" \t"));
+            line.erase(line.find_last_not_of(" \t") + 1);
+        }
+
+        if (line.empty() || line[0] == '#') {
+            continue; // Skip empty lines and comments
+        }
+
         // Process each line
         std::string firstWord = line.substr(0, line.find(" "));
+
         if (firstWord == "v") {
             // Vertex position
             Vec3 position;
@@ -30,9 +40,9 @@ void parseFile(const std::string& filepath, std::vector<Vec3>& temp_positions, s
         }
         else if (firstWord == "vt") {
             // Texture coordinate
-            Vec2 texCoord;
+            Vec3 texCoord;
             std::istringstream iss(line.substr(3));
-            iss >> texCoord.x >> texCoord.y;
+            iss >> texCoord.x >> texCoord.y >> texCoord.z;
             temp_tex_coords.push_back(texCoord);
         }
         else if (firstWord == "vn") {
@@ -47,6 +57,8 @@ void parseFile(const std::string& filepath, std::vector<Vec3>& temp_positions, s
             face_lines.push_back(line.substr(2)); // Store the face line without the 'f' prefix
         }
     }
+    std::cout << "Finished parsing. Found " << temp_positions.size() << " vertices, "
+        << temp_normals.size() << " normals, and " << face_lines.size() << " faces." << std::endl;
     inputFile.close();
 }
 
@@ -59,17 +71,34 @@ IndicesFace parseVertexDefinition(const std::string& vertex_def) {
     std::getline(iss, t_str, '/');
     std::getline(iss, n_str);
 
-    if (!v_str.empty()) indices.vertex = std::stoi(v_str);
-    if (!t_str.empty()) indices.textCord = std::stoi(t_str);
-    if (!n_str.empty()) indices.normal = std::stoi(n_str);
+    try {
+        if (!v_str.empty()) indices.vertex = std::stol(v_str);
+        if (!t_str.empty()) indices.textCord = std::stol(t_str);
+        if (!n_str.empty()) indices.normal = std::stol(n_str);
+    }
+    catch (const std::invalid_argument& e) {
+        std::cerr << "ERROR [ModelLoader]: Malformed face definition in .obj file: '" << vertex_def << "'. Contains non-numeric characters." << std::endl;
+        return {}; // Return default (all 0) to signal an error
+    }
+    catch (const std::out_of_range& e) {
+        std::cerr << "ERROR [ModelLoader]: Index value out of range in face definition: '" << vertex_def << "'." << std::endl;
+        return {}; // Return default (all 0) to signal an error
+    }
 
     return indices;
 }
 
 std::shared_ptr<Mesh> LoadModel(const std::string& filepath){
+    std::ifstream test_file(filepath);
+    if (!test_file.is_open()) {
+        std::cerr << "ERROR [ModelLoader]: Could not open file: " << filepath << std::endl;
+        return nullptr;
+    }
+    test_file.close();
+
 	// Vector to hold temporary data
     std::vector<Vec3> temp_positions;
-    std::vector<Vec2> temp_tex_coords;
+    std::vector<Vec3> temp_tex_coords;
     std::vector<Vec3> temp_normals;
     std::vector<std::string> face_lines;
 
@@ -94,16 +123,35 @@ std::shared_ptr<Mesh> LoadModel(const std::string& filepath){
 				// CACHE MISS
                 IndicesFace indices = parseVertexDefinition(vertex_def);
 
-                // Los índices en .obj son 1-based, los de C++ son 0-based
                 Vertex new_vertex;
-                if (indices.vertex > 0) {
-                    new_vertex.pos = temp_positions[indices.vertex - 1];
+
+                // Convert from 1-based or relative index to 0-based C++ index
+                long v_idx = (indices.vertex > 0) ? indices.vertex - 1 : temp_positions.size() + indices.vertex;
+                long t_idx = (indices.textCord > 0) ? indices.textCord - 1 : temp_tex_coords.size() + indices.textCord;
+                long n_idx = (indices.normal > 0) ? indices.normal - 1 : temp_normals.size() + indices.normal;
+
+                // Bounds checking
+                if (v_idx < 0 || v_idx >= temp_positions.size()) {
+                    std::cerr << "ERROR [ModelLoader]: Vertex index " << indices.vertex << " is out of bounds." << std::endl;
+                    // In a real engine, you might throw an exception here
+                    return nullptr; // Indicate error
                 }
-                if (indices.textCord > 0) {
-                    new_vertex.texCoord = temp_tex_coords[indices.textCord - 1];
+
+                new_vertex.pos = temp_positions[v_idx];
+
+                if (indices.textCord != 0) {
+                    if (t_idx < 0 || t_idx >= temp_tex_coords.size()) {
+                        std::cerr << "ERROR [ModelLoader]: Texture index " << indices.textCord << " is out of bounds." << std::endl; return nullptr;
+                    }
+                    // Your Vertex class uses Vec3 for texCoord, but .obj provides Vec2. Adapt as needed.
+                    new_vertex.texCoord = Vec3(temp_tex_coords[t_idx].x, temp_tex_coords[t_idx].y, temp_tex_coords[t_idx].z);
                 }
-                if (indices.normal > 0) {
-                    new_vertex.normal = temp_normals[indices.normal - 1];
+
+                if (indices.normal != 0) {
+                    if (n_idx < 0 || n_idx >= temp_normals.size()) {
+                        std::cerr << "ERROR [ModelLoader]: Normal index " << indices.normal << " is out of bounds." << std::endl; return nullptr;
+                    }
+                    new_vertex.normal = temp_normals[n_idx];
                 }
 
                 // Add to the buffer
@@ -117,6 +165,12 @@ std::shared_ptr<Mesh> LoadModel(const std::string& filepath){
             }
         }
     }
+
+    if (final_vertices.empty() || final_indices.empty()) {
+        std::cerr << "WARNING [ModelLoader]: Model loading resulted in an empty mesh for file: " << filepath << std::endl;
+    }
+
+    std::cout << "Successfully loaded model: " << filepath << " with " << final_vertices.size() << " vertices and " << final_indices.size() << " indices." << std::endl;
 
     return std::make_shared<Mesh>(final_vertices.data(),
         static_cast<unsigned int>(final_vertices.size() * sizeof(Vertex)),
