@@ -105,6 +105,10 @@ namespace test {
 		m_Cube4->transform.position = { -125.0f, 125.0f, 125.0f };
 		m_Cube4->transform.scale = { 20.0f, 10.0f, 5.0f };
 		m_Cube4->AddComponent<MeshRendererComponent>(m_CubeMesh, multiTextureMaterial);
+
+		std::string dragonPath = "res/models/monkey.obj";
+		std::shared_ptr<Mesh> outMeshes;
+		ModelLoader::LoadModel(dragonPath, outMeshes);
 	}
 
 	test3::~test3() {

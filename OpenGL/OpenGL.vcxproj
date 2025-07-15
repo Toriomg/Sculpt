@@ -226,9 +226,6 @@
     <Image Include="res\textures\texture1.png" />
     <Image Include="res\textures\texture2.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="res\models\dragon\dragon.obj" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
