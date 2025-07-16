@@ -116,7 +116,7 @@ namespace test {
 		m_Cube4->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material1);
 		
 		std::cout << "1" << std::endl;
-		std::string monkeyPath = "res/models/monkey.obj";
+		std::string monkeyPath = "res/models/dragon.obj";
 		auto meshMonkey = LoadModel(monkeyPath);
 		std::cout << "2" << std::endl;
 		if (meshMonkey)
