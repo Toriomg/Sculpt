@@ -24,8 +24,8 @@ namespace test {
 		m_CameraPersEnabled(true)
 	{
 
-		auto shader = std::make_shared<Shader>("res/shaders/BasicColor.shader");
-		auto shaderMonkey = std::make_shared<Shader>("res/shaders/BasicColor.shader");
+		auto shader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
+		auto shaderMonkey = std::make_shared<Shader>("res/shaders/modelmesh.shader");
 		auto texture1 = std::make_shared<Texture>("res/textures/texture1.png");
 		auto texture2 = std::make_shared<Texture>("res/textures/texture2.png");
 
@@ -103,7 +103,7 @@ namespace test {
 		m_Cube2 = m_Scene.CreateGameObject("Small Cube 2");
 		m_Cube2->transform.position = { -100.0f, 0.0f, 0.0f };
 		m_Cube2->transform.scale = { 5.0f, 5.0f, 5.0f };
-		m_Cube2->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material2);
+		m_Cube2->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material1);
 
 		m_LargeCube = m_Scene.CreateGameObject("Large Center Cube");
 		m_LargeCube->transform.position = { -25.0f, -25.0f, -25.0f };
@@ -122,9 +122,9 @@ namespace test {
 		m_Monkey->transform.position = { 125.0f, 10.0f, 0.0f };
 		m_Monkey->transform.scale = { 40.0f, 40.0f, 40.0f };
 		m_Monkey->transform.rotation = Quaternion(90.0f, 1.0f, 0.0f, 0.0f);
-		m_Monkey->AddComponent<MeshRendererComponent>(meshMonkey, m_Material1);
+		m_Monkey->AddComponent<MeshRendererComponent>(meshMonkey, m_Material3);
 
-		/*
+		
 		std::string dragonPath = "res/models/dragon.obj";
 		auto meshDragon = LoadModel(dragonPath);
 
@@ -132,8 +132,8 @@ namespace test {
 		m_Dragon->transform.position = { 75.0f, 0.0f, 0.0f };
 		m_Dragon->transform.scale = { 100.0f, 100.0f, 100.0f };
 		m_Dragon->transform.rotation = Quaternion(90.0f, 1.0f, 0.0f, 0.0f);
-		m_Dragon->AddComponent<MeshRendererComponent>(meshDragon, m_Material1);
-		*/
+		m_Dragon->AddComponent<MeshRendererComponent>(meshDragon, m_Material3);
+		
 	}
 
 	test3::~test3() {
@@ -175,6 +175,8 @@ namespace test {
 
 				// 3. Set the MVP uniform (the material already bound the shader)
 				material->m_Shader->SetUniformMat4f("u_MVP", mvp);
+				material->m_Shader->SetUniformMat4f("u_Model", model);
+				material->m_Shader->SetUniform3f("u_cameraPos", m_Camera.m_Position.x, m_Camera.m_Position.y, m_Camera.m_Position.z);
 
 				// 4. Draw the mesh
 				m_Renderer.Draw(mesh->GetVAO(), mesh->GetIBO(), *material->m_Shader);
