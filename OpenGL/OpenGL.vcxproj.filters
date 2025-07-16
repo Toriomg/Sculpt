@@ -121,6 +121,7 @@
     <None Include="res\shaders\Square.Shader" />
     <None Include="res\shaders\frag\grid.fs" />
     <None Include="res\shaders\vert\grid.vs" />
+    <None Include="res\shaders\modelmesh.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Graphics\Renderer.h">
