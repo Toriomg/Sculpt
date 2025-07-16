@@ -93,7 +93,7 @@
     <ClCompile Include="src\Editor\EditorUI.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\TIme.cpp">
+    <ClCompile Include="src\Core\Time.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\GameObject.cpp">

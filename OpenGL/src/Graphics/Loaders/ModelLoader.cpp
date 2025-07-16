@@ -10,7 +10,7 @@ struct IndicesFace {
     int normal = 0;
 };
 
-void parseFile(const std::string& filepath, std::vector<Vec3>& temp_positions, std::vector<Vec3>& temp_tex_coords, std::vector<Vec3>& temp_normals, std::vector<std::string>& face_lines) {
+void parseFile(const std::string& filepath, std::vector<Vec3>& temp_positions, std::vector<Vec2>& temp_tex_coords, std::vector<Vec3>& temp_normals, std::vector<std::string>& face_lines) {
     std::cout << "" << "Parsing model file: " << filepath << std::endl;
 
     std::ifstream inputFile(filepath);
@@ -39,9 +39,9 @@ void parseFile(const std::string& filepath, std::vector<Vec3>& temp_positions, s
         }
         else if (firstWord == "vt") {
             // Texture coordinate
-            Vec3 texCoord;
+            Vec2 texCoord;
             std::istringstream iss(line.substr(3));
-            iss >> texCoord.x >> texCoord.y >> texCoord.z;
+            iss >> texCoord.x >> texCoord.y;
             temp_tex_coords.push_back(texCoord);
         }
         else if (firstWord == "vn") {
@@ -97,7 +97,7 @@ std::shared_ptr<Mesh> LoadModel(const std::string& filepath){
 
 	// Vector to hold temporary data
     std::vector<Vec3> temp_positions;
-    std::vector<Vec3> temp_tex_coords;
+    std::vector<Vec2> temp_tex_coords;
     std::vector<Vec3> temp_normals;
     std::vector<std::string> face_lines;
 
@@ -106,7 +106,11 @@ std::shared_ptr<Mesh> LoadModel(const std::string& filepath){
 	// Now process the collected data
     std::vector<Vertex> final_vertices;
     std::vector<unsigned int> final_indices;
-    std::map<std::string, unsigned int> vertex_cache;
+
+    final_vertices.reserve(temp_positions.size());
+    final_indices.reserve(temp_positions.size() * 1.2f);
+
+    std::unordered_map<std::string, unsigned int> vertex_cache;
 
     for (const auto& face_line : face_lines) {
         std::istringstream ss(face_line);
@@ -143,7 +147,7 @@ std::shared_ptr<Mesh> LoadModel(const std::string& filepath){
                         std::cerr << "ERROR [ModelLoader]: Texture index " << indices.textCord << " is out of bounds." << std::endl; return nullptr;
                     }
                     // Your Vertex class uses Vec3 for texCoord, but .obj provides Vec2. Adapt as needed.
-                    new_vertex.texCoord = Vec3(temp_tex_coords[t_idx].x, temp_tex_coords[t_idx].y, 0.0f);
+                    new_vertex.texCoord = temp_tex_coords[t_idx];
                 }
 
                 if (indices.normal != 0) {

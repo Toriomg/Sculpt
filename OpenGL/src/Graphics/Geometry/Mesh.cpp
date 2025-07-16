@@ -17,7 +17,7 @@ Mesh::Mesh(const void* vertices, unsigned int vertexSize, const unsigned int* in
     // 3. Define the layout of the vertex data.
     VertexBufferLayout layout;
     layout.Push<float>(3); // Position (x, y, z)
-    layout.Push<float>(3); // texture u, v, w
+    layout.Push<float>(2); // texture u, v
     layout.Push<float>(3); // normal
 
     // 4. Add the Vertex Buffer and its layout to the Vertex Array Object.

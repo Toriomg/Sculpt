@@ -136,7 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\Application.cpp" />
-    <ClCompile Include="src\Core\TIme.cpp" />
+    <ClCompile Include="src\Core\Time.cpp" />
     <ClCompile Include="src\Editor\EditorUI.cpp" />
     <ClCompile Include="src\Graphics\Buffers\IndexBuffer.cpp" />
     <ClCompile Include="src\Core\Camera.cpp" />

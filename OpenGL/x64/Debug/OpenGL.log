@@ -1,10 +1,4 @@
-﻿  ModelLoader.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Loaders\ModelLoader.cpp(78,41): warning C4101: 'e': variable local sin referencia
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Loaders\ModelLoader.cpp(82,37): warning C4101: 'e': variable local sin referencia
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Loaders\ModelLoader.cpp(128,28): warning C4267: 'inicializando': conversión de 'size_t' a 'long'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Loaders\ModelLoader.cpp(129,28): warning C4267: 'inicializando': conversión de 'size_t' a 'long'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Loaders\ModelLoader.cpp(130,28): warning C4267: 'inicializando': conversión de 'size_t' a 'long'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Loaders\ModelLoader.cpp(159,40): warning C4267: 'inicializando': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
+﻿  Mesh.cpp
   OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
   "pwsh.exe" no se reconoce como un comando interno o externo,
   programa o archivo por lotes ejecutable.
