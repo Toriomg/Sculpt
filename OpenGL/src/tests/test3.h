@@ -47,6 +47,7 @@ namespace test {
 		GameObject* m_LargeCube;
 		GameObject* m_Cube4;
 		GameObject* m_Monkey;
+		GameObject* m_Dragon;
 
 		Camera m_Camera;
 		InfGrid m_Grid;

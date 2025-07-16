@@ -33,40 +33,40 @@ namespace test {
 		Vertex cubeVertices[] = {
 			// positions          // texture coords (u, v, w) // normals (nx, ny, nz)
 			// Face 1: Front (+Z)
-			Vertex(0.0f, 0.0f, s,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f),
-			Vertex(s,    0.0f, s,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f),
-			Vertex(s,    s,    s,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f, 1.0f),
-			Vertex(0.0f, s,    s,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f, 1.0f),
+			Vertex(0.0f, 0.0f, s,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f),
+			Vertex(s,    0.0f, s,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f),
+			Vertex(s,    s,    s,  1.0f, 1.0f, 0.0f, 0.0f, 1.0f),
+			Vertex(0.0f, s,    s,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f),
 
 			// Face 2: Back (-Z)
-			Vertex(s,    0.0f, 0.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, -1.0f),
-			Vertex(0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f, -1.0f),
-			Vertex(0.0f, s,    0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f, -1.0f),
-			Vertex(s,    s,    0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f, -1.0f),
+			Vertex(s,    0.0f, 0.0f,  0.0f, 0.0f, 0.0f, 0.0f, -1.0f),
+			Vertex(0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f, 0.0f, -1.0f),
+			Vertex(0.0f, s,    0.0f,  1.0f, 1.0f, 0.0f, 0.0f, -1.0f),
+			Vertex(s,    s,    0.0f,  0.0f, 1.0f, 0.0f, 0.0f, -1.0f),
 
 			// Face 3: Left (-X)
-			Vertex(0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f),
-			Vertex(0.0f, 0.0f, s,     1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f),
-			Vertex(0.0f, s,    s,     1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f),
-			Vertex(0.0f, s,    0.0f,  0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+			Vertex(0.0f, 0.0f, 0.0f,  0.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+			Vertex(0.0f, 0.0f, s,     1.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+			Vertex(0.0f, s,    s,     1.0f, 1.0f, -1.0f, 0.0f, 0.0f),
+			Vertex(0.0f, s,    0.0f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f),
 
 			// Face 4: Right (+X)
-			Vertex(s, 0.0f, s,     0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f),
-			Vertex(s, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f),
-			Vertex(s, s,    0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 0.0f, 0.0f),
-			Vertex(s, s,    s,     0.0f, 1.0f, 0.0f,  1.0f, 0.0f, 0.0f),
+			Vertex(s, 0.0f, s,     0.0f, 0.0f, 1.0f, 0.0f, 0.0f),
+			Vertex(s, 0.0f, 0.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f),
+			Vertex(s, s,    0.0f,  1.0f, 1.0f, 1.0f, 0.0f, 0.0f),
+			Vertex(s, s,    s,     0.0f, 1.0f, 1.0f, 0.0f, 0.0f),
 
 			// Face 5: Top (+Y)
-			Vertex(0.0f, s, s,     0.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f),
-			Vertex(s,    s, s,     1.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f),
-			Vertex(s,    s, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f),
-			Vertex(0.0f, s, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f),
+			Vertex(0.0f, s, s,     0.0f, 0.0f, 0.0f, 1.0f, 0.0f),
+			Vertex(s,    s, s,     1.0f, 0.0f, 0.0f, 1.0f, 0.0f),
+			Vertex(s,    s, 0.0f,  1.0f, 1.0f, 0.0f, 1.0f, 0.0f),
+			Vertex(0.0f, s, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f),
 
 			// Face 6: Bottom (-Y)
-			Vertex(0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f, 0.0f),
-			Vertex(s,    0.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, -1.0f, 0.0f),
-			Vertex(s,    0.0f, s,     1.0f, 1.0f, 0.0f,  0.0f, -1.0f, 0.0f),
-			Vertex(0.0f, 0.0f, s,     0.0f, 1.0f, 0.0f,  0.0f, -1.0f, 0.0f)
+			Vertex(0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f, -1.0f, 0.0f),
+			Vertex(s,    0.0f, 0.0f,  1.0f, 0.0f, 0.0f, -1.0f, 0.0f),
+			Vertex(s,    0.0f, s,     1.0f, 1.0f, 0.0f, -1.0f, 0.0f),
+			Vertex(0.0f, 0.0f, s,     0.0f, 1.0f, 0.0f, -1.0f, 0.0f)
 		};
 		unsigned int cubeIndices[] = {
 			0, 1, 2,    2, 3, 0,
@@ -115,22 +115,25 @@ namespace test {
 		m_Cube4->transform.scale = { 20.0f, 10.0f, 5.0f };
 		m_Cube4->AddComponent<MeshRendererComponent>(m_CubeMesh, m_Material1);
 		
-		std::cout << "1" << std::endl;
-		std::string monkeyPath = "res/models/dragon.obj";
+		std::string monkeyPath = "res/models/monkey.obj";
 		auto meshMonkey = LoadModel(monkeyPath);
-		std::cout << "2" << std::endl;
-		if (meshMonkey)
-		{
+
 		m_Monkey = m_Scene.CreateGameObject("Monkey");
 		m_Monkey->transform.position = { 125.0f, 10.0f, 0.0f };
 		m_Monkey->transform.scale = { 40.0f, 40.0f, 40.0f };
 		m_Monkey->transform.rotation = Quaternion(90.0f, 1.0f, 0.0f, 0.0f);
 		m_Monkey->AddComponent<MeshRendererComponent>(meshMonkey, m_Material1);
-		}
-		else
-		{
-			std::cerr << "Could not load model. Skipping GameObject creation." << std::endl;
-		}
+
+		/*
+		std::string dragonPath = "res/models/dragon.obj";
+		auto meshDragon = LoadModel(dragonPath);
+
+		m_Dragon = m_Scene.CreateGameObject("Dragon");
+		m_Dragon->transform.position = { 75.0f, 0.0f, 0.0f };
+		m_Dragon->transform.scale = { 100.0f, 100.0f, 100.0f };
+		m_Dragon->transform.rotation = Quaternion(90.0f, 1.0f, 0.0f, 0.0f);
+		m_Dragon->AddComponent<MeshRendererComponent>(meshDragon, m_Material1);
+		*/
 	}
 
 	test3::~test3() {
@@ -163,8 +166,11 @@ namespace test {
 				auto& mesh = meshRenderer->m_Mesh;
 
 				material->Bind();
-
-				Matx4f model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale);
+				Matx4f model;
+				if (go->name == "Monkey") {
+					 model = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
+				} else { 
+					model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale); }
 				Matx4f mvp = projection * view * global_transform * model;
 
 				// 3. Set the MVP uniform (the material already bound the shader)
