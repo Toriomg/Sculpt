@@ -18,9 +18,9 @@ void main()
 {
 	gl_Position = u_MVP * vec4(position, 1.0);
 	v_TexCoord = texCoord;
-	v_Normal = normal;
 
 	v_WorldPos = vec3(u_Model * vec4(position, 1.0));
+	v_Normal = mat3(transpose(inverse(u_Model))) * normal;
 }
 
 #shader fragment
@@ -40,23 +40,42 @@ void main()
 {
 	vec3 objectColor = texture(u_Textures[0], v_TexCoord).rgb;
 
+	vec3 norm = normalize(v_Normal);
+
 	vec3 faceNormal = normalize(cross(dFdx(v_WorldPos), dFdy(v_WorldPos)));
 
-	// 3. Define light properties
+	// Define light properties
 	vec3 lightColor = vec3(1.0, 1.0, 1.0); // A simple white light
 	vec3 lightPos = u_cameraPos;
 
-	// 4. Calculate diffuse lighting (Lambertian reflection)
+	// DIFFUSE LIGHT
+	// Calculate diffuse lighting (Lambertian reflection)
 	vec3 lightDir = normalize(lightPos - v_WorldPos);
 	float diff = max(dot(faceNormal, lightDir), 0.0);
 	vec3 diffuse = diff * lightColor;
 
-	// 5. Add a little bit of ambient light so things in shadow aren't pure black
+	// AMBIENT LIGHT
+	// Add a little bit of ambient light so things in shadow aren't pure black
 	float ambientStrength = 0.1;
 	vec3 ambient = ambientStrength * lightColor;
 
-	// 6. Combine lighting and the object's color
-	vec3 result = (ambient + diffuse) * objectColor;
+	// SPECULAR light
+	float specularStrength = 0.5; // Controls the intensity of the highlight
+	float shininess = 32.0;       // Controls the size of the highlight (higher is smaller/sharper)
+
+	// Calculate the direction the viewer is looking from (fragment to camera)
+	vec3 viewDir = normalize(u_cameraPos - v_WorldPos);
+	
+	// Calculate the reflection direction of the light off the surface
+	// reflect() expects the direction *from* the light source, so we use -lightDir
+	vec3 reflectDir = reflect(-lightDir, norm);
+
+	// Calculate the specular component
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	vec3 specular = specularStrength * spec * lightColor;
+
+	// Combine lighting and the object's color
+	vec3 result = (ambient + diffuse + specular) * objectColor;
 
 	// Final color output
 	FragColor = vec4(result, 1.0);

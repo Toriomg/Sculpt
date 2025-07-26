@@ -109,6 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>src/vendor;$(SolutionDir)OpenGl\Dependencies\GLEW\include;$(SolutionDir)OpenGl\Dependencies\GLFW\include;$(SolutionDir)OpenGl\Dependencies\GLAD\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,6 +127,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>src/vendor;$(SolutionDir)OpenGl\Dependencies\GLEW\include;$(SolutionDir)OpenGl\Dependencies\GLFW\include;$(SolutionDir)OpenGl\Dependencies\GLAD\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
