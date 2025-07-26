@@ -1,1 +1,30 @@
 #pragma once
+
+#include <GL/glew.h>
+#include <iostream>
+
+#include "../Graphics/Shading/Texture.h"
+
+class PickingTexture {
+	PickingTexture(unsigned int WindowWidth, unsigned int WindowHeight);
+	~PickingTexture() {};
+
+	void EnableWriting();
+	void DisableWriting();
+
+	struct PixelInfo {
+		unsigned int ObjectID = 0;
+		unsigned int DrawID = 0;
+		unsigned int PrimID = 0;
+
+		void print() {
+			std::cout << "Object; " << ObjectID << ", Draw: " << DrawID << ", Prim: " << PrimID << std::endl;
+		}
+	};
+
+	PixelInfo ReadInfo(unsigned int x, unsigned int y);
+private:
+	unsigned int m_fbo = 0;
+	unsigned int m_pickingTexture = 0;
+	unsigned int m_depthTexture = 0; 
+};
