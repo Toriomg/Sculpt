@@ -1,0 +1,10 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\hector\\source\\repos\\opengl\\opengl\\src\\editor\\pickingtexture.ixx",
+        "ProvidedModule": "PickingTexture",
+        "Includes": [],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\PickingTexture.obj",
+            "outputs": [
+                "x64\\Debug\\PickingTexture.ixx.ifc.dt.module.json",
+                "x64\\Debug\\PickingTexture.ixx.ifc.dt.d.json",
+                "x64\\Debug\\PickingTexture.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "PickingTexture",
+                    "source-path": "c:\\users\\hector\\source\\repos\\opengl\\opengl\\src\\editor\\pickingtexture.ixx",
+                    "is-interface": true
+                }
+            ],
+            "requires": []
+        }
+    ]
+}
