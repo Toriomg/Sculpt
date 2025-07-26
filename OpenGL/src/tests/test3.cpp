@@ -170,7 +170,8 @@ namespace test {
 				if (go->name == "Monkey") {
 					 model = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
 				} else { 
-					model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale); }
+					model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale); 
+				}
 				Matx4f mvp = projection * view * global_transform * model;
 
 				// 3. Set the MVP uniform (the material already bound the shader)
