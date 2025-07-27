@@ -53,15 +53,22 @@ namespace test {
 
 		Camera m_Camera;
 		InfGrid m_Grid;
+
 		PickingTexture m_PickingTexture;
 		Shader m_PickingShader;
 		unsigned int m_SelectedObjectID = 0;
 		int m_SelectedTriangleID = -1;
+		bool m_IsVertexSelected = false;
+		Vec3 m_SelectedVertexWorldPos;
+		GameObject* m_pSelectedObject = nullptr;
 
+		Matx4f m_MVP;
 		Vec3 m_Translation;
 		float m_Rotation;
 		Vec3 m_Scaling;
 		float m_scalar = 1;
 		bool m_CameraPersEnabled;
+
+		void CalculeMVP();
 	};
 };
