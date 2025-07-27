@@ -131,6 +131,11 @@ void Shader::SetUniform1i(const std::string& name, int value) {
 	GLCall(glUniform1i(GetUniformLocation(name), value)); // Set an integer uniform variable in the shader
 }
 
+void Shader::SetUniform1ui(const std::string& name, unsigned int value) {
+	GLCall(glUniform1ui(GetUniformLocation(name), value)); // Set an integer uniform variable in the shader
+}
+
+
 void Shader::SetUniform1iv(const std::string& name, const int* array, int size) {
 	GLCall(glUniform1iv(GetUniformLocation(name), size, array)); // Set an array of integer uniform variables in the shader
 }

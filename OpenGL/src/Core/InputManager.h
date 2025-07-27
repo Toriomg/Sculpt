@@ -10,14 +10,16 @@ struct MouseState {
     float y_offset = 0.0f;
     bool firstMouse = true;
 	bool leftButtonPressed = false;
-	bool rightButtonPressed = false;
+    bool rightButtonPressed = false;
+	bool leftButtonFirstPress = false;
+	bool rightButtonFirstPress = false;
 };
 
 extern MouseState g_MouseState;
 
 void ResetMouseOffset();
 
-void ResetMouseClicks();
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 void InitializeInput(GLFWwindow* window);
 

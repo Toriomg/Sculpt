@@ -21,8 +21,9 @@ namespace test {
 		m_Scaling(1.0f, 1.0f, 1.0f),
 		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y),
 		m_Grid(),
-		m_PickingTexture(static_cast<int>(WINDW_SIZE_X), static_cast<int>(WINDW_SIZE_X)),
-		m_CameraPersEnabled(true)
+		m_PickingTexture(static_cast<int>(WINDW_SIZE_X), static_cast<int>(WINDW_SIZE_Y)),
+		m_CameraPersEnabled(true),
+		m_PickingShader("res/shaders/Picking.shader")
 	{
 
 		auto shader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
@@ -147,7 +148,52 @@ namespace test {
 	}
 
 	void test3::OnPick() {
+		// Chunk of spaghetti code to handle picking
 		m_PickingTexture.EnableWriting();
+
+		// Empty the buffer color and depth
+		const GLuint clearColor[4] = { 0, 0, 0, 0 };
+		GLCall(glClearBufferuiv(GL_COLOR, 0, clearColor));
+		GLCall(glClear(GL_DEPTH_BUFFER_BIT)); // También limpia el buffer de profundidad
+
+		m_PickingShader.Bind();
+
+		// 4. Configurar las matrices de vista y proyección (igual que en el renderizado normal)
+		Matx4f view = m_Camera.GetViewMatrix();
+		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
+		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
+
+		m_PickingShader.SetUniformMat4f("view", view);
+		m_PickingShader.SetUniformMat4f("projection", projection);
+
+		// 5. Dibujar cada objeto seleccionable
+		unsigned int objectId = 1; // Empezamos los IDs en 1 (0 es para el fondo)
+		for (auto& go : m_Scene.GetAllGameObjects()) {
+			MeshRendererComponent* meshRenderer = go->GetComponent<MeshRendererComponent>();
+			if (meshRenderer) {
+				// Asignar el ID al objeto (puedes guardarlo en el propio GameObject)
+				go->SetPickingID(objectId);
+				m_PickingShader.SetUniform1ui("objectID", go->GetPickingID());
+
+				Matx4f model;
+				if (go->name == "Monkey") {
+					model = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
+				}
+				else {
+					model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale);
+				}
+				model = global_transform * model;
+
+				m_PickingShader.SetUniformMat4f("model", model);
+
+				// Draw the mesh with the picking shader
+				auto& mesh = meshRenderer->m_Mesh;
+				m_Renderer.Draw(mesh->GetVAO(), mesh->GetIBO(), m_PickingShader);
+
+				objectId++;
+			}
+		}
+
 		m_PickingTexture.DisableWriting();
 	}
 
@@ -165,17 +211,6 @@ namespace test {
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
 		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
 
-		int clicked_object_id = -1;
-		if (g_MouseState.leftButtonPressed) {
-			std::cout << "Mouse clicked at: (" << g_MouseState.lastX << ", " << g_MouseState.lastY << ")" << std::endl;
-			PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(g_MouseState.lastX, g_MouseState.lastY); //MAYBE I HAVE TO CHANGE Y
-			if (Pixel.ObjectID != 0) {
-				clicked_object_id = Pixel.ObjectID - 1;
-				std::cout << "Clicked on object with ID: " << clicked_object_id << std::endl;
-			} else {
-				std::cout << "No object clicked." << std::endl;
-			}
-		}
 
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
 			if (!go->m_IsVisible) continue;
@@ -203,6 +238,17 @@ namespace test {
 
 				// 4. Draw the mesh
 				m_Renderer.Draw(mesh->GetVAO(), mesh->GetIBO(), *material->m_Shader);
+			}
+		}
+		int clicked_object_id = -1;
+		if (g_MouseState.leftButtonPressed) {
+			std::cout << "Mouse clicked at: (" << g_MouseState.lastX << ", " << g_MouseState.lastY << ")" << std::endl;
+			PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(g_MouseState.lastX, g_MouseState.lastY); //MAYBE I HAVE TO CHANGE Y
+			if (Pixel.ObjectID != 0) {
+				clicked_object_id = Pixel.ObjectID - 1;
+				std::cout << "Clicked on object with ID: " << clicked_object_id << std::endl;
+			} else {
+				std::cout << "No object clicked." << std::endl;
 			}
 		}
 	}

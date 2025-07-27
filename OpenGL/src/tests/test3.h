@@ -54,6 +54,7 @@ namespace test {
 		Camera m_Camera;
 		InfGrid m_Grid;
 		PickingTexture m_PickingTexture;
+		Shader m_PickingShader;
 
 		Vec3 m_Translation;
 		float m_Rotation;

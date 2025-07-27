@@ -50,10 +50,14 @@ public:
         return nullptr; // Not found
     }
 
+	void SetPickingID(int id) { m_PickingID = id; }
+
+	int GetPickingID() const { return m_PickingID; }
+
     std::string name;
     Transform transform;
     bool m_IsVisible = true;
-
 private:
     std::vector<std::unique_ptr<Component>> m_Components;
+	int m_PickingID = 0;
 };
