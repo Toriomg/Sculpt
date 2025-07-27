@@ -7,6 +7,10 @@ void ResetMouseOffset() {
     g_MouseState.y_offset = 0.0f;
 }
 
+void ResetMouseClicks() {
+    g_MouseState.leftButtonFirstPress = false;
+    g_MouseState.rightButtonFirstPress = false;
+}
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (g_MouseState.firstMouse) {
