@@ -7,10 +7,6 @@ void ResetMouseOffset() {
     g_MouseState.y_offset = 0.0f;
 }
 
-void ResetMouseClicks() {
-    g_MouseState.leftButtonPressed = false;
-    g_MouseState.rightButtonPressed = false;
-}
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (g_MouseState.firstMouse) {
@@ -26,6 +22,26 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     g_MouseState.lastY = ypos;
 }
 
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) {
+            g_MouseState.leftButtonPressed = true;
+			g_MouseState.leftButtonFirstPress = true; // Marca el primer clic
+        }
+        else if (action == GLFW_RELEASE) {
+            g_MouseState.leftButtonPressed = false;
+        }
+    }
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        if (action == GLFW_PRESS) {
+            g_MouseState.rightButtonPressed = true;
+            g_MouseState.rightButtonFirstPress = true; // Marca el primer clic
+        }
+        else if (action == GLFW_RELEASE) {
+            g_MouseState.rightButtonPressed = false;
+        }
+    }
+}
 
 void InitializeInput(GLFWwindow* window) {
     int width, height;
@@ -37,11 +53,6 @@ void InitializeInput(GLFWwindow* window) {
     // Toda la lógica de inicialización de input está ahora aquí.
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     glfwSetCursorPosCallback(window, mouse_callback);
-    if (GLFW_MOUSE_BUTTON_LEFT){
-        g_MouseState.leftButtonPressed = true;
-	}
-    if (GLFW_MOUSE_BUTTON_RIGHT){
-        g_MouseState.rightButtonPressed = true;
-    }
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	g_MouseState.firstMouse = true; // Para que la primera posición del mouse sea considerada como el centro   
 }
