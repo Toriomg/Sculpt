@@ -35,10 +35,22 @@ out vec4 FragColor;
 
 uniform sampler2D u_Textures[2];
 uniform vec3 u_cameraPos;
+uniform bool u_IsSelected;
+uniform vec4 u_HighlightColor;
 
 void main()
 {
 	vec3 objectColor = texture(u_Textures[0], v_TexCoord).rgb;
+	
+	vec3 baseColor;
+
+	if (u_IsSelected) {
+        // mix() interpola entre dos colores. Un factor de 0.5 mezcla ambos a partes iguales.
+        baseColor = mix(objectColor, u_HighlightColor.rgb, 0.5); 
+    }
+    else {
+        baseColor = objectColor;
+    }
 
 	vec3 norm = normalize(v_Normal);
 
@@ -75,7 +87,7 @@ void main()
 	vec3 specular = specularStrength * spec * lightColor;
 
 	// Combine lighting and the object's color
-	vec3 result = (ambient + diffuse + specular) * objectColor;
+	vec3 result = (ambient + diffuse + specular) * baseColor;
 
 	// Final color output
 	FragColor = vec4(result, 1.0);

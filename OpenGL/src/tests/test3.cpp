@@ -151,6 +151,7 @@ namespace test {
 		// Chunk of spaghetti code to handle picking
 		m_PickingTexture.EnableWriting();
 
+
 		// Empty the buffer color and depth
 		const GLuint clearColor[4] = { 0, 0, 0, 0 };
 		GLCall(glClearBufferuiv(GL_COLOR, 0, clearColor));
@@ -201,7 +202,6 @@ namespace test {
 		
 		this->OnPick(); // Call picking before rendering
 
-
 		GLCall(glClearColor(0.7f, 0.5f, 0.5f, 1.0f)); // Set the clear color
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // Clear the color buffer
 
@@ -211,6 +211,21 @@ namespace test {
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
 		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
 
+		int clicked_object_id = -1;
+		if (g_MouseState.leftButtonFirstPress) {
+			unsigned int mouseX = static_cast<unsigned int>(g_MouseState.lastX);
+			unsigned int mouseY = static_cast<unsigned int>(WINDW_SIZE_Y - g_MouseState.lastY);
+
+			std::cout << "Mouse clicked at: (" << mouseX << ", " << mouseY << ")" << std::endl;
+			PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(mouseX, mouseY);
+			m_SelectedObjectID = Pixel.ObjectID;
+			if (Pixel.ObjectID != 0) {
+				clicked_object_id = Pixel.ObjectID - 1;
+				std::cout << "Clicked on object with ID: " << clicked_object_id << std::endl;
+			} else {
+				std::cout << "No object clicked." << std::endl;
+			}
+		}
 
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
 			if (!go->m_IsVisible) continue;
@@ -222,6 +237,17 @@ namespace test {
 				auto& mesh = meshRenderer->m_Mesh;
 
 				material->Bind();
+
+				if (go->GetPickingID() == m_SelectedObjectID) {
+					// The object is selected
+					material->m_Shader->SetUniform1i("u_IsSelected", 1);
+					material->m_Shader->SetUniform4f("u_HighlightColor", 0.0f, 0.5f, 0.0f, 1.0f); // Green
+				}
+				else {
+					// The object is not selected
+					material->m_Shader->SetUniform1i("u_IsSelected", 0); // false
+				}
+
 				Matx4f model;
 				// TODO : FIX MODEL ROTATION
 				if (go->name == "Monkey") {
@@ -238,17 +264,6 @@ namespace test {
 
 				// 4. Draw the mesh
 				m_Renderer.Draw(mesh->GetVAO(), mesh->GetIBO(), *material->m_Shader);
-			}
-		}
-		int clicked_object_id = -1;
-		if (g_MouseState.leftButtonPressed) {
-			std::cout << "Mouse clicked at: (" << g_MouseState.lastX << ", " << g_MouseState.lastY << ")" << std::endl;
-			PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(g_MouseState.lastX, g_MouseState.lastY); //MAYBE I HAVE TO CHANGE Y
-			if (Pixel.ObjectID != 0) {
-				clicked_object_id = Pixel.ObjectID - 1;
-				std::cout << "Clicked on object with ID: " << clicked_object_id << std::endl;
-			} else {
-				std::cout << "No object clicked." << std::endl;
 			}
 		}
 	}

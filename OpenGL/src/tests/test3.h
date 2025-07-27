@@ -55,6 +55,7 @@ namespace test {
 		InfGrid m_Grid;
 		PickingTexture m_PickingTexture;
 		Shader m_PickingShader;
+		unsigned int m_SelectedObjectID = 0;
 
 		Vec3 m_Translation;
 		float m_Rotation;

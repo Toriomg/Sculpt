@@ -94,7 +94,7 @@ void Application::Run()
             m_CurrentTest->OnUpdate(Time::GetDeltaTime());
             m_CurrentTest->OnRender();
             m_CurrentTest->OnInput(m_Window, Time::GetDeltaTime());
-
+			ResetMouseClicks(); // Reset mouse clicks for the next frame
             ImGui::Begin("Test Menu");
             // If the current test is not the menu, show the "back" button
             if (m_CurrentTest != m_TestMenu && ImGui::Button("<- Back to Menu")) {

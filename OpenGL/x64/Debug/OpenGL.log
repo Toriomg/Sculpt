@@ -1,14 +1,6 @@
-﻿  Application.cpp
-  Camera.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\Camera.cpp(4,19): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-  InputState.cpp
-  main.cpp
-  inf_grid.cpp
-  test3.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(164,103): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+﻿  test3.cpp
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(165,103): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(212,103): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(246,97): warning C4244: 'argumento': conversión de 'double' a 'unsigned int'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(246,77): warning C4244: 'argumento': conversión de 'double' a 'unsigned int'; posible pérdida de datos
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(462,85): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
   (compilando archivo de origen "src/tests/test3.cpp")
       C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(462,85):
@@ -54,25 +46,6 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.3520
               _Ty=Mesh
           ]
   
-  TestBatchRendering.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
-  (compilando archivo de origen "src/tests/TestBatchRendering.cpp")
-      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
-      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
-          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestBatchRendering.cpp(50,16):
-          Vea la referencia a la creación de una instancia de la función plantilla "std::unique_ptr<IndexBuffer,std::default_delete<IndexBuffer>> std::make_unique<IndexBuffer,unsigned int(&)[12],size_t,0>(unsigned int (&)[12],size_t &&)" que se está compilando
-  
-  TestClearColor.cpp
-  tests.cpp
-  TestTexture2D.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
-  (compilando archivo de origen "src/tests/TestTexture2D.cpp")
-      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
-      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
-          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestTexture2D.cpp(30,16):
-          Vea la referencia a la creación de una instancia de la función plantilla "std::unique_ptr<VertexBuffer,std::default_delete<VertexBuffer>> std::make_unique<VertexBuffer,float(&)[20],size_t,bool,0>(float (&)[20],size_t &&,bool &&)" que se está compilando
-  
-  Generando código...
   OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
   "pwsh.exe" no se reconoce como un comando interno o externo,
   programa o archivo por lotes ejecutable.
