@@ -135,7 +135,7 @@ namespace test {
 		m_Dragon->transform.scale = { 100.0f, 100.0f, 100.0f };
 		m_Dragon->transform.rotation = Quaternion(90.0f, 1.0f, 0.0f, 0.0f);
 		m_Dragon->AddComponent<MeshRendererComponent>(meshDragon, m_Material3);
-		*/
+		//*/
 	}
 
 	test3::~test3() {
@@ -219,11 +219,14 @@ namespace test {
 			std::cout << "Mouse clicked at: (" << mouseX << ", " << mouseY << ")" << std::endl;
 			PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(mouseX, mouseY);
 			m_SelectedObjectID = Pixel.ObjectID;
+			m_SelectedTriangleID = Pixel.PrimID;
+
 			if (Pixel.ObjectID != 0) {
 				clicked_object_id = Pixel.ObjectID - 1;
 				std::cout << "Clicked on object with ID: " << clicked_object_id << std::endl;
 			} else {
 				std::cout << "No object clicked." << std::endl;
+				m_SelectedTriangleID = -1;
 			}
 		}
 
@@ -241,11 +244,16 @@ namespace test {
 				if (go->GetPickingID() == m_SelectedObjectID) {
 					// The object is selected
 					material->m_Shader->SetUniform1i("u_IsSelected", 1);
-					material->m_Shader->SetUniform4f("u_HighlightColor", 0.0f, 0.5f, 0.0f, 1.0f); // Green
+					material->m_Shader->SetUniform4f("u_HighlightColor", 0.0f, 0.0f, 0.55f, 1.0f); // Green
+					// Face selection
+					material->m_Shader->SetUniform1i("u_IsTriangleSelected", 1);
+					material->m_Shader->SetUniform1i("u_SelectedTriangleID", m_SelectedTriangleID);
+					material->m_Shader->SetUniform4f("u_TriangleHighlightColor", 0.7f, 0.0f, 0.0f, 1.0f); // Yellow for triangle
 				}
 				else {
 					// The object is not selected
 					material->m_Shader->SetUniform1i("u_IsSelected", 0); // false
+					material->m_Shader->SetUniform1i("u_IsTriangleSelected", 0);
 				}
 
 				Matx4f model;

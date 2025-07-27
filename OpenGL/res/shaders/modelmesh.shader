@@ -13,7 +13,6 @@ out vec2 v_TexCoord;
 out vec3 v_Normal;
 out vec3 v_WorldPos;
 
-
 void main()
 {
 	gl_Position = u_MVP * vec4(position, 1.0);
@@ -35,8 +34,12 @@ out vec4 FragColor;
 
 uniform sampler2D u_Textures[2];
 uniform vec3 u_cameraPos;
+
 uniform bool u_IsSelected;
 uniform vec4 u_HighlightColor;
+uniform bool u_IsTriangleSelected;
+uniform int u_SelectedTriangleID;
+uniform vec4 u_TriangleHighlightColor;
 
 void main()
 {
@@ -50,6 +53,11 @@ void main()
     }
     else {
         baseColor = objectColor;
+    }
+
+	if (u_IsTriangleSelected && gl_PrimitiveID  == u_SelectedTriangleID) {
+        // Use a stronger mix for the triangle highlight to make it stand out
+        baseColor = mix(baseColor, u_TriangleHighlightColor.rgb, 0.85);
     }
 
 	vec3 norm = normalize(v_Normal);

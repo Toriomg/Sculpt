@@ -20,5 +20,5 @@ uniform uint objectID;
 
 void main()
 {
-    FragColor = uvec3(objectID, 0, 0); 
+    FragColor = uvec3(objectID, gl_PrimitiveID, 0); 
 }
