@@ -25,6 +25,7 @@ namespace test {
 		m_CameraPersEnabled(true),
 		m_PickingShader("res/shaders/Picking.shader")
 	{
+		m_MVP = Matx4f::identity();
 
 		auto shader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
 		auto shaderMonkey = std::make_shared<Shader>("res/shaders/modelmesh.shader");
@@ -142,7 +143,16 @@ namespace test {
 
 	}
 
+	void test3::CalculeMVP() {
+		Matx4f view = m_Camera.GetViewMatrix();
+		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
+		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
+		
+		m_MVP = projection * view * global_transform;
+	}
+
 	void test3::OnUpdate(float deltaTime) {
+		CalculeMVP(); // Calculate the MVP matrix before rendering
 		m_Camera.OnUpdate(deltaTime);
 		m_Scene.OnUpdate(deltaTime);
 	}
@@ -159,14 +169,6 @@ namespace test {
 
 		m_PickingShader.Bind();
 
-		// 4. Configurar las matrices de vista y proyección (igual que en el renderizado normal)
-		Matx4f view = m_Camera.GetViewMatrix();
-		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
-		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
-
-		m_PickingShader.SetUniformMat4f("view", view);
-		m_PickingShader.SetUniformMat4f("projection", projection);
-
 		// 5. Dibujar cada objeto seleccionable
 		unsigned int objectId = 1; // Empezamos los IDs en 1 (0 es para el fondo)
 		for (auto& go : m_Scene.GetAllGameObjects()) {
@@ -176,16 +178,16 @@ namespace test {
 				go->SetPickingID(objectId);
 				m_PickingShader.SetUniform1ui("objectID", go->GetPickingID());
 
-				Matx4f model;
+				Matx4f modelMVP;
 				if (go->name == "Monkey") {
-					model = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
+					modelMVP = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
 				}
 				else {
-					model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale);
+					modelMVP = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale);
 				}
-				model = global_transform * model;
+				modelMVP = m_MVP * modelMVP;
 
-				m_PickingShader.SetUniformMat4f("model", model);
+				m_PickingShader.SetUniformMat4f("u_MVP", modelMVP);
 
 				// Draw the mesh with the picking shader
 				auto& mesh = meshRenderer->m_Mesh;
@@ -207,9 +209,7 @@ namespace test {
 
 		m_Grid.OnRender(m_Camera, m_CameraPersEnabled);
 
-		Matx4f view = m_Camera.GetViewMatrix();
-		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
-		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
+		
 
 		int clicked_object_id = -1;
 		if (g_MouseState.leftButtonFirstPress) {
@@ -220,6 +220,15 @@ namespace test {
 			PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(mouseX, mouseY);
 			m_SelectedObjectID = Pixel.ObjectID;
 			m_SelectedTriangleID = Pixel.PrimID;
+			m_IsVertexSelected = false; // Reset vertex selection
+			m_pSelectedObject = nullptr;
+
+			for (auto& go : m_Scene.GetAllGameObjects()) {
+				if (go->GetPickingID() == m_SelectedObjectID) {
+					m_pSelectedObject = go.get();
+					break;
+				}
+			}
 
 			if (Pixel.ObjectID != 0) {
 				clicked_object_id = Pixel.ObjectID - 1;
@@ -263,7 +272,7 @@ namespace test {
 				} else { 
 					model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale); 
 				}
-				Matx4f mvp = projection * view * global_transform * model;
+				Matx4f mvp = m_MVP * model;
 
 				// 3. Set the MVP uniform (the material already bound the shader)
 				material->m_Shader->SetUniformMat4f("u_MVP", mvp);
