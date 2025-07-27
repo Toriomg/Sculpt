@@ -63,6 +63,7 @@ namespace test {
 		GameObject* m_pSelectedObject = nullptr;
 
 		Matx4f m_MVP;
+		Matx4f m_GlobalTransform;
 		Vec3 m_Translation;
 		float m_Rotation;
 		Vec3 m_Scaling;

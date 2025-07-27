@@ -26,6 +26,7 @@ namespace test {
 		m_PickingShader("res/shaders/Picking.shader")
 	{
 		m_MVP = Matx4f::identity();
+		m_GlobalTransform = Matx4f::identity();
 
 		auto shader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
 		auto shaderMonkey = std::make_shared<Shader>("res/shaders/modelmesh.shader");
@@ -146,9 +147,9 @@ namespace test {
 	void test3::CalculeMVP() {
 		Matx4f view = m_Camera.GetViewMatrix();
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
-		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
+		m_GlobalTransform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
 		
-		m_MVP = projection * view * global_transform;
+		m_MVP = projection * view * m_GlobalTransform;
 	}
 
 	void test3::OnUpdate(float deltaTime) {
@@ -230,13 +231,51 @@ namespace test {
 				}
 			}
 
-			if (Pixel.ObjectID != 0) {
-				clicked_object_id = Pixel.ObjectID - 1;
-				std::cout << "Clicked on object with ID: " << clicked_object_id << std::endl;
-			} else {
-				std::cout << "No object clicked." << std::endl;
-				m_SelectedTriangleID = -1;
+			if (m_pSelectedObject) {
+				Vec3 clickedWorldPos = m_PickingTexture.ReadWorldPosition(mouseX, mouseY);
+
+				// Get mesh and transform
+				MeshRendererComponent* mrc = m_pSelectedObject->GetComponent<MeshRendererComponent>();
+				Matx4f modelMatrix = Matx4f::translation(m_pSelectedObject->transform.position) * Matx4f::scaling(m_pSelectedObject->transform.scale);
+				// NOTE: Add rotation logic here if needed!
+				modelMatrix = m_GlobalTransform * modelMatrix;
+
+				auto& indices = mrc->m_Mesh->GetIBO(); // Assumes Mesh has these getters
+				auto& vertices = mrc->m_Mesh->GetVAO();
+
+				// Get the 3 vertices of the selected triangle
+				unsigned int i0 = indices[m_SelectedTriangleID * 3 + 0];
+				unsigned int i1 = indices[m_SelectedTriangleID * 3 + 1];
+				unsigned int i2 = indices[m_SelectedTriangleID * 3 + 2];
+
+				Vec3f v0_local = vertices[i0].position;
+				Vec3f v1_local = vertices[i1].position;
+				Vec3f v2_local = vertices[i2].position;
+
+				// Transform them to world space
+				Vec3f v0_world = modelMatrix.transformPoint(v0_local);
+				Vec3f v1_world = modelMatrix.transformPoint(v1_local);
+				Vec3f v2_world = modelMatrix.transformPoint(v2_local);
+
+				// Find which vertex is closest to the click point
+				float d0 = (clickedWorldPos - v0_world).length();
+				float d1 = (clickedWorldPos - v1_world).length();
+				float d2 = (clickedWorldPos - v2_world).length();
+
+				float min_dist = std::min({ d0, d1, d2 });
+
+				m_IsVertexSelected = true;
+				if (min_dist == d0) m_SelectedVertexWorldPos = v0_world;
+				else if (min_dist == d1) m_SelectedVertexWorldPos = v1_world;
+				else m_SelectedVertexWorldPos = v2_world;
+
+				std::cout << "Selected Vertex Pos: (" << m_SelectedVertexWorldPos.x << ", "
+					<< m_SelectedVertexWorldPos.y << ", " << m_SelectedVertexWorldPos.z << ")\n";
 			}
+		}
+		else {
+			std::cout << "No object clicked. Clearing selection." << std::endl;
+			m_SelectedTriangleID = -1;
 		}
 
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
