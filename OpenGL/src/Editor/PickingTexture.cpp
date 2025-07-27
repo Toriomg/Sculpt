@@ -1,6 +1,6 @@
 #include "PickingTexture.h"
 
-PickingTexture::PickingTexture(unsigned int WindowWidth, unsigned int WindowHeight) {
+PickingTexture::PickingTexture(int WindowWidth, int WindowHeight) {
 	glGenFramebuffers(1, &m_fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
@@ -39,7 +39,7 @@ void PickingTexture::DisableWriting() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
-PickingTexture::PixelInfo PickingTexture::ReadInfo(unsigned int x, unsigned int y) {
+PickingTexture::PixelInfo PickingTexture::ReadPixel(unsigned int x, unsigned int y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 
@@ -49,4 +49,5 @@ PickingTexture::PixelInfo PickingTexture::ReadInfo(unsigned int x, unsigned int 
 	glReadBuffer(GL_NONE);
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	return Pixel;
 }
