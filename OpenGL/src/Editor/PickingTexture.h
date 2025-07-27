@@ -6,7 +6,8 @@
 #include "../Graphics/Shading/Texture.h"
 
 class PickingTexture {
-	PickingTexture(unsigned int WindowWidth, unsigned int WindowHeight);
+public:
+	PickingTexture(int WindowWidth, int WindowHeight);
 	~PickingTexture() {};
 
 	void EnableWriting();
@@ -22,7 +23,7 @@ class PickingTexture {
 		}
 	};
 
-	PixelInfo ReadInfo(unsigned int x, unsigned int y);
+	PixelInfo ReadPixel(unsigned int x, unsigned int y);
 private:
 	unsigned int m_fbo = 0;
 	unsigned int m_pickingTexture = 0;

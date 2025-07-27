@@ -7,6 +7,11 @@ void ResetMouseOffset() {
     g_MouseState.y_offset = 0.0f;
 }
 
+void ResetMouseClicks() {
+    g_MouseState.leftButtonPressed = false;
+    g_MouseState.rightButtonPressed = false;
+}
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (g_MouseState.firstMouse) {
         g_MouseState.lastX = xpos;
@@ -32,4 +37,11 @@ void InitializeInput(GLFWwindow* window) {
     // Toda la lógica de inicialización de input está ahora aquí.
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     glfwSetCursorPosCallback(window, mouse_callback);
+    if (GLFW_MOUSE_BUTTON_LEFT){
+        g_MouseState.leftButtonPressed = true;
+	}
+    if (GLFW_MOUSE_BUTTON_RIGHT){
+        g_MouseState.rightButtonPressed = true;
+    }
+	g_MouseState.firstMouse = true; // Para que la primera posición del mouse sea considerada como el centro   
 }

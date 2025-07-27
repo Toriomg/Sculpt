@@ -21,6 +21,7 @@ namespace test {
 		m_Scaling(1.0f, 1.0f, 1.0f),
 		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y),
 		m_Grid(),
+		m_PickingTexture(static_cast<int>(WINDW_SIZE_X), static_cast<int>(WINDW_SIZE_X)),
 		m_CameraPersEnabled(true)
 	{
 
@@ -124,7 +125,7 @@ namespace test {
 		m_Monkey->transform.rotation = Quaternion(90.0f, 1.0f, 0.0f, 0.0f);
 		m_Monkey->AddComponent<MeshRendererComponent>(meshMonkey, m_Material3);
 
-		
+		/*
 		std::string dragonPath = "res/models/dragon.obj";
 		auto meshDragon = LoadModel(dragonPath);
 
@@ -133,7 +134,7 @@ namespace test {
 		m_Dragon->transform.scale = { 100.0f, 100.0f, 100.0f };
 		m_Dragon->transform.rotation = Quaternion(90.0f, 1.0f, 0.0f, 0.0f);
 		m_Dragon->AddComponent<MeshRendererComponent>(meshDragon, m_Material3);
-		
+		*/
 	}
 
 	test3::~test3() {
@@ -145,7 +146,16 @@ namespace test {
 		m_Scene.OnUpdate(deltaTime);
 	}
 
+	void test3::OnPick() {
+		m_PickingTexture.EnableWriting();
+		m_PickingTexture.DisableWriting();
+	}
+
 	void test3::OnRender() {
+		
+		this->OnPick(); // Call picking before rendering
+
+
 		GLCall(glClearColor(0.7f, 0.5f, 0.5f, 1.0f)); // Set the clear color
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // Clear the color buffer
 
@@ -155,6 +165,17 @@ namespace test {
 		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
 		Matx4f global_transform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
 
+		int clicked_object_id = -1;
+		if (g_MouseState.leftButtonPressed) {
+			std::cout << "Mouse clicked at: (" << g_MouseState.lastX << ", " << g_MouseState.lastY << ")" << std::endl;
+			PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(g_MouseState.lastX, g_MouseState.lastY); //MAYBE I HAVE TO CHANGE Y
+			if (Pixel.ObjectID != 0) {
+				clicked_object_id = Pixel.ObjectID - 1;
+				std::cout << "Clicked on object with ID: " << clicked_object_id << std::endl;
+			} else {
+				std::cout << "No object clicked." << std::endl;
+			}
+		}
 
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
 			if (!go->m_IsVisible) continue;
@@ -167,6 +188,7 @@ namespace test {
 
 				material->Bind();
 				Matx4f model;
+				// TODO : FIX MODEL ROTATION
 				if (go->name == "Monkey") {
 					 model = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
 				} else { 

@@ -7,6 +7,7 @@
 #include "../Scene/GameObject.h"
 #include "../Scene/Components/MeshRendererComponent.h" 
 #include "../Graphics/Renderer.h"
+#include "../Editor/PickingTexture.h"
 #include "Tests.h"
 
 struct Vertex3 {
@@ -26,6 +27,7 @@ namespace test {
 
 		void OnUpdate(float deltaTime) override;
 		void OnRender() override;
+		void OnPick();
 		void OnImGuiRender() override;
 		void OnInput(GLFWwindow* window, float deltaTime) override;
 
@@ -51,6 +53,7 @@ namespace test {
 
 		Camera m_Camera;
 		InfGrid m_Grid;
+		PickingTexture m_PickingTexture;
 
 		Vec3 m_Translation;
 		float m_Rotation;
