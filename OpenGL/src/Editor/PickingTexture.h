@@ -15,8 +15,8 @@ public:
 
 	struct PixelInfo {
 		unsigned int ObjectID = 0;
-		unsigned int DrawID = 0;
 		unsigned int PrimID = 0;
+		unsigned int DrawID = 0;
 
 		void print() {
 			std::cout << "Object; " << ObjectID << ", Draw: " << DrawID << ", Prim: " << PrimID << std::endl;

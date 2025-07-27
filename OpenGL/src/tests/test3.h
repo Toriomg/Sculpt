@@ -56,6 +56,7 @@ namespace test {
 		PickingTexture m_PickingTexture;
 		Shader m_PickingShader;
 		unsigned int m_SelectedObjectID = 0;
+		int m_SelectedTriangleID = -1;
 
 		Vec3 m_Translation;
 		float m_Rotation;
