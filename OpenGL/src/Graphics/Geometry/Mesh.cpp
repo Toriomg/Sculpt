@@ -10,7 +10,7 @@ Mesh::Mesh(const Vertex* vertices, unsigned int vertexCount, const unsigned int*
 {
     // 1. Create the Vertex and Index Buffers on the GPU.
     //    These are now owned by this Mesh instance via unique_ptr.
-    m_VBO = std::make_unique<VertexBuffer>(vertices, vertexCount, false);
+    m_VBO = std::make_unique<VertexBuffer>(vertices, vertexCount * sizeof(Vertex), false);
     m_IBO = std::make_unique<IndexBuffer>(indices, indexCount);
 
     // 2. Create the Vertex Array Object.
