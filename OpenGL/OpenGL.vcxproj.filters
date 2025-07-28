@@ -18,7 +18,7 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Renderer.cpp">
+    <ClCompile Include="src\Graphics\Rendering\RenderCommand.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\Buffers\VertexBuffer.cpp">
@@ -117,6 +117,15 @@
     <ClCompile Include="src\Editor\PickingTexture.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Core.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Editor\SelectionSystem.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Rendering\Renderer.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\BasicTexture.shader" />
@@ -128,7 +137,7 @@
     <None Include="res\shaders\Picking.shader" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Graphics\Renderer.h">
+    <ClInclude Include="src\Graphics\Rendering\RenderCommand.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\Buffers\VertexBuffer.h">
@@ -258,6 +267,24 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\Editor\PickingTexture.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Core.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glhead.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Rendering\Renderer.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Rendering\SelectionContext.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Rendering\RenderContext.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Editor\SelectionSystem.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

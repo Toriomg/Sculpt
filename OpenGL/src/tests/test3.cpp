@@ -21,9 +21,8 @@ namespace test {
 		m_Scaling(1.0f, 1.0f, 1.0f),
 		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y),
 		m_Grid(),
-		m_PickingTexture(static_cast<int>(WINDW_SIZE_X), static_cast<int>(WINDW_SIZE_Y)),
 		m_CameraPersEnabled(true),
-		m_PickingShader("res/shaders/Picking.shader")
+		m_SelectionSystem(static_cast<int>(WINDW_SIZE_X), static_cast<int>(WINDW_SIZE_Y))
 	{
 		m_MVP = Matx4f::identity();
 		m_GlobalTransform = Matx4f::identity();
@@ -158,134 +157,9 @@ namespace test {
 		m_Scene.OnUpdate(deltaTime);
 	}
 
-	void test3::OnPick() {
-		// Chunk of spaghetti code to handle picking
-		m_PickingTexture.EnableWriting();
+	
 
-
-		// Empty the buffer color and depth
-		const GLuint clearColor[4] = { 0, 0, 0, 0 };
-		GLCall(glClearBufferuiv(GL_COLOR, 0, clearColor));
-		GLCall(glClear(GL_DEPTH_BUFFER_BIT)); // También limpia el buffer de profundidad
-
-		m_PickingShader.Bind();
-
-		// 5. Dibujar cada objeto seleccionable
-		unsigned int objectId = 1; // Empezamos los IDs en 1 (0 es para el fondo)
-		for (auto& go : m_Scene.GetAllGameObjects()) {
-			MeshRendererComponent* meshRenderer = go->GetComponent<MeshRendererComponent>();
-			if (meshRenderer) {
-				// Asignar el ID al objeto (puedes guardarlo en el propio GameObject)
-				go->SetPickingID(objectId);
-				m_PickingShader.SetUniform1ui("objectID", go->GetPickingID());
-
-				Matx4f model_MVP = m_MVP * go->GetTransformMatrix();
-
-				m_PickingShader.SetUniformMat4f("u_Model", m_GlobalTransform * go->GetTransformMatrix());
-				m_PickingShader.SetUniformMat4f("u_MVP", model_MVP);
-
-				// Draw the mesh with the picking shader
-				auto& mesh = meshRenderer->m_Mesh;
-				m_Renderer.Draw(mesh->GetVAO(), mesh->GetIBO(), m_PickingShader);
-
-				objectId++;
-			}
-		}
-
-		m_PickingTexture.DisableWriting();
-	}
-
-	void test3::ProcessPicking() {
-		if (!g_MouseState.leftButtonFirstPress)
-			return;
-
-		unsigned int mouseX = static_cast<unsigned int>(g_MouseState.lastX);
-		unsigned int mouseY = static_cast<unsigned int>(WINDW_SIZE_Y - g_MouseState.lastY);
-
-		std::cout << "Mouse clicked at: (" << mouseX << ", " << mouseY << ")" << std::endl;
-		PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(mouseX, mouseY);
-
-		if (Pixel.ObjectID == 0) {
-			m_pSelectedObject = nullptr;
-			m_SelectedObjectID = 0;
-			m_SelectedTriangleID = -1;
-			m_IsVertexSelected = false;
-			std::cout << "No object clicked. Clearing selection." << std::endl;
-			return;
-		}
-		
-		m_SelectedObjectID = Pixel.ObjectID;
-		m_SelectedTriangleID = Pixel.PrimID;
-		m_IsVertexSelected = false; // Reset until we calculate the vertex
-		m_pSelectedObject = nullptr; // Reset until we find the object
-
-		for (auto& go : m_Scene.GetAllGameObjects()) {
-			if (go->GetPickingID() == m_SelectedObjectID) {
-				m_pSelectedObject = go.get();
-				break;
-			}
-		}
-		
-		Vec3 clickedWorldPos = m_PickingTexture.ReadWorldPosition(mouseX, mouseY);
-
-		// Get mesh and transform
-		MeshRendererComponent* mrc = m_pSelectedObject->GetComponent<MeshRendererComponent>();
-
-		Matx4f modelMatrix = m_GlobalTransform * m_pSelectedObject->GetTransformMatrix();
-
-		auto& indices = mrc->m_Mesh->GetIndices();
-		auto& vertices = mrc->m_Mesh->GetVertices();
-
-		// Get the 3 vertices of the selected triangle
-		unsigned int i0 = indices[m_SelectedTriangleID * 3 + 0];
-		unsigned int i1 = indices[m_SelectedTriangleID * 3 + 1];
-		unsigned int i2 = indices[m_SelectedTriangleID * 3 + 2];
-
-		Vec3 v0_local = vertices[i0].pos;
-		Vec3 v1_local = vertices[i1].pos;
-		Vec3 v2_local = vertices[i2].pos;
-
-		// Transform them to world space
-		Vec3 v0_world = modelMatrix.transformPoint(v0_local);
-		Vec3 v1_world = modelMatrix.transformPoint(v1_local);
-		Vec3 v2_world = modelMatrix.transformPoint(v2_local);
-
-		// Find which vertex is closest to the click point
-		float d0 = (clickedWorldPos - v0_world).length();
-		float d1 = (clickedWorldPos - v1_world).length();
-		float d2 = (clickedWorldPos - v2_world).length();
-		
-		float min_dist = std::min({ d0, d1, d2 });
-
-		m_IsVertexSelected = true;
-		if (min_dist == d0) m_SelectedVertexWorldPos = v0_world;
-		else if (min_dist == d1) m_SelectedVertexWorldPos = v1_world;
-		else m_SelectedVertexWorldPos = v2_world;
-
-		std::cout << "Selected Vertex Pos: (" << m_SelectedVertexWorldPos.x << ", "
-			<< m_SelectedVertexWorldPos.y << ", " << m_SelectedVertexWorldPos.z << ")\n";
-	}
-
-	void SetHighlightUniforms(const std::shared_ptr<Shader>& shader, bool isObject, bool isTriangle, bool isVertex,
-		int triangleID, const Vec3& vertexPos, float vertexRadius)
-	{
-		shader->SetUniform1i("u_IsSelected", isObject);
-		shader->SetUniform1i("u_IsTriangleSelected", isTriangle);
-		shader->SetUniform1i("u_IsVertexSelected", isVertex);
-
-		if (isObject) {
-			shader->SetUniform4f("u_HighlightColor", 0.0f, 0.0f, 0.55f, 1.0f);
-		}
-		if (isTriangle) {
-			shader->SetUniform1i("u_SelectedTriangleID", triangleID);
-			shader->SetUniform4f("u_TriangleHighlightColor", 0.7f, 0.0f, 0.0f, 1.0f);
-		}
-		if (isVertex) {
-			shader->SetUniform3f("u_SelectedVertexWorldPos", vertexPos.x, vertexPos.y, vertexPos.z);
-			shader->SetUniform4f("u_VertexHighlightColor", 1.0f, 0.0f, 1.0f, 1.0f);
-			shader->SetUniform1f("u_VertexHighlightRadius", vertexRadius);
-		}
-	}
+	
 
 	void test3::OnRender() {
 		
