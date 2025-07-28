@@ -179,16 +179,9 @@ namespace test {
 				go->SetPickingID(objectId);
 				m_PickingShader.SetUniform1ui("objectID", go->GetPickingID());
 
-				Matx4f model;
-				if (go->name == "Monkey") {
-					model = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
-				}
-				else {
-					model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale);
-				}
-				Matx4f model_MVP = m_MVP * model;
+				Matx4f model_MVP = m_MVP * go->GetTransformMatrix();
 
-				m_PickingShader.SetUniformMat4f("u_Model", m_GlobalTransform * model);
+				m_PickingShader.SetUniformMat4f("u_Model", m_GlobalTransform * go->GetTransformMatrix());
 				m_PickingShader.SetUniformMat4f("u_MVP", model_MVP);
 
 				// Draw the mesh with the picking shader
@@ -245,14 +238,7 @@ namespace test {
 				// Get mesh and transform
 				MeshRendererComponent* mrc = m_pSelectedObject->GetComponent<MeshRendererComponent>();
 
-				Matx4f modelMatrix;
-				if (m_pSelectedObject->name == "Monkey") {
-					modelMatrix = Matx4f::translation(m_pSelectedObject->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(m_pSelectedObject->transform.scale);
-				}
-				else {
-					modelMatrix = Matx4f::translation(m_pSelectedObject->transform.position) * Matx4f::scaling(m_pSelectedObject->transform.scale);
-				}
-				modelMatrix = m_GlobalTransform * modelMatrix;
+				Matx4f modelMatrix = m_GlobalTransform * m_pSelectedObject->GetTransformMatrix();
 
 				auto& indices = mrc->m_Mesh->GetIndices();
 				auto& vertices = mrc->m_Mesh->GetVertices();
