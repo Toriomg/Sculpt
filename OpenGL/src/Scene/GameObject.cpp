@@ -21,3 +21,14 @@ void GameObject::OnRender() {
         component->OnRender();
     }
 }
+
+Matx4f GameObject::GetTransformMatrix() const {
+    Matx4f model;
+    if (this->name == "Monkey") {
+        model = Matx4f::translation(this->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(this->transform.scale);
+    }
+    else {
+        model = Matx4f::translation(this->transform.position) * Matx4f::scaling(this->transform.scale);
+    }
+    return model;
+}

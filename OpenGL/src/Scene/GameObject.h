@@ -54,6 +54,8 @@ public:
 
 	int GetPickingID() const { return m_PickingID; }
 
+    Matx4f GetTransformMatrix() const;
+
     std::string name;
     Transform transform;
     bool m_IsVisible = true;
