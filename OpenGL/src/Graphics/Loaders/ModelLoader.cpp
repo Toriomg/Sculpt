@@ -176,7 +176,7 @@ std::shared_ptr<Mesh> LoadModel(const std::string& filepath){
     std::cout << "Successfully loaded model: " << filepath << " with " << final_vertices.size() << " vertices and " << final_indices.size() << " indices." << std::endl;
 
     return std::make_shared<Mesh>(final_vertices.data(),
-        static_cast<unsigned int>(final_vertices.size() * sizeof(Vertex)),
+        static_cast<unsigned int>(final_vertices.size()),
         final_indices.data(),
         static_cast<unsigned int>(final_indices.size())
     );

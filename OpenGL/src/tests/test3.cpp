@@ -179,16 +179,17 @@ namespace test {
 				go->SetPickingID(objectId);
 				m_PickingShader.SetUniform1ui("objectID", go->GetPickingID());
 
-				Matx4f modelMVP;
+				Matx4f model;
 				if (go->name == "Monkey") {
-					modelMVP = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
+					model = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
 				}
 				else {
-					modelMVP = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale);
+					model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale);
 				}
-				modelMVP = m_MVP * modelMVP;
+				Matx4f model_MVP = m_MVP * model;
 
-				m_PickingShader.SetUniformMat4f("u_MVP", modelMVP);
+				m_PickingShader.SetUniformMat4f("u_Model", m_GlobalTransform * model);
+				m_PickingShader.SetUniformMat4f("u_MVP", model_MVP);
 
 				// Draw the mesh with the picking shader
 				auto& mesh = meshRenderer->m_Mesh;
@@ -278,10 +279,6 @@ namespace test {
 				std::cout << "Selected Vertex Pos: (" << m_SelectedVertexWorldPos.x << ", "
 					<< m_SelectedVertexWorldPos.y << ", " << m_SelectedVertexWorldPos.z << ")\n";
 			}
-		}
-		else {
-			std::cout << "No object clicked. Clearing selection." << std::endl;
-			m_SelectedTriangleID = -1;
 		}
 
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
