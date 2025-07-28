@@ -56,6 +56,7 @@ namespace test {
 
 		PickingTexture m_PickingTexture;
 		Shader m_PickingShader;
+
 		unsigned int m_SelectedObjectID = 0;
 		int m_SelectedTriangleID = -1;
 		bool m_IsVertexSelected = false;
@@ -69,6 +70,7 @@ namespace test {
 		Vec3 m_Scaling;
 		float m_scalar = 1;
 		bool m_CameraPersEnabled;
+		float m_VertexHighlightRadius = 1.5f;
 
 		void CalculeMVP();
 	};
