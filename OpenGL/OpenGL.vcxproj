@@ -138,13 +138,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\Application.cpp" />
+    <ClCompile Include="src\Core\Core.cpp" />
     <ClCompile Include="src\Core\Time.cpp" />
     <ClCompile Include="src\Editor\EditorUI.cpp" />
     <ClCompile Include="src\Editor\PickingTexture.cpp" />
+    <ClCompile Include="src\Editor\SelectionSystem.cpp" />
     <ClCompile Include="src\Graphics\Buffers\IndexBuffer.cpp" />
     <ClCompile Include="src\Core\Camera.cpp" />
     <ClCompile Include="src\Core\InputState.cpp" />
     <ClCompile Include="src\Graphics\Loaders\ModelLoader.cpp" />
+    <ClCompile Include="src\Graphics\Rendering\Renderer.cpp" />
     <ClCompile Include="src\Graphics\Shading\Material.cpp" />
     <ClCompile Include="src\Graphics\Geometry\Mesh.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -152,7 +155,7 @@
     <ClCompile Include="src\Editor\inf_grid.cpp" />
     <ClCompile Include="src\Scene\Components\MeshRendererComponent.cpp" />
     <ClCompile Include="src\Scene\GameObject.cpp" />
-    <ClCompile Include="src\Graphics\Renderer.cpp" />
+    <ClCompile Include="src\Graphics\Rendering\RenderCommand.cpp" />
     <ClCompile Include="src\Graphics\Shading\Shader.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\tests\test3.cpp" />
@@ -186,10 +189,16 @@
     <ClInclude Include="src\Core\Time.h" />
     <ClInclude Include="src\Editor\EditorUI.h" />
     <ClInclude Include="src\Editor\PickingTexture.h" />
+    <ClInclude Include="src\Editor\SelectionSystem.h" />
+    <ClInclude Include="src\glhead.h" />
     <ClInclude Include="src\Graphics\Buffers\IndexBuffer.h" />
     <ClInclude Include="src\Core\Camera.h" />
     <ClInclude Include="src\Core\InputManager.h" />
+    <ClInclude Include="src\Core\Core.h" />
     <ClInclude Include="src\Graphics\Loaders\ModelLoader.h" />
+    <ClInclude Include="src\Graphics\Rendering\RenderContext.h" />
+    <ClInclude Include="src\Graphics\Rendering\Renderer.h" />
+    <ClInclude Include="src\Graphics\Rendering\SelectionContext.h" />
     <ClInclude Include="src\Graphics\Shading\Material.h" />
     <ClInclude Include="src\Graphics\Geometry\Mesh.h" />
     <ClInclude Include="src\Graphics\Geometry\Vertex.h" />
@@ -203,7 +212,7 @@
     <ClInclude Include="src\Scene\Components\Component.h" />
     <ClInclude Include="src\Scene\Components\MeshRendererComponent.h" />
     <ClInclude Include="src\Scene\GameObject.h" />
-    <ClInclude Include="src\Graphics\Renderer.h" />
+    <ClInclude Include="src\Graphics\Rendering\RenderCommand.h" />
     <ClInclude Include="src\Graphics\Shading\Shader.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\tests\test3.h" />

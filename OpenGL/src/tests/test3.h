@@ -6,7 +6,9 @@
 #include "../Scene/Scene.h"
 #include "../Scene/GameObject.h"
 #include "../Scene/Components/MeshRendererComponent.h" 
-#include "../Graphics/Renderer.h"
+#include "../Graphics/Rendering/Renderer.h"
+#include "../Editor/SelectionSystem.h"
+#include "../Graphics/Rendering/SelectionContext.h"
 #include "../Editor/PickingTexture.h"
 #include "Tests.h"
 
@@ -31,8 +33,11 @@ namespace test {
 		void OnInput(GLFWwindow* window, float deltaTime) override;
 
 	private:
-		Scene m_Scene;
+		Scene m_Scene;//
 		Renderer m_Renderer;
+		SelectionSystem m_SelectionSystem;
+		SelectionContext m_SelectionContext;
+
 		std::shared_ptr<VertexArray> m_VAO;
 		std::shared_ptr<IndexBuffer> m_IBO;
 		std::shared_ptr<Shader> m_Shader;
@@ -53,15 +58,6 @@ namespace test {
 		Camera m_Camera;
 		InfGrid m_Grid;
 
-		PickingTexture m_PickingTexture;
-		Shader m_PickingShader;
-
-		unsigned int m_SelectedObjectID = 0;
-		int m_SelectedTriangleID = -1;
-		bool m_IsVertexSelected = false;
-		Vec3 m_SelectedVertexWorldPos;
-		GameObject* m_pSelectedObject = nullptr;
-
 		Matx4f m_MVP;
 		Matx4f m_GlobalTransform;
 		Vec3 m_Translation;
@@ -72,7 +68,5 @@ namespace test {
 		float m_VertexHighlightRadius = 1.5f;
 
 		void CalculeMVP();
-		void OnPick();
-		void ProcessPicking();
 	};
 };
