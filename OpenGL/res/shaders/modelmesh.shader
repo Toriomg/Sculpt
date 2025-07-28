@@ -41,27 +41,9 @@ uniform bool u_IsTriangleSelected;
 uniform int u_SelectedTriangleID;
 uniform vec4 u_TriangleHighlightColor;
 
-void main()
-{
-	vec3 objectColor = texture(u_Textures[0], v_TexCoord).rgb;
-	
-	vec3 baseColor;
 
-	if (u_IsSelected) {
-        // mix() interpola entre dos colores. Un factor de 0.5 mezcla ambos a partes iguales.
-        baseColor = mix(objectColor, u_HighlightColor.rgb, 0.5); 
-    }
-    else {
-        baseColor = objectColor;
-    }
-
-	if (u_IsTriangleSelected && gl_PrimitiveID  == u_SelectedTriangleID) {
-        // Use a stronger mix for the triangle highlight to make it stand out
-        baseColor = mix(baseColor, u_TriangleHighlightColor.rgb, 0.85);
-    }
-
+vec3 lighting(){
 	vec3 norm = normalize(v_Normal);
-
 	vec3 faceNormal = normalize(cross(dFdx(v_WorldPos), dFdy(v_WorldPos)));
 
 	// Define light properties
@@ -94,8 +76,32 @@ void main()
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	vec3 specular = specularStrength * spec * lightColor;
 
+	return ambient + diffuse + specular;
+}
+
+void main()
+{
+	vec3 objectColor = texture(u_Textures[0], v_TexCoord).rgb;
+	
+	vec3 baseColor;
+
+	if (u_IsSelected) {
+        // mix() interpola entre dos colores. Un factor de 0.5 mezcla ambos a partes iguales.
+        baseColor = mix(objectColor, u_HighlightColor.rgb, 0.5); 
+    }
+    else {
+        baseColor = objectColor;
+    }
+
+	if (u_IsTriangleSelected && gl_PrimitiveID  == u_SelectedTriangleID) {
+        // Use a stronger mix for the triangle highlight to make it stand out
+        baseColor = mix(baseColor, u_TriangleHighlightColor.rgb, 0.85);
+    }
+
+	vec3 light = lighting();
+
 	// Combine lighting and the object's color
-	vec3 result = (ambient + diffuse + specular) * baseColor;
+	vec3 result = light * baseColor;
 
 	// Final color output
 	FragColor = vec4(result, 1.0);
