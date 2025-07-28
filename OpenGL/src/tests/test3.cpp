@@ -82,7 +82,7 @@ namespace test {
 		};
 
 		// Create ONE mesh, which will be shared by all cubes.
-		m_CubeMesh = std::make_shared<Mesh>(cubeVertices, sizeof(cubeVertices), cubeIndices, sizeof(cubeIndices) / sizeof(unsigned int));
+		m_CubeMesh = std::make_shared<Mesh>(cubeVertices, sizeof(cubeVertices) / sizeof(Vertex), cubeIndices, sizeof(cubeIndices) / sizeof(unsigned int));
 
 		// Create two different materials.
 		m_Material1 = std::make_shared<Material>(shader);
@@ -236,26 +236,33 @@ namespace test {
 
 				// Get mesh and transform
 				MeshRendererComponent* mrc = m_pSelectedObject->GetComponent<MeshRendererComponent>();
-				Matx4f modelMatrix = Matx4f::translation(m_pSelectedObject->transform.position) * Matx4f::scaling(m_pSelectedObject->transform.scale);
+
+				Matx4f modelMatrix;
+				if (m_pSelectedObject->name == "Monkey") {
+					modelMatrix = Matx4f::translation(m_pSelectedObject->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(m_pSelectedObject->transform.scale);
+				}
+				else {
+					modelMatrix = Matx4f::translation(m_pSelectedObject->transform.position) * Matx4f::scaling(m_pSelectedObject->transform.scale);
+				}
 				// NOTE: Add rotation logic here if needed!
 				modelMatrix = m_GlobalTransform * modelMatrix;
 
-				auto& indices = mrc->m_Mesh->GetIBO(); // Assumes Mesh has these getters
-				auto& vertices = mrc->m_Mesh->GetVAO();
+				auto& indices = mrc->m_Mesh->GetIndices();
+				auto& vertices = mrc->m_Mesh->GetVertices();
 
 				// Get the 3 vertices of the selected triangle
 				unsigned int i0 = indices[m_SelectedTriangleID * 3 + 0];
 				unsigned int i1 = indices[m_SelectedTriangleID * 3 + 1];
 				unsigned int i2 = indices[m_SelectedTriangleID * 3 + 2];
 
-				Vec3f v0_local = vertices[i0].position;
-				Vec3f v1_local = vertices[i1].position;
-				Vec3f v2_local = vertices[i2].position;
+				Vec3 v0_local = vertices[i0].position;
+				Vec3 v1_local = vertices[i1].position;
+				Vec3 v2_local = vertices[i2].position;
 
 				// Transform them to world space
-				Vec3f v0_world = modelMatrix.transformPoint(v0_local);
-				Vec3f v1_world = modelMatrix.transformPoint(v1_local);
-				Vec3f v2_world = modelMatrix.transformPoint(v2_local);
+				Vec3 v0_world = modelMatrix.transformPoint(v0_local);
+				Vec3 v1_world = modelMatrix.transformPoint(v1_local);
+				Vec3 v2_world = modelMatrix.transformPoint(v2_local);
 
 				// Find which vertex is closest to the click point
 				float d0 = (clickedWorldPos - v0_world).length();
