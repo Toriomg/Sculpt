@@ -4,7 +4,7 @@
 
 #include "Tests.h"
 
-struct Vertex {
+struct VertexStruct {
 	float Pos[3];
 	float Color[4];
 	float TexCoords[2];
@@ -36,7 +36,7 @@ namespace test {
 
 		Vec2 m_QuadPosition;
 
-		static std::array<Vertex, 4> CreateQuad(float x, float y, float textureID);
+		static std::array<VertexStruct, 4> CreateQuad(float x, float y, float textureID);
 	};
 
 };

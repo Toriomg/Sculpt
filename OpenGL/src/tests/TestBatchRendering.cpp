@@ -66,10 +66,10 @@ namespace test {
 
 	}
 
-	std::array<Vertex, 4> TestBatchRendering::CreateQuad(float x, float y, float textureID){
+	std::array<VertexStruct, 4> TestBatchRendering::CreateQuad(float x, float y, float textureID){
 		float size = 100.0f;
 
-		Vertex vertices[] = {
+		VertexStruct vertices[] = {
 			// Bottom left
 			{ {x, y, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, textureID },
 
@@ -91,9 +91,9 @@ namespace test {
 		auto q0 = this->CreateQuad(m_QuadPosition.x, m_QuadPosition.y, 0.0f);
 		auto q1 = this->CreateQuad(  50.0f, -50.0f, 1.0f);
 
-		Vertex vertices[8];
-		memcpy(vertices, q0.data(), q0.size() * sizeof(Vertex));
-		memcpy(vertices + q0.size(), q1.data(), q1.size() * sizeof(Vertex));
+		VertexStruct vertices[8];
+		memcpy(vertices, q0.data(), q0.size() * sizeof(VertexStruct));
+		memcpy(vertices + q0.size(), q1.data(), q1.size() * sizeof(VertexStruct));
 
 		m_VBO->SetData(vertices, sizeof(vertices), 0); // Allocate space for the vertex buffer
 

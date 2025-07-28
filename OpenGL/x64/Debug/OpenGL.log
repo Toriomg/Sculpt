@@ -1,14 +1,4 @@
 ﻿  Application.cpp
-  Camera.cpp
-  InputState.cpp
-  PickingTexture.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\Camera.cpp(4,19): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Editor\PickingTexture.cpp(44,18): error C2084: la función 'PickingTexture::~PickingTexture(void)' ya tiene un cuerpo
-      C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Editor\PickingTexture.h(12,3):
-      vea la definición anterior de “PickingTexture::~PickingTexture”
-  
-  inf_grid.cpp
-  main.cpp
   TestBatchRendering.cpp
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
   (compilando archivo de origen "src/tests/TestBatchRendering.cpp")
@@ -18,60 +8,11 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.3520
           Vea la referencia a la creación de una instancia de la función plantilla "std::unique_ptr<IndexBuffer,std::default_delete<IndexBuffer>> std::make_unique<IndexBuffer,unsigned int(&)[12],size_t,0>(unsigned int (&)[12],size_t &&)" que se está compilando
   
   TestClearColor.cpp
-  TestTexture2D.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4267: 'argumento': conversión de 'size_t' a 'unsigned int'; posible pérdida de datos
-  (compilando archivo de origen "src/tests/TestTexture2D.cpp")
-      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
-      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
-          C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\TestTexture2D.cpp(30,16):
-          Vea la referencia a la creación de una instancia de la función plantilla "std::unique_ptr<VertexBuffer,std::default_delete<VertexBuffer>> std::make_unique<VertexBuffer,float(&)[20],size_t,bool,0>(float (&)[20],size_t &&,bool &&)" que se está compilando
-  
-  test3.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(150,97): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(247,59): error C2676: '[' binario: 'const IndexBuffer' no define este operador o una conversión a un tipo aceptable para el operador predefinido
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(248,59): error C2676: '[' binario: 'const IndexBuffer' no define este operador o una conversión a un tipo aceptable para el operador predefinido
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(249,59): error C2676: '[' binario: 'const IndexBuffer' no define este operador o una conversión a un tipo aceptable para el operador predefinido
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(251,5): error C2065: 'Vec3f': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(251,11): error C2146: error de sintaxis: falta ';' delante del identificador 'v0_local'
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(251,11): error C2065: 'v0_local': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(251,33): error C2676: '[' binario: 'const VertexArray' no define este operador o una conversión a un tipo aceptable para el operador predefinido
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(252,5): error C2065: 'Vec3f': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(252,11): error C2146: error de sintaxis: falta ';' delante del identificador 'v1_local'
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(252,11): error C2065: 'v1_local': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(252,33): error C2676: '[' binario: 'const VertexArray' no define este operador o una conversión a un tipo aceptable para el operador predefinido
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(253,5): error C2065: 'Vec3f': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(253,11): error C2146: error de sintaxis: falta ';' delante del identificador 'v2_local'
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(253,11): error C2065: 'v2_local': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(253,33): error C2676: '[' binario: 'const VertexArray' no define este operador o una conversión a un tipo aceptable para el operador predefinido
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(256,5): error C2065: 'Vec3f': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(256,11): error C2146: error de sintaxis: falta ';' delante del identificador 'v0_world'
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(256,11): error C2065: 'v0_world': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(256,34): error C2039: "transformPoint": no es un miembro de "Matx4f"
-      C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Math\matx.h(12,7):
-      vea la declaración de 'Matx4f'
-  
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(256,49): error C2065: 'v0_local': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(257,5): error C2065: 'Vec3f': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(257,11): error C2146: error de sintaxis: falta ';' delante del identificador 'v1_world'
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(257,11): error C2065: 'v1_world': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(257,34): error C2039: "transformPoint": no es un miembro de "Matx4f"
-      C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Math\matx.h(12,7):
-      vea la declaración de 'Matx4f'
-  
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(257,49): error C2065: 'v1_local': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(258,5): error C2065: 'Vec3f': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(258,11): error C2146: error de sintaxis: falta ';' delante del identificador 'v2_world'
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(258,11): error C2065: 'v2_world': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(258,34): error C2039: "transformPoint": no es un miembro de "Matx4f"
-      C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Math\matx.h(12,7):
-      vea la declaración de 'Matx4f'
-  
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(258,49): error C2065: 'v2_local': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(261,35): error C2065: 'v0_world': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(262,35): error C2065: 'v1_world': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(263,35): error C2065: 'v2_world': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(268,52): error C2065: 'v0_world': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(269,57): error C2065: 'v1_world': identificador no declarado
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp(270,37): error C2065: 'v2_world': identificador no declarado
-  tests.cpp
+  VertexBuffer.cpp
   Generando código...
+glew32s.lib(glew.obj) : warning LNK4099: no se encontró PDB 'vc120.pdb' con 'glew32s.lib(glew.obj)' o en 'C:\Users\Hector\source\repos\OpenGL\x64\Debug\vc120.pdb'; se vinculará el objeto sin tener en cuenta información de depuración
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+LINK : warning LNK4098: la biblioteca predeterminada'LIBCMT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+  OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
+  "pwsh.exe" no se reconoce como un comando interno o externo,
+  programa o archivo por lotes ejecutable.
