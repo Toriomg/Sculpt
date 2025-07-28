@@ -35,11 +35,18 @@ out vec4 FragColor;
 uniform sampler2D u_Textures[2];
 uniform vec3 u_cameraPos;
 
+// Model selection uniforms
 uniform bool u_IsSelected;
 uniform vec4 u_HighlightColor;
+// Triangle selection uniforms
 uniform bool u_IsTriangleSelected;
 uniform int u_SelectedTriangleID;
 uniform vec4 u_TriangleHighlightColor;
+// Vertex selection uniforms
+uniform bool u_IsVertexSelected;
+uniform vec3 u_SelectedVertexWorldPos;
+uniform vec4 u_VertexHighlightColor;
+uniform float u_VertexHighlightRadius;
 
 
 vec3 lighting(){
@@ -98,10 +105,24 @@ void main()
         baseColor = mix(baseColor, u_TriangleHighlightColor.rgb, 0.85);
     }
 
-	vec3 light = lighting();
-
 	// Combine lighting and the object's color
-	vec3 result = light * baseColor;
+	vec3 result = lighting() * baseColor;
+
+	if (u_IsVertexSelected) {
+        // Calculate the distance from the current pixel's world position to the center of the selected vertex.
+        float dist = distance(v_WorldPos, u_SelectedVertexWorldPos);
+
+        // Smoothstep to create a soft-edged circle.
+        // It will be fully opaque inside (radius - 0.5) and fade to transparent at the radius edge.
+        float falloff = 0.5;
+        float highlightFactor = 1.0 - smoothstep(u_VertexHighlightRadius - falloff, u_VertexHighlightRadius, dist);
+        
+        // If the pixel is inside the circle's influence...
+        if (highlightFactor > 0.0) {
+            // Mix the final lit color with the vertex highlight color.
+            result = mix(result, u_VertexHighlightColor.rgb, highlightFactor);
+        }
+    }
 
 	// Final color output
 	FragColor = vec4(result, 1.0);

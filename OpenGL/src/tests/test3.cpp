@@ -210,25 +210,32 @@ namespace test {
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // Clear the color buffer
 
 		m_Grid.OnRender(m_Camera, m_CameraPersEnabled);
-
 		
-
-		int clicked_object_id = -1;
 		if (g_MouseState.leftButtonFirstPress) {
 			unsigned int mouseX = static_cast<unsigned int>(g_MouseState.lastX);
 			unsigned int mouseY = static_cast<unsigned int>(WINDW_SIZE_Y - g_MouseState.lastY);
 
 			std::cout << "Mouse clicked at: (" << mouseX << ", " << mouseY << ")" << std::endl;
 			PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(mouseX, mouseY);
-			m_SelectedObjectID = Pixel.ObjectID;
-			m_SelectedTriangleID = Pixel.PrimID;
-			m_IsVertexSelected = false; // Reset vertex selection
-			m_pSelectedObject = nullptr;
 
-			for (auto& go : m_Scene.GetAllGameObjects()) {
-				if (go->GetPickingID() == m_SelectedObjectID) {
-					m_pSelectedObject = go.get();
-					break;
+			if (Pixel.ObjectID == 0) {
+				m_pSelectedObject = nullptr;
+				m_SelectedObjectID = 0;
+				m_SelectedTriangleID = -1;
+				m_IsVertexSelected = false;
+				std::cout << "No object clicked. Clearing selection." << std::endl;
+			}
+			else {
+				m_SelectedObjectID = Pixel.ObjectID;
+				m_SelectedTriangleID = Pixel.PrimID;
+				m_IsVertexSelected = false; // Reset until we calculate the vertex
+				m_pSelectedObject = nullptr; // Reset until we find the object
+
+				for (auto& go : m_Scene.GetAllGameObjects()) {
+					if (go->GetPickingID() == m_SelectedObjectID) {
+						m_pSelectedObject = go.get();
+						break;
+					}
 				}
 			}
 
@@ -292,7 +299,9 @@ namespace test {
 
 				material->Bind();
 
-				if (go->GetPickingID() == m_SelectedObjectID) {
+				material->m_Shader->SetUniform1f("u_VertexHighlightRadius", m_VertexHighlightRadius);
+
+				if (go.get() == m_pSelectedObject) {
 					// The object is selected
 					material->m_Shader->SetUniform1i("u_IsSelected", 1);
 					material->m_Shader->SetUniform4f("u_HighlightColor", 0.0f, 0.0f, 0.55f, 1.0f); // Green
@@ -300,11 +309,18 @@ namespace test {
 					material->m_Shader->SetUniform1i("u_IsTriangleSelected", 1);
 					material->m_Shader->SetUniform1i("u_SelectedTriangleID", m_SelectedTriangleID);
 					material->m_Shader->SetUniform4f("u_TriangleHighlightColor", 0.7f, 0.0f, 0.0f, 1.0f); // Yellow for triangle
+					if (m_IsVertexSelected) {
+						material->m_Shader->SetUniform1i("u_IsVertexSelected", 1);
+						material->m_Shader->SetUniform3f("u_SelectedVertexWorldPos",
+							m_SelectedVertexWorldPos.x, m_SelectedVertexWorldPos.y, m_SelectedVertexWorldPos.z);
+						material->m_Shader->SetUniform4f("u_VertexHighlightColor", 1.0f, 0.0f, 1.0f, 1.0f); // Magenta
+					}
 				}
 				else {
 					// The object is not selected
 					material->m_Shader->SetUniform1i("u_IsSelected", 0); // false
 					material->m_Shader->SetUniform1i("u_IsTriangleSelected", 0);
+					material->m_Shader->SetUniform1i("u_IsVertexSelected", 0);
 				}
 
 				Matx4f model;
@@ -348,6 +364,10 @@ namespace test {
 		ImGui::DragFloat("Model Rotation", &m_Rotation, 0.5f);
 		ImGui::DragFloat3("Model Scaling", &m_Scaling.x, 0.01f);
 		ImGui::DragFloat("Scalar Multiplier", &m_scalar, 0.01f);
+
+		ImGui::Separator();
+		ImGui::Text("Highlight Controls");
+		ImGui::DragFloat("Vertex Highlight Radius", &m_VertexHighlightRadius, 0.05f, 0.1f, 10.0f);
 
 		ImGui::Separator();
 		ImGui::Text("Performance");
