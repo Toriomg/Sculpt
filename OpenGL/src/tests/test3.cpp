@@ -244,7 +244,6 @@ namespace test {
 				else {
 					modelMatrix = Matx4f::translation(m_pSelectedObject->transform.position) * Matx4f::scaling(m_pSelectedObject->transform.scale);
 				}
-				// NOTE: Add rotation logic here if needed!
 				modelMatrix = m_GlobalTransform * modelMatrix;
 
 				auto& indices = mrc->m_Mesh->GetIndices();
@@ -255,9 +254,9 @@ namespace test {
 				unsigned int i1 = indices[m_SelectedTriangleID * 3 + 1];
 				unsigned int i2 = indices[m_SelectedTriangleID * 3 + 2];
 
-				Vec3 v0_local = vertices[i0].position;
-				Vec3 v1_local = vertices[i1].position;
-				Vec3 v2_local = vertices[i2].position;
+				Vec3 v0_local = vertices[i0].pos;
+				Vec3 v1_local = vertices[i1].pos;
+				Vec3 v2_local = vertices[i2].pos;
 
 				// Transform them to world space
 				Vec3 v0_world = modelMatrix.transformPoint(v0_local);

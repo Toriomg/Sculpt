@@ -1,5 +1,5 @@
 #pragma once
-#include "vec3.h"
+#include "vec4.h"
 #include <GL/glew.h>
 #include <cmath>
 
@@ -31,12 +31,14 @@ public:
         m[3][0] = m30; m[3][1] = m31; m[3][2] = m32; m[3][3] = m33;
     }
 
-    static Matx4f identity() {
-        return Matx4f(1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f);
-    }
+    Vec3 transformPoint(Vec3 point) const {
+		Vec4 result;
+		result = (*this) * Vec4(point.x, point.y, point.z, 1.0f);
+		if (result.w == 0.0f) return Vec3(0.0f, 0.0f, 0.0f);
+
+        float invW = 1.0f / result.w;
+        return Vec3(result.x * invW, result.y * invW, result.z * invW);
+	}
 
     Matx4f operator*(const Matx4f& other) const {
         Matx4f result;
@@ -59,6 +61,22 @@ public:
             }
         }
         return result;
+    }
+
+    Vec4 operator*(Vec4 vec) const{
+        return Vec4(
+            m[0][0] * vec.x + m[0][1] * vec.y + m[0][2] * vec.z + m[0][3] * vec.w,
+            m[1][0] * vec.x + m[1][1] * vec.y + m[1][2] * vec.z + m[1][3] * vec.w,
+            m[2][0] * vec.x + m[2][1] * vec.y + m[2][2] * vec.z + m[2][3] * vec.w,
+            m[3][0] * vec.x + m[3][1] * vec.y + m[3][2] * vec.z + m[3][3] * vec.w
+        );
+	}
+
+    static Matx4f identity() {
+        return Matx4f(1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f);
     }
 
     static Matx4f translation(const Vec3& vec) {

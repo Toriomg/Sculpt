@@ -9,7 +9,7 @@
 class PickingTexture {
 public:
 	PickingTexture(int WindowWidth, int WindowHeight);
-	~PickingTexture() {};
+	~PickingTexture();
 
 	void EnableWriting();
 	void DisableWriting();
