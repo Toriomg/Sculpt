@@ -195,85 +195,108 @@ namespace test {
 		m_PickingTexture.DisableWriting();
 	}
 
+	void test3::ProcessPicking() {
+		if (!g_MouseState.leftButtonFirstPress)
+			return;
+
+		unsigned int mouseX = static_cast<unsigned int>(g_MouseState.lastX);
+		unsigned int mouseY = static_cast<unsigned int>(WINDW_SIZE_Y - g_MouseState.lastY);
+
+		std::cout << "Mouse clicked at: (" << mouseX << ", " << mouseY << ")" << std::endl;
+		PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(mouseX, mouseY);
+
+		if (Pixel.ObjectID == 0) {
+			m_pSelectedObject = nullptr;
+			m_SelectedObjectID = 0;
+			m_SelectedTriangleID = -1;
+			m_IsVertexSelected = false;
+			std::cout << "No object clicked. Clearing selection." << std::endl;
+			return;
+		}
+		
+		m_SelectedObjectID = Pixel.ObjectID;
+		m_SelectedTriangleID = Pixel.PrimID;
+		m_IsVertexSelected = false; // Reset until we calculate the vertex
+		m_pSelectedObject = nullptr; // Reset until we find the object
+
+		for (auto& go : m_Scene.GetAllGameObjects()) {
+			if (go->GetPickingID() == m_SelectedObjectID) {
+				m_pSelectedObject = go.get();
+				break;
+			}
+		}
+		
+		Vec3 clickedWorldPos = m_PickingTexture.ReadWorldPosition(mouseX, mouseY);
+
+		// Get mesh and transform
+		MeshRendererComponent* mrc = m_pSelectedObject->GetComponent<MeshRendererComponent>();
+
+		Matx4f modelMatrix = m_GlobalTransform * m_pSelectedObject->GetTransformMatrix();
+
+		auto& indices = mrc->m_Mesh->GetIndices();
+		auto& vertices = mrc->m_Mesh->GetVertices();
+
+		// Get the 3 vertices of the selected triangle
+		unsigned int i0 = indices[m_SelectedTriangleID * 3 + 0];
+		unsigned int i1 = indices[m_SelectedTriangleID * 3 + 1];
+		unsigned int i2 = indices[m_SelectedTriangleID * 3 + 2];
+
+		Vec3 v0_local = vertices[i0].pos;
+		Vec3 v1_local = vertices[i1].pos;
+		Vec3 v2_local = vertices[i2].pos;
+
+		// Transform them to world space
+		Vec3 v0_world = modelMatrix.transformPoint(v0_local);
+		Vec3 v1_world = modelMatrix.transformPoint(v1_local);
+		Vec3 v2_world = modelMatrix.transformPoint(v2_local);
+
+		// Find which vertex is closest to the click point
+		float d0 = (clickedWorldPos - v0_world).length();
+		float d1 = (clickedWorldPos - v1_world).length();
+		float d2 = (clickedWorldPos - v2_world).length();
+		
+		float min_dist = std::min({ d0, d1, d2 });
+
+		m_IsVertexSelected = true;
+		if (min_dist == d0) m_SelectedVertexWorldPos = v0_world;
+		else if (min_dist == d1) m_SelectedVertexWorldPos = v1_world;
+		else m_SelectedVertexWorldPos = v2_world;
+
+		std::cout << "Selected Vertex Pos: (" << m_SelectedVertexWorldPos.x << ", "
+			<< m_SelectedVertexWorldPos.y << ", " << m_SelectedVertexWorldPos.z << ")\n";
+	}
+
+	void SetHighlightUniforms(const std::shared_ptr<Shader>& shader, bool isObject, bool isTriangle, bool isVertex,
+		int triangleID, const Vec3& vertexPos, float vertexRadius)
+	{
+		shader->SetUniform1i("u_IsSelected", isObject);
+		shader->SetUniform1i("u_IsTriangleSelected", isTriangle);
+		shader->SetUniform1i("u_IsVertexSelected", isVertex);
+
+		if (isObject) {
+			shader->SetUniform4f("u_HighlightColor", 0.0f, 0.0f, 0.55f, 1.0f);
+		}
+		if (isTriangle) {
+			shader->SetUniform1i("u_SelectedTriangleID", triangleID);
+			shader->SetUniform4f("u_TriangleHighlightColor", 0.7f, 0.0f, 0.0f, 1.0f);
+		}
+		if (isVertex) {
+			shader->SetUniform3f("u_SelectedVertexWorldPos", vertexPos.x, vertexPos.y, vertexPos.z);
+			shader->SetUniform4f("u_VertexHighlightColor", 1.0f, 0.0f, 1.0f, 1.0f);
+			shader->SetUniform1f("u_VertexHighlightRadius", vertexRadius);
+		}
+	}
+
 	void test3::OnRender() {
 		
 		this->OnPick(); // Call picking before rendering
+		this->ProcessPicking();
 
 		GLCall(glClearColor(0.7f, 0.5f, 0.5f, 1.0f)); // Set the clear color
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // Clear the color buffer
 
 		m_Grid.OnRender(m_Camera, m_CameraPersEnabled);
 		
-		if (g_MouseState.leftButtonFirstPress) {
-			unsigned int mouseX = static_cast<unsigned int>(g_MouseState.lastX);
-			unsigned int mouseY = static_cast<unsigned int>(WINDW_SIZE_Y - g_MouseState.lastY);
-
-			std::cout << "Mouse clicked at: (" << mouseX << ", " << mouseY << ")" << std::endl;
-			PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(mouseX, mouseY);
-
-			if (Pixel.ObjectID == 0) {
-				m_pSelectedObject = nullptr;
-				m_SelectedObjectID = 0;
-				m_SelectedTriangleID = -1;
-				m_IsVertexSelected = false;
-				std::cout << "No object clicked. Clearing selection." << std::endl;
-			}
-			else {
-				m_SelectedObjectID = Pixel.ObjectID;
-				m_SelectedTriangleID = Pixel.PrimID;
-				m_IsVertexSelected = false; // Reset until we calculate the vertex
-				m_pSelectedObject = nullptr; // Reset until we find the object
-
-				for (auto& go : m_Scene.GetAllGameObjects()) {
-					if (go->GetPickingID() == m_SelectedObjectID) {
-						m_pSelectedObject = go.get();
-						break;
-					}
-				}
-			}
-
-			if (m_pSelectedObject) {
-				Vec3 clickedWorldPos = m_PickingTexture.ReadWorldPosition(mouseX, mouseY);
-
-				// Get mesh and transform
-				MeshRendererComponent* mrc = m_pSelectedObject->GetComponent<MeshRendererComponent>();
-
-				Matx4f modelMatrix = m_GlobalTransform * m_pSelectedObject->GetTransformMatrix();
-
-				auto& indices = mrc->m_Mesh->GetIndices();
-				auto& vertices = mrc->m_Mesh->GetVertices();
-
-				// Get the 3 vertices of the selected triangle
-				unsigned int i0 = indices[m_SelectedTriangleID * 3 + 0];
-				unsigned int i1 = indices[m_SelectedTriangleID * 3 + 1];
-				unsigned int i2 = indices[m_SelectedTriangleID * 3 + 2];
-
-				Vec3 v0_local = vertices[i0].pos;
-				Vec3 v1_local = vertices[i1].pos;
-				Vec3 v2_local = vertices[i2].pos;
-
-				// Transform them to world space
-				Vec3 v0_world = modelMatrix.transformPoint(v0_local);
-				Vec3 v1_world = modelMatrix.transformPoint(v1_local);
-				Vec3 v2_world = modelMatrix.transformPoint(v2_local);
-
-				// Find which vertex is closest to the click point
-				float d0 = (clickedWorldPos - v0_world).length();
-				float d1 = (clickedWorldPos - v1_world).length();
-				float d2 = (clickedWorldPos - v2_world).length();
-
-				float min_dist = std::min({ d0, d1, d2 });
-
-				m_IsVertexSelected = true;
-				if (min_dist == d0) m_SelectedVertexWorldPos = v0_world;
-				else if (min_dist == d1) m_SelectedVertexWorldPos = v1_world;
-				else m_SelectedVertexWorldPos = v2_world;
-
-				std::cout << "Selected Vertex Pos: (" << m_SelectedVertexWorldPos.x << ", "
-					<< m_SelectedVertexWorldPos.y << ", " << m_SelectedVertexWorldPos.z << ")\n";
-			}
-		}
-
 		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
 			if (!go->m_IsVisible) continue;
 
@@ -288,25 +311,10 @@ namespace test {
 				material->m_Shader->SetUniform1f("u_VertexHighlightRadius", m_VertexHighlightRadius);
 
 				if (go.get() == m_pSelectedObject) {
-					// The object is selected
-					material->m_Shader->SetUniform1i("u_IsSelected", 1);
-					material->m_Shader->SetUniform4f("u_HighlightColor", 0.0f, 0.0f, 0.55f, 1.0f); // Green
-					// Face selection
-					material->m_Shader->SetUniform1i("u_IsTriangleSelected", 1);
-					material->m_Shader->SetUniform1i("u_SelectedTriangleID", m_SelectedTriangleID);
-					material->m_Shader->SetUniform4f("u_TriangleHighlightColor", 0.7f, 0.0f, 0.0f, 1.0f); // Yellow for triangle
-					if (m_IsVertexSelected) {
-						material->m_Shader->SetUniform1i("u_IsVertexSelected", 1);
-						material->m_Shader->SetUniform3f("u_SelectedVertexWorldPos",
-							m_SelectedVertexWorldPos.x, m_SelectedVertexWorldPos.y, m_SelectedVertexWorldPos.z);
-						material->m_Shader->SetUniform4f("u_VertexHighlightColor", 1.0f, 0.0f, 1.0f, 1.0f); // Magenta
-					}
+					SetHighlightUniforms(material->m_Shader, true, true, m_IsVertexSelected, m_SelectedTriangleID, m_SelectedVertexWorldPos, m_VertexHighlightRadius);
 				}
 				else {
-					// The object is not selected
-					material->m_Shader->SetUniform1i("u_IsSelected", 0); // false
-					material->m_Shader->SetUniform1i("u_IsTriangleSelected", 0);
-					material->m_Shader->SetUniform1i("u_IsVertexSelected", 0);
+					SetHighlightUniforms(material->m_Shader, false, false, false, -1, {}, 0.0f);
 				}
 
 				Matx4f model;
@@ -339,11 +347,14 @@ namespace test {
 	void test3::OnImGuiRender() {
 		m_Camera.OnImGuiRender(m_CameraPersEnabled);
 
-		ImGui::Text("Scene Object Controls");
-		// These controls are specific to this test scene
-		ImGui::DragFloat3("Cube 1 Position", &m_Cube1->transform.position.x, 1.0f);
-		ImGui::DragFloat3("Cube 2 Position", &m_Cube2->transform.position.x, 1.0f);
+		if (m_pSelectedObject) {
+			// Display the name of the selected object
+			ImGui::Text("Name: %s", m_pSelectedObject->name.c_str());
 
+			// Add controls for its transform
+			ImGui::DragFloat3("Position", &m_pSelectedObject->transform.position.x, 0.1f);
+			ImGui::DragFloat3("Scale", &m_pSelectedObject->transform.scale.x, 0.01f);
+		}
 		ImGui::Separator();
 		ImGui::Text("Global Transform Controls");
 		ImGui::DragFloat3("Model Translation", &m_Translation.x, 0.1f);

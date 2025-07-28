@@ -27,7 +27,6 @@ namespace test {
 
 		void OnUpdate(float deltaTime) override;
 		void OnRender() override;
-		void OnPick();
 		void OnImGuiRender() override;
 		void OnInput(GLFWwindow* window, float deltaTime) override;
 
@@ -73,5 +72,7 @@ namespace test {
 		float m_VertexHighlightRadius = 1.5f;
 
 		void CalculeMVP();
+		void OnPick();
+		void ProcessPicking();
 	};
 };
