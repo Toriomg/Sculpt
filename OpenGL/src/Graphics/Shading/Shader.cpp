@@ -93,7 +93,7 @@ unsigned int Shader::CompileShader(const std::string& source, unsigned int type)
         glGetShaderInfoLog(id, length, &length, message); // Get the error message
         std::cerr << "Failed to compile" 
             << (type == GL_VERTEX_SHADER ? "vertex" : "fragment")
-            << "shader!" << std::endl; // Print an error message
+            << "shader! From the file: " << m_FilePath << std::endl; // Print an error message
         std::cerr << message << std::endl; // Print the error message
         glDeleteShader(id); // Delete the shader object
 		return 0; // Return -1 to indicate failure
