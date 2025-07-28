@@ -334,7 +334,7 @@ namespace test {
 
 				// 3. Set the MVP uniform (the material already bound the shader)
 				material->m_Shader->SetUniformMat4f("u_MVP", mvp);
-				material->m_Shader->SetUniformMat4f("u_Model", model);
+				material->m_Shader->SetUniformMat4f("u_Model", m_GlobalTransform * model);
 				material->m_Shader->SetUniform3f("u_cameraPos", m_Camera.m_Position.x, m_Camera.m_Position.y, m_Camera.m_Position.z);
 
 				// 4. Draw the mesh
