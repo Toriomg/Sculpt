@@ -3,11 +3,7 @@
 
 
 #include "test3.h"
-#include "../Core/InputManager.h"
 
-#include "imgui/imgui.h"
-#include "../Graphics/Loaders/ModelLoader.h"
-#include "../Graphics/Geometry/Vertex.h"
 
 extern struct MouseState g_MouseState;
 

@@ -4,7 +4,6 @@
 #include "../Graphics/Shading/Shader.h"
 #include "../Graphics/Rendering/RenderCommand.h"
 #include "../Scene/Components/MeshRendererComponent.h"
-#include "../Graphics/Geometry/Mesh.h"
 
 class SelectionSystem{
 public:

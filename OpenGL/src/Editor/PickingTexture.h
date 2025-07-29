@@ -3,7 +3,6 @@
 #include <GL/glew.h>
 #include <iostream>
 
-#include "../Graphics/Shading/Texture.h"
 #include "../Math/maths.h"
 
 class PickingTexture {
