@@ -1,7 +1,7 @@
 #include "Material.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "../Renderer.h" // For GLCall
+#include "../../Core/Core.h"
 
 Material::Material(const std::shared_ptr<Shader>& shader)
     : m_Shader(shader)

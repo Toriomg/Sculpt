@@ -162,53 +162,19 @@ namespace test {
 	
 
 	void test3::OnRender() {
-		
-		this->OnPick(); // Call picking before rendering
-		this->ProcessPicking();
-
-		GLCall(glClearColor(0.7f, 0.5f, 0.5f, 1.0f)); // Set the clear color
-		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // Clear the color buffer
-
-		m_Grid.OnRender(m_Camera, m_CameraPersEnabled);
-		
-		for (auto& go : m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
-			if (!go->m_IsVisible) continue;
-
-			// Get the required components
-			MeshRendererComponent* meshRenderer = go->GetComponent<MeshRendererComponent>();
-			if (meshRenderer) {
-				auto& material = meshRenderer->m_Material;
-				auto& mesh = meshRenderer->m_Mesh;
-
-				material->Bind();
-
-				material->m_Shader->SetUniform1f("u_VertexHighlightRadius", m_VertexHighlightRadius);
-
-				if (go.get() == m_pSelectedObject) {
-					SetHighlightUniforms(material->m_Shader, true, true, m_IsVertexSelected, m_SelectedTriangleID, m_SelectedVertexWorldPos, m_VertexHighlightRadius);
-				}
-				else {
-					SetHighlightUniforms(material->m_Shader, false, false, false, -1, {}, 0.0f);
-				}
-
-				Matx4f model;
-				// TODO : FIX MODEL ROTATION
-				if (go->name == "Monkey") {
-					 model = Matx4f::translation(go->transform.position) * Matx4f::rotationY(M_PI) * Matx4f::scaling(go->transform.scale);
-				} else { 
-					model = Matx4f::translation(go->transform.position) * Matx4f::scaling(go->transform.scale); 
-				}
-				Matx4f mvp = m_MVP * model;
-
-				// 3. Set the MVP uniform (the material already bound the shader)
-				material->m_Shader->SetUniformMat4f("u_MVP", mvp);
-				material->m_Shader->SetUniformMat4f("u_Model", m_GlobalTransform * model);
-				material->m_Shader->SetUniform3f("u_cameraPos", m_Camera.m_Position.x, m_Camera.m_Position.y, m_Camera.m_Position.z);
-
-				// 4. Draw the mesh
-				m_Renderer.Draw(mesh->GetVAO(), mesh->GetIBO(), *material->m_Shader);
-			}
+		m_SelectionSystem.UpdatePickingPass(m_Scene, m_Camera, m_GlobalTransform, m_MVP); // Update the picking system before rendering
+		if (g_MouseState.rightButtonFirstPress){
+			unsigned int mouseX = static_cast<unsigned int>(g_MouseState.lastX);
+			unsigned int mouseY = static_cast<unsigned int>(WINDW_SIZE_Y - g_MouseState.lastY);
+			m_SelectionSystem.ProcessSelectionClick(m_Scene, m_GlobalTransform, mouseX, mouseY, m_SelectionContext);
 		}
+
+		RenderContext RContext;
+		RContext.m_Camera = &m_Camera;
+		RContext.m_Scene = &m_Scene;
+		RContext.m_SelectionContext = &m_SelectionContext;
+		
+		m_Renderer.RenderScene(&RContext, m_GlobalTransform, m_MVP, m_Grid); // Render the scene using the renderer
 	}
 
 	void test3::OnInput(GLFWwindow* window, float deltaTime) {
@@ -221,13 +187,14 @@ namespace test {
 	void test3::OnImGuiRender() {
 		m_Camera.OnImGuiRender(m_CameraPersEnabled);
 
-		if (m_pSelectedObject) {
+		GameObject* SelectedObject = m_SelectionContext.pSelectedObject;
+		if (SelectedObject) {
 			// Display the name of the selected object
-			ImGui::Text("Name: %s", m_pSelectedObject->name.c_str());
+			ImGui::Text("Name: %s", SelectedObject->name.c_str());
 
 			// Add controls for its transform
-			ImGui::DragFloat3("Position", &m_pSelectedObject->transform.position.x, 0.1f);
-			ImGui::DragFloat3("Scale", &m_pSelectedObject->transform.scale.x, 0.01f);
+			ImGui::DragFloat3("Position", &SelectedObject->transform.position.x, 0.1f);
+			ImGui::DragFloat3("Scale", &SelectedObject->transform.scale.x, 0.01f);
 		}
 		ImGui::Separator();
 		ImGui::Text("Global Transform Controls");

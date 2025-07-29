@@ -55,7 +55,7 @@ namespace test {
 		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // Set the clear color
 		GLCall(glClear(GL_COLOR_BUFFER_BIT)); // Clear the color buffer
 
-		Renderer renderer; // Create a Renderer object to handle drawing
+		RenderCommand renderer; // Create a Renderer object to handle drawing
 
 		m_Texture->Bind(); // Bind the texture before drawing
 		{

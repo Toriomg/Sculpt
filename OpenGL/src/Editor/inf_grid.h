@@ -11,7 +11,7 @@ public:
     virtual ~InfGrid();
 
     // The core rendering logic for the grid.
-    void OnRender(const Camera& camera, bool CameraPersEnabled) const;
+    void Draw(const Matx4f& view, const Matx4f& projection, const Vec3& cameraPos) const;
 
 private:
     // The grid owns its own specific shader.

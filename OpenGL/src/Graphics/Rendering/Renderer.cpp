@@ -21,12 +21,17 @@ void SetHighlightUniforms(const std::shared_ptr<Shader>& shader, bool isObject, 
 	}
 }
 
-void Renderer::RenderScene(RenderContext* context, const Matx4f& globalTransform, const Matx4f& MVP) {
+void Renderer::RenderScene(RenderContext* context, const Matx4f& globalTransform, const Matx4f& MVP, const InfGrid& grid) {
 	GLCall(glClearColor(0.7f, 0.5f, 0.5f, 1.0f)); // Set the clear color
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // Clear the color buffer
 
+	const auto& camera = *context->m_Camera;
+	Matx4f view = camera.GetViewMatrix();
+	Matx4f projection = camera.GetProjectionMatrix(true);
 
-	for (auto& go : context->m_Scene.GetAllGameObjects()) { // Assuming Scene has a method to get all objects
+
+
+	for (auto& go : context->m_Scene->GetAllGameObjects()) { // Assuming Scene has a method to get all objects
 		if (!go->m_IsVisible) continue;
 
 		// Get the required components
@@ -39,10 +44,10 @@ void Renderer::RenderScene(RenderContext* context, const Matx4f& globalTransform
 
 			material->m_Shader->SetUniform1f("u_VertexHighlightRadius", m_VertexHighlightRadius);
 
-			if (go.get() == context->m_SelectionContext.pSelectedObject) {
-				SetHighlightUniforms(material->m_Shader, true, true, context->m_SelectionContext.IsVertexSelected,
-					context->m_SelectionContext.SelectedTriangleID,
-					context->m_SelectionContext.SelectedVertexWorldPos, m_VertexHighlightRadius);
+			if (go.get() == context->m_SelectionContext->pSelectedObject) {
+				SetHighlightUniforms(material->m_Shader, true, true, context->m_SelectionContext->IsVertexSelected,
+					context->m_SelectionContext->SelectedTriangleID,
+					context->m_SelectionContext->SelectedVertexWorldPos, m_VertexHighlightRadius);
 			}
 			else {
 				SetHighlightUniforms(material->m_Shader, false, false, false, -1, {}, 0.0f);
@@ -55,12 +60,25 @@ void Renderer::RenderScene(RenderContext* context, const Matx4f& globalTransform
 			material->m_Shader->SetUniformMat4f("u_MVP", mvp);
 			material->m_Shader->SetUniformMat4f("u_Model", globalTransform * go->GetTransformMatrix());
 			material->m_Shader->SetUniform3f("u_cameraPos", 
-				context->m_Camera.m_Position.x,
-				context->m_Camera.m_Position.y,
-				context->m_Camera.m_Position.z);
+				context->m_Camera->m_Position.x,
+				context->m_Camera->m_Position.y,
+				context->m_Camera->m_Position.z);
 
 			// 4. Draw the mesh
 			m_RendererCommand.Draw(mesh->GetVAO(), mesh->GetIBO(), *material->m_Shader);
 		}
+	GLCall(glDisable(GL_DEPTH_TEST)); // Grid shouldn't hide objects
+	GLCall(glEnable(GL_BLEND));
+	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+	// Call the grid's simple Draw method
+	grid.Draw(view, projection, camera.m_Position);
+
+	// 4. RESTORE STATE
+	// Always clean up state for the next frame or the next renderer (e.g., ImGui).
+	GLCall(glEnable(GL_DEPTH_TEST));
+	GLCall(glDisable(GL_BLEND));
 	}
+
+
 }

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../Graphics/Renderer.h"
+#include "../Graphics/Rendering/RenderCommand.h"
 #include "../tests/tests.h" // For test::Test and test::TestMenu
 #include "../Editor/EditorUI.h" // For EditorUI
 
@@ -28,7 +28,7 @@ private:
     std::unique_ptr<EditorUI> m_EditorUI;
     unsigned int m_Width, m_Height;
 
-    Renderer m_Renderer;
+    RenderCommand m_Renderer;
 
     // Test framework members
     test::Test* m_CurrentTest;

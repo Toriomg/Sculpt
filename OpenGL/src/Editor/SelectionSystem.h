@@ -11,7 +11,7 @@ public:
 	SelectionSystem(int WindowWidth, int WindowHeight);
 
 	void UpdatePickingPass(const Scene& scene, const Camera& camera, const Matx4f& globalTransform, const Matx4f& MVP);
-	void ProcessSelectionClick(const Scene& scene, const Matx4f& globalTransform, int mouseX, int mouseY, float windowHeight, SelectionContext& context);
+	void ProcessSelectionClick(const Scene& scene, const Matx4f& globalTransform, int mouseX, int mouseY, SelectionContext& context);
 private:
 	PickingTexture m_PickingTexture;
 	Shader m_PickingShader;

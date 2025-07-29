@@ -1,5 +1,5 @@
 #pragma once
-
+#include "../../Core/Core.h"
 class VertexBuffer {
 private:
 	unsigned int m_RendererID;
