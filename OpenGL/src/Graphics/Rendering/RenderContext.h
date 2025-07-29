@@ -4,7 +4,7 @@
 #include "SelectionContext.h"
 
 struct RenderContext {
-	Camera& m_Camera;
-	Scene& m_Scene;
-	SelectionContext& m_SelectionContext;
+	Camera* m_Camera;
+	Scene* m_Scene;
+	SelectionContext* m_SelectionContext;
 };

@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-#include "../Renderer.h"
+#include "../../Core/Core.h"
 #include "Shader.h"
 
 Shader::Shader(const std::string& filepath) 

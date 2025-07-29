@@ -1,6 +1,6 @@
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
-#include "../Renderer.h"
+#include "../../Core/Core.h"
 
 VertexArray::VertexArray() {
 	GLCall(glGenVertexArrays(1, &m_RendererID)); // Generate a Vertex Array Object (VAO)

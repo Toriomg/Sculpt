@@ -42,12 +42,8 @@ void SelectionSystem::UpdatePickingPass(const Scene& scene, const Camera& camera
 
 	m_PickingTexture.DisableWriting();
 }
-void SelectionSystem::ProcessSelectionClick(const Scene& scene, const Matx4f& globalTransform, int mouseX, int mouseY, float windowHeight, SelectionContext& context) {
-	if (!g_MouseState.rightButtonFirstPress)
-		return;
-
-	unsigned int mouseX = static_cast<unsigned int>(g_MouseState.lastX);
-	unsigned int mouseY = static_cast<unsigned int>(windowHeight - g_MouseState.lastY);
+void SelectionSystem::ProcessSelectionClick(const Scene& scene, const Matx4f& globalTransform, int mouseX, int mouseY, SelectionContext& context) {
+	
 
 	std::cout << "Mouse clicked at: (" << mouseX << ", " << mouseY << ")" << std::endl;
 	PickingTexture::PixelInfo Pixel = m_PickingTexture.ReadPixel(mouseX, mouseY);

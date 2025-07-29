@@ -1,11 +1,14 @@
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\Application.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Application.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\Core.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Core.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\Time.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Time.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Editor\EditorUI.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\EditorUI.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Editor\PickingTexture.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\PickingTexture.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Editor\SelectionSystem.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\SelectionSystem.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Buffers\IndexBuffer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\IndexBuffer.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\Camera.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Camera.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Core\InputState.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\InputState.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Loaders\ModelLoader.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\ModelLoader.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Rendering\Renderer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Renderer.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Shading\Material.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Material.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Geometry\Mesh.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Mesh.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\main.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\main.obj
@@ -13,7 +16,7 @@ C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Math\maths.cpp;C:\Users\Hector\so
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Editor\inf_grid.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\inf_grid.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Scene\Components\MeshRendererComponent.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\MeshRendererComponent.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Scene\GameObject.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\GameObject.obj
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Renderer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Renderer.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Rendering\RenderCommand.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\RenderCommand.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Graphics\Shading\Shader.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Shader.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Scene\Scene.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Scene.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\tests\test3.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\test3.obj
