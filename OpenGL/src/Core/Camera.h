@@ -28,16 +28,17 @@ public:
 	bool m_OnLowerEdge = false;
 	bool m_OnLeftEdge = false;
 	bool m_OnRightEdge = false;
-	Camera(float windowWidth, float windowHeight);
+	bool* m_CameraPersEnabled;
+	Camera(float windowWidth, float windowHeight, bool* m_CameraPersEnabled);
 
 	void SetPosition(const Vec3& position);
 	void SetSpeed(float speed);
 	void OnUpdate(float deltaTime);
 	void OnInput(GLFWwindow* window, float deltaTime);
 	void OnMouse(float xOffset, float yOffset, float deltaTime);
-	void OnImGuiRender(bool& CameraPersEnabled);
+	void OnImGuiRender();
 
 	Matx4f GetViewMatrix() const;
-	Matx4f GetProjectionMatrix(bool CameraPersEnabled) const;
+	Matx4f GetProjectionMatrix() const;
 private:
 };

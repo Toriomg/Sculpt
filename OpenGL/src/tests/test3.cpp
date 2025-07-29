@@ -19,7 +19,7 @@ namespace test {
 		:m_Translation(0.0f, 0.0f, 0.0f),
 		m_Rotation(0.0f),
 		m_Scaling(1.0f, 1.0f, 1.0f),
-		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y),
+		m_Camera(WINDW_SIZE_X, WINDW_SIZE_Y, &m_CameraPersEnabled),
 		m_Grid(),
 		m_CameraPersEnabled(true),
 		m_SelectionSystem(static_cast<int>(WINDW_SIZE_X), static_cast<int>(WINDW_SIZE_Y))
@@ -145,7 +145,7 @@ namespace test {
 
 	void test3::CalculeMVP() {
 		Matx4f view = m_Camera.GetViewMatrix();
-		Matx4f projection = m_Camera.GetProjectionMatrix(m_CameraPersEnabled);
+		Matx4f projection = m_Camera.GetProjectionMatrix();
 		m_GlobalTransform = Matx4f::translation(m_Translation) * Matx4f::rotationY(m_Rotation / 180.0 * M_PI) * Matx4f::scaling(m_Scaling * m_scalar);
 		
 		m_MVP = projection * view * m_GlobalTransform;
@@ -185,7 +185,7 @@ namespace test {
 	}
 
 	void test3::OnImGuiRender() {
-		m_Camera.OnImGuiRender(m_CameraPersEnabled);
+		m_Camera.OnImGuiRender();
 
 		GameObject* SelectedObject = m_SelectionContext.pSelectedObject;
 		if (SelectedObject) {

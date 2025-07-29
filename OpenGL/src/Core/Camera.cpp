@@ -4,7 +4,7 @@
 static int MARGIN = 20.0f; // Margen para detectar los bordes de la ventana
 static float EDGE_SPEED = 40.0f; // Paso de movimiento en los bordes
 
-Camera::Camera(float windowWidth, float windowHeight)
+Camera::Camera(float windowWidth, float windowHeight, bool* CameraPersEnabled)
     : m_Position(0.0f, 10.0f, -100.0f),  // Posición inicial de la cámara
     m_Target(0.0f, 0.0f, 1.0f),     // Mirando hacia adelante en el eje Z positivo (local)
     m_Up(0.0f, 1.0f, 0.0f),              // Velocidad de movimiento
@@ -18,6 +18,8 @@ Camera::Camera(float windowWidth, float windowHeight)
 	m_WindowWidth = windowWidth;
 	m_WindowHeight = windowHeight;
 	m_AspectRatio = windowWidth / windowHeight; // Calculamos el aspecto de la ventana
+
+	m_CameraPersEnabled = CameraPersEnabled; // Puntero a la variable de estado de la cámara
 
     m_Yaw = 100.00f;
     m_Pitch = 0.0f;
@@ -107,7 +109,7 @@ void Camera::OnMouse(float xOffset, float yOffset, float deltaTime) {
     }
 }
 
-void Camera::OnImGuiRender(bool& CameraPersEnabled) {
+void Camera::OnImGuiRender() {
     // This contains all the UI code that was previously in test3.cpp
     ImGui::Text("Camera Controls");
     ImGui::DragFloat3("Position", &m_Position.x, 0.1f);
@@ -117,8 +119,8 @@ void Camera::OnImGuiRender(bool& CameraPersEnabled) {
     ImGui::DragFloat("Sensitivity", &m_MouseSensitivity, 0.1f);
     ImGui::Separator();
     ImGui::Text("Camera Settings");
-    ImGui::Checkbox("Perspective", &CameraPersEnabled);
-    if (CameraPersEnabled) {
+    ImGui::Checkbox("Perspective", m_CameraPersEnabled);
+    if (*m_CameraPersEnabled) {
         ImGui::DragFloat("FOV", &m_FOV, 0.5f);
     }
     else {
@@ -134,8 +136,8 @@ Matx4f Camera::GetViewMatrix() const {
 	return Matx4f::lookAt(m_Position, m_Target, m_Up);
 }
 
-Matx4f Camera::GetProjectionMatrix(bool CameraPersEnabled) const {
-    if (CameraPersEnabled) {
+Matx4f Camera::GetProjectionMatrix() const {
+    if (*m_CameraPersEnabled) {
         return Matx4f::perspective(m_FOV, m_AspectRatio, m_NearClip, m_FarClip);
     }
     else {
