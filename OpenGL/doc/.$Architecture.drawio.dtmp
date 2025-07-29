@@ -1,0 +1,25 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.6 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36" version="28.0.6">
+  <diagram name="Página-1" id="_FNVNPXv3zH-LlOUTnpk">
+    <mxGraphModel dx="1028" dy="629" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="MTISWiJ9wwQb3dVPaGBe-5" value="UI Layer" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="190" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="MTISWiJ9wwQb3dVPaGBe-6" value="&lt;span class=&quot;router-outlet-wrapper ng-tns-c2462920339-0&quot;&gt;&lt;h4 class=&quot;ng-star-inserted&quot;&gt;&lt;span class=&quot;ng-star-inserted&quot;&gt;Application Core &amp;amp; Data Model&lt;/span&gt;&lt;/h4&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="310" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="MTISWiJ9wwQb3dVPaGBe-7" value="&lt;span class=&quot;router-outlet-wrapper ng-tns-c2462920339-0&quot;&gt;&lt;h4 class=&quot;ng-star-inserted&quot;&gt;&lt;span class=&quot;ng-star-inserted&quot;&gt;Renderer &amp;amp; Tools API&lt;/span&gt;&lt;/h4&gt;&lt;/span&gt;" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="440" y="300" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="MTISWiJ9wwQb3dVPaGBe-8" value="&lt;span class=&quot;router-outlet-wrapper ng-tns-c2462920339-0&quot;&gt;&lt;h4 class=&quot;ng-star-inserted&quot;&gt;&lt;span class=&quot;ng-star-inserted&quot;&gt;Graphics Abstraction Layer&lt;/span&gt;&lt;/h4&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="MTISWiJ9wwQb3dVPaGBe-9" value="&lt;span class=&quot;router-outlet-wrapper ng-tns-c2462920339-0&quot;&gt;&lt;h4 class=&quot;ng-star-inserted&quot;&gt;&lt;span class=&quot;ng-star-inserted&quot;&gt;Platform &amp;amp; Core Foundation&lt;/span&gt;&lt;/h4&gt;&lt;/span&gt;" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="360" y="300" width="110" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
