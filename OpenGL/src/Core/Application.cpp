@@ -1,7 +1,6 @@
 #include "Application.h"
 #include "Time.h"
 
-// --- All the includes that were in main.cpp ---
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>

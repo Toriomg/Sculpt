@@ -72,9 +72,6 @@
         <mxCell id="0MT5sDtZ2W6ylK8wsyuu-18" value="Vertex" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="550" y="340" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="0MT5sDtZ2W6ylK8wsyuu-28" value="Object" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="460" y="360" width="110" height="50" as="geometry" />
-        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

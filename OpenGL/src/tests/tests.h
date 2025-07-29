@@ -7,17 +7,21 @@
 #include <functional>
 #include <vector>
 
-
-#include "../Core/Camera.h"
-#include "../Math/maths.h"
-#include "../Graphics/Buffers/VertexBuffer.h"
-#include "../Graphics/Buffers/VertexArray.h"
-#include "../Graphics/Buffers/IndexBuffer.h"
-#include "../Graphics/Buffers/VertexBufferLayout.h"
-#include "../Graphics/Shading/Texture.h"
 #include "../Editor/inf_grid.h"
-#include "../Graphics/Geometry/Mesh.h"
-#include "../Graphics/Shading/Material.h"
+#include "../Editor/SelectionSystem.h"
+#include "../Graphics/Rendering/Renderer.h"
+#include "../Core/Camera.h"
+
+#include "../Graphics/Shading/Texture.h"
+#include "../Scene/Components/MeshRendererComponent.h"
+
+#include "../Scene/Scene.h"
+#include "../Scene/GameObject.h"
+#include "../Editor/PickingTexture.h"
+#include "../Core/InputManager.h"
+
+#include "imgui/imgui.h"
+#include "../Graphics/Loaders/ModelLoader.h"
 
 namespace test {
 

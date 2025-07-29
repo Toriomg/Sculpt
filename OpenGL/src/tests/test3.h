@@ -3,13 +3,7 @@
 #include <array>
 #include <GLFW/glfw3.h>
 
-#include "../Scene/Scene.h"
-#include "../Scene/GameObject.h"
-#include "../Scene/Components/MeshRendererComponent.h" 
-#include "../Graphics/Rendering/Renderer.h"
-#include "../Editor/SelectionSystem.h"
-#include "../Graphics/Rendering/SelectionContext.h"
-#include "../Editor/PickingTexture.h"
+
 #include "Tests.h"
 
 struct Vertex3 {

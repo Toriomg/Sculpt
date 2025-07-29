@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "../Graphics/Rendering/RenderCommand.h"
 #include "../tests/tests.h" // For test::Test and test::TestMenu
 #include "../Editor/EditorUI.h" // For EditorUI
+#include "../Graphics/Rendering/RenderCommand.h"
 
 // Forward declare GLFWwindow to avoid including glfw3.h in the header.
 // This is good practice to keep headers clean and reduce compile times.
