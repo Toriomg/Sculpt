@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "../../Core/Core.h"
 #include "../Math/maths.h"
 
 struct ShaderProgramSource {

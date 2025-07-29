@@ -10,7 +10,6 @@
 #include <charconv>
 #include <array>
 
-#include "../Geometry/Vertex.h"
 #include "../Geometry/Mesh.h"
 #include "../Shading/Material.h"
 

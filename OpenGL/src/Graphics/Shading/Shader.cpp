@@ -4,7 +4,6 @@
 #include <string>
 #include <sstream>
 
-#include "../../Core/Core.h"
 #include "Shader.h"
 
 Shader::Shader(const std::string& filepath) 

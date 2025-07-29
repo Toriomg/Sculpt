@@ -4,9 +4,7 @@
 
 #include "Vertex.h"
 #include "../Buffers/VertexArray.h"
-#include "../Buffers/VertexBuffer.h"
 #include "../Buffers/IndexBuffer.h"
-#include "../Buffers/VertexBufferLayout.h"
 
 // Represents the geometry of an object ready to be rendered.
 // It owns the GPU buffers (VBO, IBO, VAO).

@@ -2,8 +2,6 @@
 #include "RenderContext.h"
 #include "RenderCommand.h"
 #include "../../Scene/Components/MeshRendererComponent.h"
-#include "../Shading/Material.h"
-#include "../Geometry/Mesh.h"
 #include "../../Editor/inf_grid.h"
 
 class Renderer

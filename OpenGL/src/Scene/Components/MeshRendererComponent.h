@@ -3,7 +3,8 @@
 
 #include <memory>
 #include <vector>
-
+#include "../../Graphics/Shading/Material.h"
+#include "../../Graphics/Geometry/Mesh.h"
 #include "Component.h"
 
 class Mesh;
