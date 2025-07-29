@@ -1,5 +1,6 @@
 #pragma once
-#include "../Math/maths.h"
+#include "Shader.h"
+#include "Texture.h"
 
 #include <memory>
 #include <vector>

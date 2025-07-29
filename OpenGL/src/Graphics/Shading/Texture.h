@@ -1,5 +1,4 @@
 #pragma once
-#include "../../Core/Core.h"
 #include "../Rendering/RenderCommand.h"
 
 class Texture

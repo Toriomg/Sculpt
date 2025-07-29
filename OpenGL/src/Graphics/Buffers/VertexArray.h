@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 
 class VertexBufferLayout;
 
