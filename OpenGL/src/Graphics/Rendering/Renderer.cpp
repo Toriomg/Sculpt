@@ -27,8 +27,19 @@ void Renderer::RenderScene(RenderContext* context, const Matx4f& globalTransform
 
 	const auto& camera = *context->m_Camera;
 	Matx4f view = camera.GetViewMatrix();
-	Matx4f projection = camera.GetProjectionMatrix(true);
+	Matx4f projection = camera.GetProjectionMatrix();
 
+	GLCall(glDisable(GL_DEPTH_TEST)); // Grid shouldn't hide objects
+	GLCall(glEnable(GL_BLEND));
+	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+	// Call the grid's simple Draw method
+	grid.Draw(view, projection, camera.m_Position);
+
+	// 4. RESTORE STATE
+	// Always clean up state for the next frame or the next renderer (e.g., ImGui).
+	GLCall(glEnable(GL_DEPTH_TEST));
+	GLCall(glDisable(GL_BLEND));
 
 
 	for (auto& go : context->m_Scene->GetAllGameObjects()) { // Assuming Scene has a method to get all objects
@@ -67,17 +78,6 @@ void Renderer::RenderScene(RenderContext* context, const Matx4f& globalTransform
 			// 4. Draw the mesh
 			m_RendererCommand.Draw(mesh->GetVAO(), mesh->GetIBO(), *material->m_Shader);
 		}
-	GLCall(glDisable(GL_DEPTH_TEST)); // Grid shouldn't hide objects
-	GLCall(glEnable(GL_BLEND));
-	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-	// Call the grid's simple Draw method
-	grid.Draw(view, projection, camera.m_Position);
-
-	// 4. RESTORE STATE
-	// Always clean up state for the next frame or the next renderer (e.g., ImGui).
-	GLCall(glEnable(GL_DEPTH_TEST));
-	GLCall(glDisable(GL_BLEND));
 	}
 
 
