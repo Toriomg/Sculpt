@@ -39,6 +39,8 @@ void Application::OnEvent(Event& e) {
     dispatcher.Dispatch<MouseButtonPressedEvent>(std::bind(&Application::OnMouseButtonPressed, this, std::placeholders::_1));
     dispatcher.Dispatch<MouseButtonReleasedEvent>(std::bind(&Application::OnMouseButtonReleased, this, std::placeholders::_1));
     dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
+	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&Application::OnKeyPressed, this, std::placeholders::_1));
+	dispatcher.Dispatch<KeyReleasedEvent>(std::bind(&Application::OnKeyReleased, this, std::placeholders::_1));
 }
 
 bool Application::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
@@ -57,4 +59,16 @@ bool Application::OnWindowClose(WindowCloseEvent& e) {
     m_Running = false;
     LOG_INFO("Window close event received. Shutting down.");
     return true; // Return true: we handled it, no other layer needs it.
+}
+
+bool Application::OnKeyPressed(KeyPressedEvent& e) {
+    LOG_INFO("Key {0} was pressed!", e.GetKeyCode());
+    // Return true if you want to "consume" the event
+    return false;
+}
+
+bool Application::OnKeyReleased(KeyReleasedEvent& e) {
+    LOG_INFO("Key {0} was released!", e.GetKeyCode());
+    // Return true if you want to "consume" the event
+    return false;
 }
