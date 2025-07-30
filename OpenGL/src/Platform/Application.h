@@ -15,10 +15,14 @@ public:
     ~Application();
 
     void Run();
+	void OnEvent(Event& event);
 
 private:
     std::unique_ptr<Window> m_Window;
     std::string m_AppName;
     unsigned int m_Width, m_Height;
     bool m_Running = true;
+
+    bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+    bool OnWindowClose(WindowCloseEvent& e);
 };
