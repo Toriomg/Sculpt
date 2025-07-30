@@ -26,4 +26,6 @@ private:
     bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
     bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
     bool OnWindowClose(WindowCloseEvent& e);
+    bool OnKeyPressed(KeyPressedEvent& e);
+	bool OnKeyReleased(KeyReleasedEvent& e);
 };

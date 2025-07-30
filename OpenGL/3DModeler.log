@@ -1,63 +1,518 @@
-[13:43:33] [info] ENGINE: Creating window 3D Modeler (1600, 900)
-[13:43:33] [info] ENGINE: GLEW Initialized
-[13:43:33] [info] ENGINE: OpenGL Info:
-[13:43:33] [info] ENGINE:   Vendor: Intel
-[13:43:33] [info] ENGINE:   Renderer: Intel(R) RaptorLake-S Mobile Graphics Controller
-[13:43:33] [info] ENGINE:   Version: 3.3.0 - Build 32.0.101.5972
-[13:43:33] [info] ENGINE: OpenGL Initialized
-[13:43:35] [info] APP: Mouse button 0 was pressed!
-[13:43:35] [info] APP: Mouse button 0 was released!
-[13:43:35] [info] APP: Mouse button 1 was pressed!
-[13:43:35] [info] APP: Mouse button 1 was released!
-[13:43:35] [info] APP: Mouse button 1 was pressed!
-[13:43:35] [info] APP: Mouse button 1 was released!
-[13:43:36] [info] APP: Mouse button 1 was pressed!
-[13:43:36] [info] APP: Mouse button 1 was released!
-[13:43:36] [info] APP: Mouse button 2 was pressed!
-[13:43:36] [info] APP: Mouse button 2 was released!
-[13:43:36] [info] APP: Mouse button 2 was pressed!
-[13:43:36] [info] APP: Mouse button 2 was released!
-[13:43:37] [info] APP: Mouse button 2 was pressed!
-[13:43:37] [info] APP: Mouse button 2 was released!
-[13:43:38] [info] APP: Mouse button 2 was pressed!
-[13:43:38] [info] APP: Mouse button 2 was released!
-[13:43:38] [info] APP: Mouse button 2 was pressed!
-[13:43:38] [info] APP: Mouse button 2 was released!
-[13:43:39] [info] APP: Mouse button 2 was pressed!
-[13:43:39] [info] APP: Mouse button 2 was released!
-[13:43:39] [info] APP: Mouse button 2 was pressed!
-[13:43:39] [info] APP: Mouse button 2 was released!
-[13:43:40] [info] APP: Mouse button 0 was pressed!
-[13:43:40] [info] APP: Mouse button 0 was released!
-[13:43:40] [info] APP: Mouse button 1 was pressed!
-[13:43:40] [info] APP: Mouse button 1 was released!
-[13:43:41] [info] APP: Mouse button 0 was pressed!
-[13:43:41] [info] APP: Mouse button 0 was released!
-[13:43:41] [info] APP: Mouse button 4 was pressed!
-[13:43:41] [info] APP: Mouse button 3 was pressed!
-[13:43:41] [info] APP: Mouse button 4 was released!
-[13:43:42] [info] APP: Mouse button 3 was released!
-[13:43:42] [info] APP: Mouse button 3 was pressed!
-[13:43:42] [info] APP: Mouse button 3 was released!
-[13:43:42] [info] APP: Mouse button 3 was pressed!
-[13:43:42] [info] APP: Mouse button 3 was released!
-[13:43:42] [info] APP: Mouse button 3 was pressed!
-[13:43:42] [info] APP: Mouse button 3 was released!
-[13:43:43] [info] APP: Mouse button 3 was pressed!
-[13:43:43] [info] APP: Mouse button 3 was released!
-[13:43:43] [info] APP: Mouse button 3 was pressed!
-[13:43:43] [info] APP: Mouse button 3 was released!
-[13:43:43] [info] APP: Mouse button 3 was pressed!
-[13:43:43] [info] APP: Mouse button 3 was released!
-[13:43:43] [info] APP: Mouse button 3 was pressed!
-[13:43:43] [info] APP: Mouse button 3 was released!
-[13:43:44] [info] APP: Mouse button 3 was pressed!
-[13:43:44] [info] APP: Mouse button 3 was released!
-[13:43:44] [info] APP: Mouse button 3 was pressed!
-[13:43:44] [info] APP: Mouse button 3 was released!
-[13:43:44] [info] APP: Mouse button 3 was pressed!
-[13:43:44] [info] APP: Mouse button 3 was released!
-[13:43:44] [info] APP: Mouse button 3 was pressed!
-[13:43:44] [info] APP: Mouse button 3 was released!
-[13:43:44] [info] APP: Mouse button 4 was pressed!
-[13:43:45] [info] APP: Mouse button 4 was released!
+[15:35:03] [info] ENGINE: Creating window 3D Modeler (1600, 900)
+[15:35:04] [info] ENGINE: GLEW Initialized
+[15:35:04] [info] ENGINE: OpenGL Info:
+[15:35:04] [info] ENGINE:   Vendor: Intel
+[15:35:04] [info] ENGINE:   Renderer: Intel(R) RaptorLake-S Mobile Graphics Controller
+[15:35:04] [info] ENGINE:   Version: 3.3.0 - Build 32.0.101.5972
+[15:35:04] [info] ENGINE: OpenGL Initialized
+[15:35:08] [info] APP: Mouse button 0 was pressed!
+[15:35:08] [info] APP: Mouse button 0 was released!
+[15:35:10] [info] APP: Key KeyPressedEvent: 83 (repeat = 0) was pressed!
+[15:35:10] [info] APP: Key KeyReleasedEvent: 83 was released!
+[15:35:10] [info] APP: Key KeyPressedEvent: 83 (repeat = 0) was pressed!
+[15:35:10] [info] APP: Key KeyReleasedEvent: 83 was released!
+[15:35:15] [info] APP: Key KeyPressedEvent: 83 (repeat = 0) was pressed!
+[15:35:15] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:15] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:15] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:15] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:15] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:15] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:15] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:16] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:17] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:17] [info] APP: Key KeyPressedEvent: 83 (repeat = 1) was pressed!
+[15:35:17] [info] APP: Key KeyReleasedEvent: 83 was released!
+[15:35:17] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:17] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:17] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:18] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:18] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:18] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:18] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:18] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:18] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:19] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:19] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:19] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:20] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:20] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:20] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:20] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:20] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:21] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:35:22] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:22] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:22] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:22] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:22] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:23] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:23] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:23] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:23] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:23] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:23] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:23] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:23] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:23] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:23] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:24] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:35:24] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:35:24] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:35:24] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:35:24] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:35:24] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:35:24] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:35:25] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:35:25] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:35:25] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:25] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:25] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:25] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:25] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:25] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:26] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:26] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:26] [info] APP: Key KeyPressedEvent: 280 (repeat = 0) was pressed!
+[15:35:26] [info] APP: Key KeyReleasedEvent: 280 was released!
+[15:35:27] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:27] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:27] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:27] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:28] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:28] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:28] [info] APP: Key KeyPressedEvent: 280 (repeat = 0) was pressed!
+[15:35:28] [info] APP: Key KeyReleasedEvent: 280 was released!
+[15:35:28] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:29] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:29] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:29] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:29] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:29] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:29] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:29] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:29] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:29] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:30] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:30] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:30] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:35:30] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:31] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:31] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:35:31] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:35:31] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:32] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:32] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:35:32] [info] APP: Key KeyPressedEvent: 83 (repeat = 0) was pressed!
+[15:35:33] [info] APP: Key KeyReleasedEvent: 83 was released!
+[15:35:33] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:33] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:34] [info] APP: Key KeyPressedEvent: 86 (repeat = 0) was pressed!
+[15:35:34] [info] APP: Key KeyReleasedEvent: 86 was released!
+[15:35:34] [info] APP: Key KeyPressedEvent: 67 (repeat = 0) was pressed!
+[15:35:34] [info] APP: Key KeyReleasedEvent: 67 was released!
+[15:35:35] [info] APP: Key KeyPressedEvent: 90 (repeat = 0) was pressed!
+[15:35:35] [info] APP: Key KeyReleasedEvent: 90 was released!
+[15:35:35] [info] APP: Key KeyPressedEvent: 87 (repeat = 0) was pressed!
+[15:35:35] [info] APP: Key KeyReleasedEvent: 87 was released!
+[15:35:36] [info] APP: Key KeyPressedEvent: 69 (repeat = 0) was pressed!
+[15:35:36] [info] APP: Key KeyReleasedEvent: 69 was released!
+[15:35:36] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:36] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:36] [info] APP: Key KeyPressedEvent: 70 (repeat = 0) was pressed!
+[15:35:36] [info] APP: Key KeyReleasedEvent: 70 was released!
+[15:35:37] [info] APP: Key KeyPressedEvent: 66 (repeat = 0) was pressed!
+[15:35:37] [info] APP: Key KeyReleasedEvent: 66 was released!
+[15:35:37] [info] APP: Key KeyPressedEvent: 78 (repeat = 0) was pressed!
+[15:35:37] [info] APP: Key KeyReleasedEvent: 78 was released!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 0) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:38] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 84 (repeat = 1) was pressed!
+[15:35:39] [info] APP: Key KeyReleasedEvent: 84 was released!
+[15:35:39] [info] APP: Key KeyPressedEvent: 70 (repeat = 0) was pressed!
+[15:35:39] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:39] [info] APP: Key KeyReleasedEvent: 70 was released!
+[15:35:39] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:39] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:40] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:40] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:35:40] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:40] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:40] [info] APP: Key KeyPressedEvent: 83 (repeat = 0) was pressed!
+[15:35:40] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:40] [info] APP: Key KeyReleasedEvent: 83 was released!
+[15:35:40] [info] APP: Key KeyPressedEvent: 88 (repeat = 0) was pressed!
+[15:35:41] [info] APP: Key KeyReleasedEvent: 88 was released!
+[15:35:41] [info] APP: Key KeyPressedEvent: 86 (repeat = 0) was pressed!
+[15:35:41] [info] APP: Key KeyPressedEvent: 67 (repeat = 0) was pressed!
+[15:35:41] [info] APP: Key KeyPressedEvent: 88 (repeat = 0) was pressed!
+[15:35:41] [info] APP: Key KeyReleasedEvent: 86 was released!
+[15:35:41] [info] APP: Key KeyPressedEvent: 90 (repeat = 0) was pressed!
+[15:35:41] [info] APP: Key KeyReleasedEvent: 67 was released!
+[15:35:41] [info] APP: Key KeyReleasedEvent: 88 was released!
+[15:35:41] [info] APP: Key KeyReleasedEvent: 90 was released!
+[15:35:41] [info] APP: Key KeyPressedEvent: 32 (repeat = 0) was pressed!
+[15:35:41] [info] APP: Key KeyReleasedEvent: 32 was released!
+[15:35:42] [info] APP: Key KeyPressedEvent: 32 (repeat = 0) was pressed!
+[15:35:42] [info] APP: Key KeyReleasedEvent: 32 was released!
+[15:35:42] [info] APP: Key KeyPressedEvent: 32 (repeat = 0) was pressed!
+[15:35:42] [info] APP: Key KeyReleasedEvent: 32 was released!
+[15:35:42] [info] APP: Key KeyPressedEvent: 32 (repeat = 0) was pressed!
+[15:35:42] [info] APP: Key KeyReleasedEvent: 32 was released!
+[15:35:42] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:35:42] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:35:42] [info] APP: Key KeyPressedEvent: 32 (repeat = 0) was pressed!
+[15:35:43] [info] APP: Key KeyReleasedEvent: 32 was released!
+[15:35:43] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:35:43] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:35:43] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:35:43] [info] APP: Key KeyPressedEvent: 32 (repeat = 0) was pressed!
+[15:35:43] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:35:43] [info] APP: Key KeyReleasedEvent: 32 was released!
+[15:35:43] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:35:43] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:35:43] [info] APP: Key KeyPressedEvent: 32 (repeat = 0) was pressed!
+[15:35:44] [info] APP: Key KeyReleasedEvent: 32 was released!
+[15:35:44] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:35:44] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:35:44] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:44] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:44] [info] APP: Key KeyPressedEvent: 87 (repeat = 0) was pressed!
+[15:35:44] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:45] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:45] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:45] [info] APP: Key KeyReleasedEvent: 87 was released!
+[15:35:45] [info] APP: Key KeyPressedEvent: 83 (repeat = 0) was pressed!
+[15:35:45] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:45] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:45] [info] APP: Key KeyReleasedEvent: 83 was released!
+[15:35:45] [info] APP: Key KeyPressedEvent: 87 (repeat = 0) was pressed!
+[15:35:45] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:45] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:46] [info] APP: Key KeyReleasedEvent: 87 was released!
+[15:35:46] [info] APP: Key KeyPressedEvent: 83 (repeat = 0) was pressed!
+[15:35:46] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:46] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:46] [info] APP: Key KeyReleasedEvent: 83 was released!
+[15:35:46] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:46] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:47] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:47] [info] APP: Key KeyPressedEvent: 83 (repeat = 0) was pressed!
+[15:35:47] [info] APP: Key KeyReleasedEvent: 83 was released!
+[15:35:47] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:48] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:48] [info] APP: Key KeyPressedEvent: 70 (repeat = 0) was pressed!
+[15:35:48] [info] APP: Key KeyReleasedEvent: 70 was released!
+[15:35:49] [info] APP: Key KeyPressedEvent: 71 (repeat = 0) was pressed!
+[15:35:49] [info] APP: Key KeyReleasedEvent: 71 was released!
+[15:35:50] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:50] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:51] [info] APP: Key KeyPressedEvent: 66 (repeat = 0) was pressed!
+[15:35:51] [info] APP: Key KeyReleasedEvent: 66 was released!
+[15:35:52] [info] APP: Key KeyPressedEvent: 67 (repeat = 0) was pressed!
+[15:35:52] [info] APP: Key KeyReleasedEvent: 67 was released!
+[15:35:52] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:52] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:52] [info] APP: Key KeyPressedEvent: 69 (repeat = 0) was pressed!
+[15:35:52] [info] APP: Key KeyReleasedEvent: 69 was released!
+[15:35:53] [info] APP: Key KeyPressedEvent: 87 (repeat = 0) was pressed!
+[15:35:53] [info] APP: Key KeyReleasedEvent: 87 was released!
+[15:35:54] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:35:54] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:35:55] [info] APP: Key KeyPressedEvent: 66 (repeat = 0) was pressed!
+[15:35:55] [info] APP: Key KeyReleasedEvent: 66 was released!
+[15:35:55] [info] APP: Key KeyPressedEvent: 67 (repeat = 0) was pressed!
+[15:35:55] [info] APP: Key KeyReleasedEvent: 67 was released!
+[15:35:55] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:35:55] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:35:56] [info] APP: Key KeyPressedEvent: 69 (repeat = 0) was pressed!
+[15:35:56] [info] APP: Key KeyReleasedEvent: 69 was released!
+[15:35:56] [info] APP: Key KeyPressedEvent: 70 (repeat = 0) was pressed!
+[15:35:56] [info] APP: Key KeyReleasedEvent: 70 was released!
+[15:35:57] [info] APP: Key KeyPressedEvent: 71 (repeat = 0) was pressed!
+[15:35:57] [info] APP: Key KeyReleasedEvent: 71 was released!
+[15:35:58] [info] APP: Key KeyPressedEvent: 72 (repeat = 0) was pressed!
+[15:35:58] [info] APP: Key KeyReleasedEvent: 72 was released!
+[15:35:58] [info] APP: Key KeyPressedEvent: 73 (repeat = 0) was pressed!
+[15:35:58] [info] APP: Key KeyReleasedEvent: 73 was released!
+[15:35:58] [info] APP: Key KeyPressedEvent: 74 (repeat = 0) was pressed!
+[15:35:58] [info] APP: Key KeyReleasedEvent: 74 was released!
+[15:35:59] [info] APP: Key KeyPressedEvent: 75 (repeat = 0) was pressed!
+[15:35:59] [info] APP: Key KeyReleasedEvent: 75 was released!
+[15:35:59] [info] APP: Key KeyPressedEvent: 76 (repeat = 0) was pressed!
+[15:35:59] [info] APP: Key KeyReleasedEvent: 76 was released!
+[15:35:59] [info] APP: Key KeyPressedEvent: 77 (repeat = 0) was pressed!
+[15:35:59] [info] APP: Key KeyReleasedEvent: 77 was released!
+[15:35:59] [info] APP: Key KeyPressedEvent: 78 (repeat = 0) was pressed!
+[15:35:59] [info] APP: Key KeyReleasedEvent: 78 was released!
+[15:36:01] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:02] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyPressedEvent: 65 (repeat = 1) was pressed!
+[15:36:03] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:36:03] [info] APP: Mouse button 0 was pressed!
+[15:36:03] [info] APP: Mouse button 0 was released!
+[15:36:03] [info] APP: Mouse button 0 was pressed!
+[15:36:03] [info] APP: Mouse button 0 was released!
+[15:36:03] [info] APP: Mouse button 0 was pressed!
+[15:36:04] [info] APP: Mouse button 0 was released!
+[15:36:04] [info] APP: Mouse button 0 was pressed!
+[15:36:04] [info] APP: Mouse button 0 was released!
+[15:36:04] [info] APP: Mouse button 0 was pressed!
+[15:36:04] [info] APP: Mouse button 0 was released!
+[15:36:04] [info] APP: Mouse button 0 was pressed!
+[15:36:04] [info] APP: Mouse button 0 was released!
+[15:36:04] [info] APP: Mouse button 0 was pressed!
+[15:36:04] [info] APP: Mouse button 0 was released!
+[15:36:04] [info] APP: Mouse button 0 was pressed!
+[15:36:04] [info] APP: Mouse button 0 was released!
+[15:36:04] [info] APP: Mouse button 1 was pressed!
+[15:36:05] [info] APP: Mouse button 1 was released!
+[15:36:05] [info] APP: Mouse button 1 was pressed!
+[15:36:05] [info] APP: Mouse button 1 was released!
+[15:36:05] [info] APP: Mouse button 1 was pressed!
+[15:36:05] [info] APP: Mouse button 1 was released!
+[15:36:05] [info] APP: Mouse button 2 was pressed!
+[15:36:05] [info] APP: Mouse button 2 was released!
+[15:36:05] [info] APP: Mouse button 2 was pressed!
+[15:36:05] [info] APP: Mouse button 2 was released!
+[15:36:05] [info] APP: Mouse button 2 was pressed!
+[15:36:05] [info] APP: Mouse button 2 was released!
+[15:36:06] [info] APP: Mouse button 2 was pressed!
+[15:36:06] [info] APP: Mouse button 2 was released!
+[15:36:06] [info] APP: Mouse button 2 was pressed!
+[15:36:06] [info] APP: Mouse button 2 was released!
+[15:36:06] [info] APP: Mouse button 2 was pressed!
+[15:36:06] [info] APP: Mouse button 2 was released!
+[15:36:06] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:36:06] [info] APP: Key KeyPressedEvent: 83 (repeat = 0) was pressed!
+[15:36:06] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:36:07] [info] APP: Key KeyPressedEvent: 65 (repeat = 0) was pressed!
+[15:36:07] [info] APP: Key KeyReleasedEvent: 83 was released!
+[15:36:07] [info] APP: Key KeyReleasedEvent: 65 was released!
+[15:36:07] [info] APP: Key KeyPressedEvent: 68 (repeat = 0) was pressed!
+[15:36:07] [info] APP: Key KeyReleasedEvent: 68 was released!
+[15:36:07] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:07] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:07] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:07] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:07] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:08] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:08] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:08] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:08] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:08] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:08] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:08] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:08] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:08] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:08] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:08] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:08] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:09] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:09] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:09] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:09] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:09] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:09] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:09] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:09] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:09] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:09] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:10] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:10] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:10] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:10] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:10] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:10] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:10] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:10] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:10] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:10] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:10] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:10] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:10] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:10] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:10] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:10] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:10] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:10] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:11] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:11] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:11] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:11] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:11] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:11] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:11] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:11] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:11] [info] APP: Key KeyPressedEvent: 342 (repeat = 0) was pressed!
+[15:36:11] [info] APP: Key KeyReleasedEvent: 342 was released!
+[15:36:11] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:12] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:12] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:12] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:12] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:12] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:12] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:12] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:13] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:13] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:13] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:13] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:13] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:13] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:13] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:13] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:13] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:13] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:13] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:13] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:14] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:14] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:14] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:14] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:14] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:14] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:14] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:14] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:14] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:14] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:14] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:14] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:14] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:14] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:15] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:15] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:15] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:15] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:15] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:15] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:15] [info] APP: Key KeyPressedEvent: 258 (repeat = 0) was pressed!
+[15:36:15] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:15] [info] APP: Key KeyPressedEvent: 340 (repeat = 0) was pressed!
+[15:36:15] [info] APP: Key KeyReleasedEvent: 258 was released!
+[15:36:15] [info] APP: Key KeyReleasedEvent: 340 was released!
+[15:36:16] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:16] [info] APP: Key KeyPressedEvent: 90 (repeat = 0) was pressed!
+[15:36:16] [info] APP: Key KeyReleasedEvent: 90 was released!
+[15:36:16] [info] APP: Key KeyPressedEvent: 90 (repeat = 0) was pressed!
+[15:36:16] [info] APP: Key KeyReleasedEvent: 90 was released!
+[15:36:17] [info] APP: Key KeyPressedEvent: 90 (repeat = 0) was pressed!
+[15:36:17] [info] APP: Key KeyReleasedEvent: 90 was released!
+[15:36:17] [info] APP: Key KeyPressedEvent: 90 (repeat = 0) was pressed!
+[15:36:17] [info] APP: Key KeyReleasedEvent: 90 was released!
+[15:36:17] [info] APP: Key KeyPressedEvent: 90 (repeat = 0) was pressed!
+[15:36:17] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyPressedEvent: 90 (repeat = 1) was pressed!
+[15:36:18] [info] APP: Key KeyReleasedEvent: 90 was released!
+[15:36:18] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:19] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:19] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:19] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:19] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:20] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:20] [info] APP: Key KeyPressedEvent: 90 (repeat = 0) was pressed!
+[15:36:20] [info] APP: Key KeyReleasedEvent: 90 was released!
+[15:36:20] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:21] [info] APP: Key KeyPressedEvent: 341 (repeat = 0) was pressed!
+[15:36:21] [info] APP: Key KeyPressedEvent: 90 (repeat = 0) was pressed!
+[15:36:21] [info] APP: Key KeyReleasedEvent: 90 was released!
+[15:36:21] [info] APP: Key KeyReleasedEvent: 341 was released!
+[15:36:23] [info] APP: Mouse button 0 was pressed!
+[15:36:23] [info] APP: Mouse button 0 was released!
+[15:36:24] [info] APP: Window close event received. Shutting down.
+[15:36:24] [info] ENGINE: Program CORRECTLY ended

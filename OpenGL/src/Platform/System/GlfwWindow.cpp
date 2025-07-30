@@ -101,7 +101,7 @@ void GlfwWindow::Init(const std::string& title, unsigned int width, unsigned int
 
         switch (action) {
             case GLFW_PRESS: {
-                KeyPressedEvent event(key);
+                KeyPressedEvent event(key, false);
                 data.EventCallback(event);
                 break;
             }
