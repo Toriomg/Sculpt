@@ -83,20 +83,40 @@ void GlfwWindow::Init(const std::string& title, unsigned int width, unsigned int
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
         switch (action) {
-        case GLFW_PRESS: {
-            MouseButtonPressedEvent event(button); // Create the event
-            data.EventCallback(event);             // Dispatch it
-            break;
-        }
-        case GLFW_RELEASE: {
-            MouseButtonReleasedEvent event(button);
-            data.EventCallback(event);
-            break;
-        }
+            case GLFW_PRESS: {
+                MouseButtonPressedEvent event(button); // Create the event
+                data.EventCallback(event);             // Dispatch it
+                break;
+            }
+            case GLFW_RELEASE: {
+                MouseButtonReleasedEvent event(button);
+                data.EventCallback(event);
+                break;
+            }
         }
         });
 
-    // ... set up other callbacks for keyboard, mouse, etc. in the same way ...
+	glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+        switch (action) {
+            case GLFW_PRESS: {
+                KeyPressedEvent event(key);
+                data.EventCallback(event);
+                break;
+            }
+            case GLFW_RELEASE: {
+                KeyReleasedEvent event(key);
+                data.EventCallback(event);
+                break;
+            }
+            case GLFW_REPEAT: {
+                KeyPressedEvent event(key, true); // true for repeat
+                data.EventCallback(event);
+                break;
+			}
+        }
+        });
 }
 
 void GlfwWindow::Shutdown() {

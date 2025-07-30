@@ -37,16 +37,18 @@ void Application::OnEvent(Event& e) {
     // Use the dispatcher to route the event to the correct handler
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<MouseButtonPressedEvent>(std::bind(&Application::OnMouseButtonPressed, this, std::placeholders::_1));
+    dispatcher.Dispatch<MouseButtonReleasedEvent>(std::bind(&Application::OnMouseButtonReleased, this, std::placeholders::_1));
     dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
-
-    // You can log all events for debugging
-    if (!e.Handled) {
-        // CORE_LOG_TRACE("Event received: {0}", e.GetName());
-    }
 }
 
 bool Application::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
     LOG_INFO("Mouse button {0} was pressed!", e.GetMouseButton());
+    // Return true if you want to "consume" the event
+    return false;
+}
+
+bool Application::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
+    LOG_INFO("Mouse button {0} was released!", e.GetMouseButton());
     // Return true if you want to "consume" the event
     return false;
 }

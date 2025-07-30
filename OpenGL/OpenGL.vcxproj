@@ -168,6 +168,7 @@
     <ClInclude Include="src\Platform\Application.h" />
     <ClInclude Include="src\Platform\CoreUtils\Log.h" />
     <ClInclude Include="src\Platform\Events\Event.h" />
+    <ClInclude Include="src\Platform\Events\KeyboardEvent.h" />
     <ClInclude Include="src\Platform\Events\MouseEvent.h" />
     <ClInclude Include="src\Platform\Events\WindowEvent.h" />
     <ClInclude Include="src\Platform\System\GlfwWindow.h" />

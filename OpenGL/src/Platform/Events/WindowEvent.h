@@ -1,4 +1,6 @@
 #pragma once
+#include "Event.h"
+
 class WindowResizeEvent : public Event {
 public:
     WindowResizeEvent(unsigned int width, unsigned int height)

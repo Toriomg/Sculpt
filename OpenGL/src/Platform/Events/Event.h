@@ -1,7 +1,9 @@
+#pragma once
+
 enum class EventType {
     None = 0,
     WindowClose, WindowResize,
-    KeyPressed, KeyReleased,
+	KeyPressed, KeyReleased, KeyRepeated,
     MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 };
 
