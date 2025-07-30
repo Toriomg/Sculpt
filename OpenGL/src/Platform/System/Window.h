@@ -1,11 +1,16 @@
 #pragma once
 #include <glhead.h>
 
+// Events
+
+#include "Platform/Events/MouseEvent.h"
+#include "Platform/Events/WindowEvent.h"
+
 class Window {
 public:
     // Using a std::function to create an event callback system.
     // The Application will set this callback to receive events from the window.
-    using EventCallbackFn = std::function<void(/*Event&*/)>; // Placeholder for your Event class
+    using EventCallbackFn = std::function<void(Event&)>; // Placeholder for your Event class
 
     virtual ~Window() = default;
 
