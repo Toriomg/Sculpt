@@ -4,9 +4,11 @@
 Application::Application(const std::string& name, unsigned int width, unsigned int height)
     : m_Window(nullptr), m_AppName(name), m_Width(width), m_Height(height)
 {
+	Log::Init(); // Initialize the logging system
+
     // Initialize the library
     if (!glfwInit()) {
-        std::cerr << "ERROR: glfwInit() failed." << std::endl;
+        CORE_LOG_CRITICAL("ERROR: glfwInit() failed.");
         return;
     }
 
@@ -20,7 +22,7 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
     if (!m_Window)
     {
         glfwTerminate();
-        std::cerr << "ERROR: glfwCreateWindow() failed." << std::endl;
+        CORE_LOG_CRITICAL("ERROR: glfwCreateWindow() failed.");
         return;
     }
 
@@ -29,9 +31,9 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
     glfwSwapInterval(1); // Enable vsync
 
 
-	// Initialize GLEW
+    // Initialize GLEW
     if (glewInit() != GLEW_OK) {
-        std::cerr << "ERROR: glewInit() failed." << std::endl;
+        CORE_LOG_CRITICAL("ERROR: glewInit() failed.");
         return;
     }
 
@@ -49,12 +51,15 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 
     // Setup Input
 	InputManager::Get().Init(m_Window);
+
+	CORE_LOG_INFO("OpenGL Initialized");
 }
 
 Application::~Application()
 {
     glfwDestroyWindow(m_Window);
     glfwTerminate();
+    CORE_LOG_INFO("Program CORRECTLY ended");
 }
 
 void Application::Run()
@@ -64,7 +69,7 @@ void Application::Run()
 		InputManager::Get().Update();
 		Time::Update();
 
-		std::cout << InputManager::Get().GetMouseX() << std::endl;
+		//std::cout << InputManager::Get().GetMouseX() << std::endl;
         glfwSwapBuffers(m_Window);
         glfwPollEvents();
     }

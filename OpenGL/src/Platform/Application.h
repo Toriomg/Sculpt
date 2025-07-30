@@ -5,6 +5,7 @@
 #include "glhead.h"
 #include "System/Time.h"
 #include "System/Input.h"
+#include "CoreUtils/Log.h"
 
 class Application
 {
