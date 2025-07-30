@@ -108,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src/vendor;$(SolutionDir)OpenGl\Dependencies\GLEW\include;$(SolutionDir)OpenGl\Dependencies\GLFW\include;$(SolutionDir)OpenGl\Dependencies\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/vendor;$(SolutionDir)OpenGl\Dependencies\GLEW\include;$(SolutionDir)OpenGl\Dependencies\GLFW\include;$(SolutionDir)OpenGl\Dependencies\GLAD\include;$(ProjectDir)src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -126,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src/vendor;$(SolutionDir)OpenGl\Dependencies\GLEW\include;$(SolutionDir)OpenGl\Dependencies\GLFW\include;$(SolutionDir)OpenGl\Dependencies\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/vendor;$(SolutionDir)OpenGl\Dependencies\GLEW\include;$(SolutionDir)OpenGl\Dependencies\GLFW\include;$(SolutionDir)OpenGl\Dependencies\GLAD\include;$(ProjectDir)src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -137,33 +137,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Core\Application.cpp" />
-    <ClCompile Include="src\Core\Core.cpp" />
-    <ClCompile Include="src\Core\Time.cpp" />
-    <ClCompile Include="src\Editor\EditorUI.cpp" />
-    <ClCompile Include="src\Editor\PickingTexture.cpp" />
-    <ClCompile Include="src\Editor\SelectionSystem.cpp" />
-    <ClCompile Include="src\Graphics\Buffers\IndexBuffer.cpp" />
-    <ClCompile Include="src\Core\Camera.cpp" />
-    <ClCompile Include="src\Core\InputState.cpp" />
-    <ClCompile Include="src\Graphics\Loaders\ModelLoader.cpp" />
-    <ClCompile Include="src\Graphics\Rendering\Renderer.cpp" />
-    <ClCompile Include="src\Graphics\Shading\Material.cpp" />
-    <ClCompile Include="src\Graphics\Geometry\Mesh.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Math\maths.cpp" />
-    <ClCompile Include="src\Editor\inf_grid.cpp" />
-    <ClCompile Include="src\Scene\Components\MeshRendererComponent.cpp" />
-    <ClCompile Include="src\Scene\GameObject.cpp" />
-    <ClCompile Include="src\Graphics\Rendering\RenderCommand.cpp" />
-    <ClCompile Include="src\Graphics\Shading\Shader.cpp" />
-    <ClCompile Include="src\Scene\Scene.cpp" />
-    <ClCompile Include="src\tests\test3.cpp" />
-    <ClCompile Include="src\Graphics\Shading\Texture.cpp" />
-    <ClCompile Include="src\tests\TestBatchRendering.cpp" />
-    <ClCompile Include="src\tests\TestClearColor.cpp" />
-    <ClCompile Include="src\tests\tests.cpp" />
-    <ClCompile Include="src\tests\TestTexture2D.cpp" />
+    <ClCompile Include="src\Platform\Application.cpp" />
+    <ClCompile Include="src\Platform\CoreUtils\Math\maths.cpp" />
+    <ClCompile Include="src\Platform\System\Input.cpp" />
+    <ClCompile Include="src\Platform\System\Time.cpp" />
     <ClCompile Include="src\vendor\imgui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\vendor\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
@@ -172,8 +150,6 @@
     <ClCompile Include="src\vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\vendor\stb_image\stb_image.cpp" />
-    <ClCompile Include="src\Graphics\Buffers\VertexArray.cpp" />
-    <ClCompile Include="src\Graphics\Buffers\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\BasicTexture.shader" />
@@ -185,42 +161,17 @@
     <None Include="res\shaders\vert\grid.vs" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Core\Application.h" />
-    <ClInclude Include="src\Core\Time.h" />
-    <ClInclude Include="src\Editor\EditorUI.h" />
-    <ClInclude Include="src\Editor\PickingTexture.h" />
-    <ClInclude Include="src\Editor\SelectionSystem.h" />
+    <ClInclude Include="src\Platform\Application.h" />
+    <ClInclude Include="src\Platform\CoreUtils\Log.h" />
+    <ClInclude Include="src\Platform\System\Input.h" />
+    <ClInclude Include="src\Platform\System\Time.h" />
     <ClInclude Include="src\glhead.h" />
-    <ClInclude Include="src\Graphics\Buffers\IndexBuffer.h" />
-    <ClInclude Include="src\Core\Camera.h" />
-    <ClInclude Include="src\Core\InputManager.h" />
-    <ClInclude Include="src\Core\Core.h" />
-    <ClInclude Include="src\Graphics\Loaders\ModelLoader.h" />
-    <ClInclude Include="src\Graphics\Rendering\RenderContext.h" />
-    <ClInclude Include="src\Graphics\Rendering\Renderer.h" />
-    <ClInclude Include="src\Graphics\Rendering\SelectionContext.h" />
-    <ClInclude Include="src\Graphics\Shading\Material.h" />
-    <ClInclude Include="src\Graphics\Geometry\Mesh.h" />
-    <ClInclude Include="src\Graphics\Geometry\Vertex.h" />
-    <ClInclude Include="src\Math\maths.h" />
-    <ClInclude Include="src\Math\matx.h" />
-    <ClInclude Include="src\Math\quaternion.h" />
-    <ClInclude Include="src\Math\vec2.h" />
-    <ClInclude Include="src\Math\vec3.h" />
-    <ClInclude Include="src\Editor\inf_grid.h" />
-    <ClInclude Include="src\Math\vec4.h" />
-    <ClInclude Include="src\Scene\Components\Component.h" />
-    <ClInclude Include="src\Scene\Components\MeshRendererComponent.h" />
-    <ClInclude Include="src\Scene\GameObject.h" />
-    <ClInclude Include="src\Graphics\Rendering\RenderCommand.h" />
-    <ClInclude Include="src\Graphics\Shading\Shader.h" />
-    <ClInclude Include="src\Scene\Scene.h" />
-    <ClInclude Include="src\tests\test3.h" />
-    <ClInclude Include="src\Graphics\Shading\Texture.h" />
-    <ClInclude Include="src\tests\TestBatchRendering.h" />
-    <ClInclude Include="src\tests\TestClearColor.h" />
-    <ClInclude Include="src\tests\tests.h" />
-    <ClInclude Include="src\tests\TestTexture2D.h" />
+    <ClInclude Include="src\Platform\CoreUtils\Math\maths.h" />
+    <ClInclude Include="src\Platform\CoreUtils\Math\matx.h" />
+    <ClInclude Include="src\Platform\CoreUtils\Math\quaternion.h" />
+    <ClInclude Include="src\Platform\CoreUtils\Math\vec2.h" />
+    <ClInclude Include="src\Platform\CoreUtils\Math\vec3.h" />
+    <ClInclude Include="src\Platform\CoreUtils\Math\vec4.h" />
     <ClInclude Include="src\vendor\imgui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="src\vendor\imgui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="src\vendor\imgui\backends\imgui_impl_opengl3_loader.h" />
@@ -231,9 +182,6 @@
     <ClInclude Include="src\vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="src\vendor\imgui\imstb_truetype.h" />
     <ClInclude Include="src\vendor\stb_image\stb_image.h" />
-    <ClInclude Include="src\Graphics\Buffers\VertexArray.h" />
-    <ClInclude Include="src\Graphics\Buffers\VertexBuffer.h" />
-    <ClInclude Include="src\Graphics\Buffers\VertexBufferLayout.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <ItemGroup>

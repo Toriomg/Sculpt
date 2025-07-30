@@ -1,4 +1,4 @@
-#include "Core/Application.h"
+#include "Platform/Application.h"
 #include <iostream>
 
 int main(void)
