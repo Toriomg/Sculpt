@@ -1,43 +1,55 @@
 #pragma once
-
+#include "glhead.h"
 #include "Event.h"
 
-class KeyPressedEvent : public Event {
+class KeyEvent : public Event {
 public:
-    KeyPressedEvent(int button) : m_Button(button) {}
+    int GetKeyCode() const { return m_KeyCode; }
 
-    int GetMouseButton() const { return m_Button; }
+protected:
+    // Protected constructor so you can't create a generic KeyEvent
+    KeyEvent(int keycode)
+        : m_KeyCode(keycode) {
+    }
 
+    int m_KeyCode;
+};
+
+class KeyPressedEvent : public KeyEvent {
+public:
+    KeyPressedEvent(int keycode, bool isRepeat = false)
+        : KeyEvent(keycode), m_IsRepeat(isRepeat) {
+    }
+
+    bool IsRepeat() const { return m_IsRepeat; }
+
+    std::string ToString() const {
+        std::stringstream ss;
+        ss << "KeyPressedEvent: " << m_KeyCode << " (repeat = " << m_IsRepeat << ")";
+        return ss.str();
+    }
 
     static EventType GetStaticType() { return EventType::KeyPressed; }
     virtual EventType GetEventType() const override { return GetStaticType(); }
     virtual const char* GetName() const override { return "KeyPressed"; }
 private:
-    int m_Button;
+    bool m_IsRepeat;
 };
 
-class KeyReleasedEvent : public Event {
+class KeyReleasedEvent : public KeyEvent {
 public:
-    KeyReleasedEvent(int button) : m_Button(button) {}
+    KeyReleasedEvent(int keycode)
+        : KeyEvent(keycode) {
+    }
 
-    int GetMouseButton() const { return m_Button; }
+    std::string ToString() const {
+        std::stringstream ss;
+        ss << "KeyReleasedEvent: " << m_KeyCode;
+        return ss.str();
+    }
 
     static EventType GetStaticType() { return EventType::KeyReleased; }
     virtual EventType GetEventType() const override { return GetStaticType(); }
     virtual const char* GetName() const override { return "KeyReleased"; }
-private:
-    int m_Button;
 };
 
-class KeyRepeatedEvent : public Event {
-public:
-    KeyRepeatedEvent(int button) : m_Button(button) {}
-
-    int GetMouseButton() const { return m_Button; }
-
-    static EventType GetStaticType() { return EventType::KeyRepeated; }
-    virtual EventType GetEventType() const override { return GetStaticType(); }
-    virtual const char* GetName() const override { return "KeyRepeated"; }
-private:
-    int m_Button;
-};
