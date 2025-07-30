@@ -2,6 +2,7 @@ C:\Users\Hector\source\repos\OpenGL\OpenGL\src\main.cpp;C:\Users\Hector\source\r
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Application.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Application.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\CoreUtils\Log.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Log.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\CoreUtils\Math\maths.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\maths.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\GlfwWindow.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\GlfwWindow.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Input.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Input.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Time.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Time.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\vendor\imgui\backends\imgui_impl_glfw.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\imgui_impl_glfw.obj

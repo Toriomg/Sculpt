@@ -1,9 +1,1 @@
-﻿  Application.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: 'APIENTRY': redefinición de macro
-  (compilando archivo de origen "src/Platform/Application.cpp")
-      C:\Users\Hector\source\repos\OpenGL\OpenGl\Dependencies\GLFW\include\GLFW\glfw3.h(123,11):
-      vea la definición anterior de “APIENTRY”
-  
-  OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
-  "pwsh.exe" no se reconoce como un comando interno o externo,
-  programa o archivo por lotes ejecutable.
+﻿  OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
