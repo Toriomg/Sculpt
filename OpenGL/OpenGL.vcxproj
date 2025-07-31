@@ -143,7 +143,9 @@
     <ClCompile Include="src\Platform\Application.cpp" />
     <ClCompile Include="src\Platform\CoreUtils\Log.cpp" />
     <ClCompile Include="src\Platform\CoreUtils\Math\maths.cpp" />
-    <ClCompile Include="src\Platform\System\GlfwWindow.cpp" />
+    <ClCompile Include="src\Platform\System\Input\GlfwInput.cpp" />
+    <ClCompile Include="src\Platform\System\Input\Input.cpp" />
+    <ClCompile Include="src\Platform\System\Window\GlfwWindow.cpp" />
     <ClCompile Include="src\Platform\System\Input.cpp" />
     <ClCompile Include="src\Platform\System\Time.cpp" />
     <ClCompile Include="src\vendor\imgui\backends\imgui_impl_glfw.cpp" />
@@ -171,7 +173,10 @@
     <ClInclude Include="src\Platform\Events\KeyboardEvent.h" />
     <ClInclude Include="src\Platform\Events\MouseEvent.h" />
     <ClInclude Include="src\Platform\Events\WindowEvent.h" />
-    <ClInclude Include="src\Platform\System\GlfwWindow.h" />
+    <ClInclude Include="src\Platform\System\Input\GlfwInput.h" />
+    <ClInclude Include="src\Platform\System\Input\Input.h" />
+    <ClInclude Include="src\Platform\System\Input\KeyCodes.h" />
+    <ClInclude Include="src\Platform\System\Window\GlfwWindow.h" />
     <ClInclude Include="src\Platform\System\Input.h" />
     <ClInclude Include="src\Platform\System\Time.h" />
     <ClInclude Include="src\glhead.h" />
@@ -181,7 +186,7 @@
     <ClInclude Include="src\Platform\CoreUtils\Math\vec2.h" />
     <ClInclude Include="src\Platform\CoreUtils\Math\vec3.h" />
     <ClInclude Include="src\Platform\CoreUtils\Math\vec4.h" />
-    <ClInclude Include="src\Platform\System\Window.h" />
+    <ClInclude Include="src\Platform\System\Window\Window.h" />
     <ClInclude Include="src\vendor\imgui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="src\vendor\imgui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="src\vendor\imgui\backends\imgui_impl_opengl3_loader.h" />

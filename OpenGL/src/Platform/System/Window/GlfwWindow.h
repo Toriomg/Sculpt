@@ -1,5 +1,5 @@
 #pragma once
-#include "Platform/System/Window.h"
+#include "Platform/System/Window/Window.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -19,6 +19,7 @@ public:
 
     void* GetNativeWindow() const override { return m_Window; }
 
+    std::string GetKeyName(int keycode) const override;
 private:
     void Init(const std::string& title, unsigned int width, unsigned int height);
     void Shutdown();
