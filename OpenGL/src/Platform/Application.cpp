@@ -7,6 +7,8 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 	Log::Init(); // Initialize the logging system
 
     m_Window = std::unique_ptr<Window>(Window::Create());
+    Input::Init(m_Window.get());
+
 	m_Window->SetVSync(true);
     m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
@@ -19,6 +21,7 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 
 Application::~Application()
 {
+	Input::Shutdown(); // Shutdown the input system
     CORE_LOG_INFO("Program CORRECTLY ended");
 }
 
@@ -27,8 +30,8 @@ void Application::Run()
     while (m_Running)
     {
 		Time::Update();
-
-		//std::cout << InputManager::Get().GetMouseX() << std::endl;
+		Input::OnUpdate(); // Update the input system
+        LOG_INFO("Botton left: {0}", Input::IsMouseButtonPressed(MouseCode::Left));
         m_Window->OnUpdate();
     }
 }
@@ -62,13 +65,15 @@ bool Application::OnWindowClose(WindowCloseEvent& e) {
 }
 
 bool Application::OnKeyPressed(KeyPressedEvent& e) {
-    LOG_INFO("Key {0} was pressed!", e.GetKeyCode());
+    std::string keyName = m_Window->GetKeyName(e.GetKeyCode());
+
+    LOG_INFO("Key '{0}' was pressed! (Repeat: {1})", keyName, e.IsRepeat());
     // Return true if you want to "consume" the event
     return false;
 }
 
 bool Application::OnKeyReleased(KeyReleasedEvent& e) {
-    LOG_INFO("Key {0} was released!", e.GetKeyCode());
+    LOG_INFO("Key {0} was released!", m_Window->GetKeyName(e.GetKeyCode()));
     // Return true if you want to "consume" the event
     return false;
 }

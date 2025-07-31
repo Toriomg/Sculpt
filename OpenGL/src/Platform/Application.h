@@ -3,8 +3,8 @@
 
 #include "glhead.h"
 #include "Platform/System/Time.h"
-#include "Platform/System/Input.h"
-#include "Platform/System/Window.h"
+#include "Platform/System/Input/Input.h"
+#include "Platform/System/Window/Window.h"
 #include "Platform/CoreUtils/Log.h"
 
 class Application
