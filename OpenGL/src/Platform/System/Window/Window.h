@@ -4,8 +4,8 @@
 
 // Events
 
-#include "Platform/Events/MouseEvent.h"
-#include "Platform/Events/WindowEvent.h"
+#include "Platform/System/Events/MouseEvent.h"
+#include "Platform/System/Events/WindowEvent.h"
 #include "Platform/Events/KeyboardEvent.h"
 
 class Window {

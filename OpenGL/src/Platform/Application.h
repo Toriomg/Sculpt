@@ -5,6 +5,7 @@
 #include "Platform/System/Time.h"
 #include "Platform/System/Input/Input.h"
 #include "Platform/System/Window/Window.h"
+#include "Platform/System/Layers/LayerStack.h"
 #include "Platform/CoreUtils/Log.h"
 
 class Application
