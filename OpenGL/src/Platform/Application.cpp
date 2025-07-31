@@ -31,7 +31,6 @@ void Application::Run()
     {
 		Time::Update();
 		Input::OnUpdate(); // Update the input system
-        LOG_INFO("Botton left: {0}", Input::IsMouseButtonPressed(MouseCode::Left));
         m_Window->OnUpdate();
     }
 }

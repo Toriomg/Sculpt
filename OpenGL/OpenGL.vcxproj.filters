@@ -66,6 +66,9 @@
     <ClCompile Include="src\Platform\System\Input\GlfwInput.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\Layers\LayerStack.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\BasicTexture.shader" />
@@ -461,16 +464,16 @@
     <ClInclude Include="src\Platform\System\Window\GlfwWindow.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Events\Event.h">
+    <ClInclude Include="src\Platform\System\Events\Event.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Events\MouseEvent.h">
+    <ClInclude Include="src\Platform\System\Events\MouseEvent.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Events\WindowEvent.h">
+    <ClInclude Include="src\Platform\System\Events\WindowEvent.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Events\KeyboardEvent.h">
+    <ClInclude Include="src\Platform\System\Events\KeyboardEvent.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\System\Input\GlfwInput.h">
@@ -480,6 +483,15 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\System\Input\KeyCodes.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Layers\Layer.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Layers\LayerStack.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Layers\EditorLayer.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
