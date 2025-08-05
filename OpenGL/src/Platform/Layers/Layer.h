@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Platform/System/Events/Event.h"
+#include "Platform/CoreUtils/Log.h"
 #include "glhead.h"
 
 class Layer

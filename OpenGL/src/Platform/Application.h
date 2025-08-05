@@ -5,8 +5,10 @@
 #include "Platform/System/Time.h"
 #include "Platform/System/Input/Input.h"
 #include "Platform/System/Window/Window.h"
-#include "Platform/System/Layers/LayerStack.h"
 #include "Platform/CoreUtils/Log.h"
+// Layers
+#include "Platform/Layers/LayerStack.h"
+#include "Platform/Layers/EditorLayer.h"
 
 class Application
 {
@@ -24,9 +26,7 @@ private:
     unsigned int m_Width, m_Height;
     bool m_Running = true;
 
-    bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
-    bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
+	LayerStack m_LayerStack;
+
     bool OnWindowClose(WindowCloseEvent& e);
-    bool OnKeyPressed(KeyPressedEvent& e);
-	bool OnKeyReleased(KeyReleasedEvent& e);
 };

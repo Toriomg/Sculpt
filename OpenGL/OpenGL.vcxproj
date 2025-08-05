@@ -143,6 +143,7 @@
     <ClCompile Include="src\Platform\Application.cpp" />
     <ClCompile Include="src\Platform\CoreUtils\Log.cpp" />
     <ClCompile Include="src\Platform\CoreUtils\Math\maths.cpp" />
+    <ClCompile Include="src\Platform\Layers\EditorLayer.cpp" />
     <ClCompile Include="src\Platform\Layers\LayerStack.cpp" />
     <ClCompile Include="src\Platform\System\Input\GlfwInput.cpp" />
     <ClCompile Include="src\Platform\System\Input\Input.cpp" />

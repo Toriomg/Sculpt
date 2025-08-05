@@ -22,7 +22,7 @@ public:
     static Vec2 GetMousePosition();
     static float GetMouseX();
     static float GetMouseY();
-
+	static std::string GetKeyName(int keycode);
     // This inner class is the key to platform abstraction
     class InputImpl {
     public:
@@ -31,6 +31,7 @@ public:
         virtual bool IsKeyPressedImpl(KeyCode key) = 0;
         virtual bool IsMouseButtonPressedImpl(MouseCode button) = 0;
         virtual Vec2 GetMousePositionImpl() = 0;
+        virtual std::string GetKeyNameImpl(int keycode) const = 0;
     };
 
 private:

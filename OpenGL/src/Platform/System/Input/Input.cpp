@@ -39,3 +39,7 @@ float Input::GetMouseX() {
 float Input::GetMouseY() {
     return GetMousePosition().y;
 }
+
+std::string Input::GetKeyName(int key) {
+    return s_Instance->GetKeyNameImpl(key);
+}
