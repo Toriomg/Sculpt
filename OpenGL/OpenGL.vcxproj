@@ -143,6 +143,8 @@
     <ClCompile Include="src\Platform\Application.cpp" />
     <ClCompile Include="src\Platform\CoreUtils\Log.cpp" />
     <ClCompile Include="src\Platform\CoreUtils\Math\maths.cpp" />
+    <ClCompile Include="src\Platform\Graphics\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="src\Platform\Graphics\Buffers\VertexBuffer.cpp" />
     <ClCompile Include="src\Platform\Layers\EditorLayer.cpp" />
     <ClCompile Include="src\Platform\Layers\LayerStack.cpp" />
     <ClCompile Include="src\Platform\System\Input\GlfwInput.cpp" />
@@ -171,6 +173,8 @@
   <ItemGroup>
     <ClInclude Include="src\Platform\Application.h" />
     <ClInclude Include="src\Platform\CoreUtils\Log.h" />
+    <ClInclude Include="src\Platform\Graphics\Buffers\IndexBuffer.h" />
+    <ClInclude Include="src\Platform\Graphics\Buffers\VertexBuffer.h" />
     <ClInclude Include="src\Platform\System\Events\Event.h" />
     <ClInclude Include="src\Platform\System\Events\KeyboardEvent.h" />
     <ClInclude Include="src\Platform\System\Events\MouseEvent.h" />
