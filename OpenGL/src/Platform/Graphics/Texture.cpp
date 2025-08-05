@@ -7,7 +7,7 @@ Texture::Texture(const std::string& path)
 	stbi_set_flip_vertically_on_load(1); // Flip the image vertically to match OpenGL's texture coordinate system
 	m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4); // Load the image with 4 channels (RGBA)
 
-	glGenTextures(1, &m_RendererID);
+	glGenTextures(1, &m_RendererID) ;
 	glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
 	// Upload the texture data to OpenGL
