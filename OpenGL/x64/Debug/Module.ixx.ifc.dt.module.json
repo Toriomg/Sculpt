@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\Module.obj",
+            "outputs": [
+                "x64\\Debug\\Module.ixx.ifc.dt.module.json",
+                "x64\\Debug\\Module.ixx.ifc.dt.d.json",
+                "x64\\Debug\\Module.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "Module",
+                    "source-path": "c:\\users\\hector\\source\\repos\\opengl\\opengl\\src\\platform\\graphics\\module.ixx",
+                    "is-interface": true
+                }
+            ],
+            "requires": []
+        }
+    ]
+}
