@@ -2,6 +2,8 @@ C:\Users\Hector\source\repos\OpenGL\OpenGL\src\main.cpp;C:\Users\Hector\source\r
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Application.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Application.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\CoreUtils\Log.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Log.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\CoreUtils\Math\maths.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\maths.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Layers\EditorLayer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\EditorLayer.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Layers\LayerStack.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\LayerStack.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Input\GlfwInput.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\GlfwInput.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Input\Input.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Input.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Window\GlfwWindow.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\GlfwWindow.obj

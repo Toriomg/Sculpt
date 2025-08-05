@@ -13,7 +13,7 @@ protected:
     virtual bool IsKeyPressedImpl(KeyCode key) override;
     virtual bool IsMouseButtonPressedImpl(MouseCode button) override;
     virtual Vec2 GetMousePositionImpl() override;
-
+    std::string GetKeyNameImpl(int keycode) const override;
 private:
     GLFWwindow* m_NativeWindow;
 };

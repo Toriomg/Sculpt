@@ -1,4 +1,5 @@
 #include "LayerStack.h"
+#include <algorithm>
 
 LayerStack::LayerStack() : m_LayerInsertIndex(0) {}
 

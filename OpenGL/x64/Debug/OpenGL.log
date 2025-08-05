@@ -1,23 +1,9 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1129,5): warning MSB8027: Dos o más archivos con el mismo nombre de Input.cpp producirán salidas en la misma ubicación. Esto puede dar lugar a un resultado de compilación incorrecto. Los archivos implicados son src\Platform\System\Input\Input.cpp, src\Platform\System\Input.cpp.
-  main.cpp
   Application.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Window\Window.h(9,10): error C1083: No se puede abrir el archivo incluir: 'Platform/Events/KeyboardEvent.h': No such file or directory
-  (compilando archivo de origen "src/main.cpp")
-  
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Window\Window.h(9,10): error C1083: No se puede abrir el archivo incluir: 'Platform/Events/KeyboardEvent.h': No such file or directory
-  (compilando archivo de origen "src/Platform/Application.cpp")
-  
-  LayerStack.cpp
-  GlfwInput.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Window\Window.h(9,10): error C1083: No se puede abrir el archivo incluir: 'Platform/Events/KeyboardEvent.h': No such file or directory
-  (compilando archivo de origen "src/Platform/System/Input/GlfwInput.cpp")
-  
-  Input.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Window\Window.h(9,10): error C1083: No se puede abrir el archivo incluir: 'Platform/Events/KeyboardEvent.h': No such file or directory
-  (compilando archivo de origen "src/Platform/System/Input/Input.cpp")
-  
-  GlfwWindow.cpp
-C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Window\Window.h(9,10): error C1083: No se puede abrir el archivo incluir: 'Platform/Events/KeyboardEvent.h': No such file or directory
-  (compilando archivo de origen "src/Platform/System/Window/GlfwWindow.cpp")
-  
-  Generando código...
+x64\Debug\Input.obj : warning LNK4042: objeto especificado más de una vez; omitidos los sobrantes
+glew32s.lib(glew.obj) : warning LNK4099: no se encontró PDB 'vc120.pdb' con 'glew32s.lib(glew.obj)' o en 'C:\Users\Hector\source\repos\OpenGL\x64\Debug\vc120.pdb'; se vinculará el objeto sin tener en cuenta información de depuración
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+LINK : warning LNK4098: la biblioteca predeterminada'LIBCMT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+  OpenGL.vcxproj -> C:\Users\Hector\source\repos\OpenGL\x64\Debug\OpenGL.exe
+  "pwsh.exe" no se reconoce como un comando interno o externo,
+  programa o archivo por lotes ejecutable.

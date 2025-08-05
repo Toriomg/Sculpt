@@ -1,5 +1,6 @@
 #pragma once
 #include "Platform/Layers/Layer.h"
+#include "Platform/System/Input/Input.h"
 //#include "Scene/Scene.h"
 //#include "UI/EditorUI.h"
 #include "Platform/System/Events/KeyboardEvent.h"
@@ -15,9 +16,10 @@ public:
     virtual void OnEvent(Event& event) override;
 
 private:
-    // Event handlers now live here!
-    bool OnKeyPressed(KeyPressedEvent& e);
     bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+    bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
+    bool OnKeyPressed(KeyPressedEvent& e);
+    bool OnKeyReleased(KeyReleasedEvent& e);
 
     // This layer now owns the core application state and UI
     //std::unique_ptr<Scene> m_ActiveScene;

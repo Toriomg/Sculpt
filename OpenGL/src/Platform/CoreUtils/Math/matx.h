@@ -1,6 +1,6 @@
 #pragma once
-#include "vec4.h"
 #include <GL/glew.h>
+#include "vec4.h"
 #include <cmath>
 
 #define M_PI 3.141592653589793f
@@ -150,19 +150,19 @@ public:
 		return A * B;
 	}
 
-    static Matx4f orthographic(float left, float right, float bottom, float top, float near, float far) {
+    static Matx4f orthographic(float left, float right, float bottom, float top, float zNear, float zFar) {
         return Matx4f(2.0f / (right - left), 0.0f, 0.0f, -(right + left) / (right - left),
                       0.0f, 2.0f / (top - bottom), 0.0f, -(top + bottom) / (top - bottom),
-                      0.0f, 0.0f, -2.0f / (far - near), -(far + near) / (far - near),
+                      0.0f, 0.0f, -2.0f / (zFar - zNear), -(zFar + zNear) / (zFar - zNear),
                       0.0f, 0.0f, 0.0f, 1.0f);
     }
 
-    static Matx4f perspective(float fov, float aspectRatio, float near, float far) {
+    static Matx4f perspective(float fov, float aspectRatio, float zNear, float zFar) {
         float tanHalfFov = tan(fov * M_PI / 360.0f);
         float f = 1.0f / tanHalfFov;
 
-        float A = -(far + near) / (far - near);
-        float B = -(2.0f * far * near) / (far - near);
+        float A = -(zFar + zNear) / (zFar - zNear);
+        float B = -(2.0f * zFar * zNear) / (zFar - zNear);
         if (aspectRatio == 0.0f) {
             aspectRatio = 1.0f; // Prevent division by zero
 		}
@@ -175,7 +175,7 @@ public:
         );
     }
 
-    const float* data() const {
+    const float* data() const{
         return &m[0][0];
 	}
 };

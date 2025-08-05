@@ -18,8 +18,6 @@ public:
     bool IsVSync() const override;
 
     void* GetNativeWindow() const override { return m_Window; }
-
-    std::string GetKeyName(int keycode) const override;
 private:
     void Init(const std::string& title, unsigned int width, unsigned int height);
     void Shutdown();

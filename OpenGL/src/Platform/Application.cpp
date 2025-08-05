@@ -15,6 +15,7 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
     // Setup Time
 	Time::Init();
 
+    m_LayerStack.PushLayer(new EditorLayer());
 
 	CORE_LOG_INFO("OpenGL Initialized");
 }
@@ -31,6 +32,9 @@ void Application::Run()
     {
 		Time::Update();
 		Input::OnUpdate(); // Update the input system
+        for (Layer* layer : m_LayerStack) {
+            layer->OnUpdate();
+        }
         m_Window->OnUpdate();
     }
 }
@@ -38,41 +42,19 @@ void Application::Run()
 void Application::OnEvent(Event& e) {
     // Use the dispatcher to route the event to the correct handler
     EventDispatcher dispatcher(e);
-    dispatcher.Dispatch<MouseButtonPressedEvent>(std::bind(&Application::OnMouseButtonPressed, this, std::placeholders::_1));
-    dispatcher.Dispatch<MouseButtonReleasedEvent>(std::bind(&Application::OnMouseButtonReleased, this, std::placeholders::_1));
     dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
-	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&Application::OnKeyPressed, this, std::placeholders::_1));
-	dispatcher.Dispatch<KeyReleasedEvent>(std::bind(&Application::OnKeyReleased, this, std::placeholders::_1));
-}
 
-bool Application::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
-    LOG_INFO("Mouse button {0} was pressed!", e.GetMouseButton());
-    // Return true if you want to "consume" the event
-    return false;
-}
-
-bool Application::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
-    LOG_INFO("Mouse button {0} was released!", e.GetMouseButton());
-    // Return true if you want to "consume" the event
-    return false;
+    for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+        // If a layer has handled the event, stop processing.
+        if (e.Handled) {
+            break;
+        }
+        (*it)->OnEvent(e);
+    }
 }
 
 bool Application::OnWindowClose(WindowCloseEvent& e) {
     m_Running = false;
-    LOG_INFO("Window close event received. Shutting down.");
+    CORE_LOG_INFO("Window close event received. Shutting down.");
     return true; // Return true: we handled it, no other layer needs it.
-}
-
-bool Application::OnKeyPressed(KeyPressedEvent& e) {
-    std::string keyName = m_Window->GetKeyName(e.GetKeyCode());
-
-    LOG_INFO("Key '{0}' was pressed! (Repeat: {1})", keyName, e.IsRepeat());
-    // Return true if you want to "consume" the event
-    return false;
-}
-
-bool Application::OnKeyReleased(KeyReleasedEvent& e) {
-    LOG_INFO("Key {0} was released!", m_Window->GetKeyName(e.GetKeyCode()));
-    // Return true if you want to "consume" the event
-    return false;
 }
