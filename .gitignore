@@ -48,7 +48,7 @@ OpenGL/x64/
 *.sln
 *.vcxproj.user
 *.vcxproj.filters
-*.vcxproj.*
+*.vcxproj
 *.ini
 .vscode/
 .idea/
