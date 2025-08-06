@@ -9,7 +9,7 @@ void EditorLayer::OnAttach() {
     CORE_LOG_INFO("EditorLayer attached!");
 }
 
-void EditorLayer::OnUpdate() {
+void EditorLayer::OnUpdate(float deltaTime) {
     // This is where it is updated the game logic every frame
 }
 

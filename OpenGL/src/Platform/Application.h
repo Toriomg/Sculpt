@@ -9,6 +9,7 @@
 // Layers
 #include "Platform/Layers/LayerStack.h"
 #include "Platform/Layers/EditorLayer.h"
+#include "Platform/Layers/ServiceLayer.h"
 
 class Application
 {

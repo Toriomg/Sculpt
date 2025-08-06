@@ -33,6 +33,8 @@ void Renderer::BeginScene(const Matx4f& ViewProjectionMatrix) {
     // At the beginning of rendering a scene, cache the camera's
     // combined view and projection matrix. This will be used for
     // every single object that gets drawn in this frame.
+	RenderCommand::SetClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f));
+    RenderCommand::Clear();
     s_SceneData.View = ViewProjectionMatrix;
 }
 

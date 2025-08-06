@@ -57,20 +57,22 @@ void Camera::RecalculateProjectionMatrix() {
 
 	switch (m_ProjectionType)
 	{
-	case Camera::ProjectionType::Perspective:
-		m_ProjectionMatrix = Matx4f::perspective(m_PerspectiveFOV, aspectRatio, m_NearClip, m_FarClip);
-		break;
-	case Camera::ProjectionType::Orthographic:
-		float orthoHalfHeight = m_OrthographicSize; // Or m_OrthoHalfHeight, or m_OrthographicSize a la Unity
+		case Camera::ProjectionType::Perspective:{
+			m_ProjectionMatrix = Matx4f::perspective(m_PerspectiveFOV, aspectRatio, m_NearClip, m_FarClip);
+			break;
+		}
+		case Camera::ProjectionType::Orthographic: {
+			float orthoHalfHeight = m_OrthographicSize; // Or m_OrthoHalfHeight, or m_OrthographicSize a la Unity
 
-		float orthoHalfWidth = orthoHalfHeight * aspectRatio;
+			float orthoHalfWidth = orthoHalfHeight * aspectRatio;
 
-		Matx4f::orthographic(-orthoHalfWidth, orthoHalfWidth,
-			-orthoHalfHeight, orthoHalfHeight,
-			m_NearClip, m_FarClip);
-		break;
-	default:
-		break;
+			Matx4f::orthographic(-orthoHalfWidth, orthoHalfWidth,
+				-orthoHalfHeight, orthoHalfHeight,
+				m_NearClip, m_FarClip);
+			break;
+		}
+		default:
+			break;
 	}
 	m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }
