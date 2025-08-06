@@ -32,3 +32,26 @@
 *.app
 
 .vs
+
+**/build/
+**/bin/
+**/obj/
+
+#IDE
+
+*.user
+*.suo
+*.rsuser
+*.userosscache
+*.sln
+*.vcxproj.user
+.vscode/
+.idea/
+
+#LOGS
+
+*.log
+*~
+*.tmp
+.DS_Store
+Thumbs.db
