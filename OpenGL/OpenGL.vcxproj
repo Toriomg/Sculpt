@@ -157,6 +157,7 @@
     <ClCompile Include="src\Platform\System\Window\GlfwWindow.cpp" />
     <ClCompile Include="src\Platform\System\Input.cpp" />
     <ClCompile Include="src\Platform\System\Time.cpp" />
+    <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\vendor\imgui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\vendor\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />

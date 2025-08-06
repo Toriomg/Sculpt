@@ -13,12 +13,15 @@ public:
     static void Init();
     static void Shutdown();
 
-    // Call this at the start of every frame
     static void BeginScene(const Camera& camera);
     static void EndScene();
 
     // The main function to draw an object
-    static void Submit(const std::shared_ptr<Mesh>& mesh, const std::shared_ptr<Material>& material, const Vec4& transform);
+    static void Submit(
+        const std::shared_ptr<Mesh>& mesh,
+        const std::shared_ptr<Material>& material,
+        const Matx4f& transform
+    );
 
     // A function to handle window resizing
     static void OnWindowResize(uint32_t width, uint32_t height);
