@@ -90,6 +90,9 @@
     <ClCompile Include="src\Platform\Layers\EditorLayer.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\Graphics\RenderCommand.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\BasicTexture.shader" />
@@ -546,6 +549,9 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Renderer.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Graphics\RenderCommand.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

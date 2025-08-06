@@ -147,6 +147,7 @@
     <ClCompile Include="src\Platform\Graphics\Buffers\VertexArray.cpp" />
     <ClCompile Include="src\Platform\Graphics\Buffers\VertexBuffer.cpp" />
     <ClCompile Include="src\Platform\Graphics\Framebuffer.cpp" />
+    <ClCompile Include="src\Platform\Graphics\RenderCommand.cpp" />
     <ClCompile Include="src\Platform\Graphics\Shader.cpp" />
     <ClCompile Include="src\Platform\Graphics\Texture.cpp" />
     <ClCompile Include="src\Platform\Layers\EditorLayer.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="src\Platform\Graphics\Buffers\IndexBuffer.h" />
     <ClInclude Include="src\Platform\Graphics\Buffers\VertexBuffer.h" />
     <ClInclude Include="src\Platform\Graphics\Framebuffer.h" />
+    <ClInclude Include="src\Platform\Graphics\RenderCommand.h" />
     <ClInclude Include="src\Platform\Graphics\Shader.h" />
     <ClInclude Include="src\Platform\Graphics\Texture.h" />
     <ClInclude Include="src\Platform\Graphics\Vertex.h" />
