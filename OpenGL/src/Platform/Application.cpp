@@ -32,7 +32,7 @@ void Application::Run()
 		Time::Update();
 		Input::OnUpdate(); // Update the input system
         for (Layer* layer : m_LayerStack) {
-            layer->OnUpdate();
+            layer->OnUpdate(Time::GetDeltaTime());
         }
         m_Window->OnUpdate();
     }

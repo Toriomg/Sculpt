@@ -29,11 +29,11 @@ void Renderer::OnWindowResize(uint32_t width, uint32_t height) {
     RenderCommand::SetViewport(0, 0, width, height);
 }
 
-void Renderer::BeginScene(const Camera& camera) {
+void Renderer::BeginScene(const Matx4f& ViewProjectionMatrix) {
     // At the beginning of rendering a scene, cache the camera's
     // combined view and projection matrix. This will be used for
     // every single object that gets drawn in this frame.
-    s_SceneData.View = camera.GetViewProjectionMatrix();
+    s_SceneData.View = ViewProjectionMatrix;
 }
 
 void Renderer::EndScene() {
