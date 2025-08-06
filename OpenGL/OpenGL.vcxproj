@@ -206,6 +206,9 @@
     <ClInclude Include="src\Platform\CoreUtils\Math\vec3.h" />
     <ClInclude Include="src\Platform\CoreUtils\Math\vec4.h" />
     <ClInclude Include="src\Platform\System\Window\Window.h" />
+    <ClInclude Include="src\Renderer\Material.h" />
+    <ClInclude Include="src\Renderer\Mesh.h" />
+    <ClInclude Include="src\Renderer\Renderer.h" />
     <ClInclude Include="src\vendor\imgui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="src\vendor\imgui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="src\vendor\imgui\backends\imgui_impl_opengl3_loader.h" />

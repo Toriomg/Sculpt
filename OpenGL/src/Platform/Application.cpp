@@ -1,6 +1,5 @@
 #include "Application.h"
 
-
 Application::Application(const std::string& name, unsigned int width, unsigned int height)
     : m_Window(nullptr), m_AppName(name), m_Width(width), m_Height(height)
 {
