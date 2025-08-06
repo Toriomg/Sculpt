@@ -15,7 +15,7 @@ public:
     // Called when the layer is removed from the stack
     virtual void OnDetach() {}
     // Called every frame to update the layer's logic
-    virtual void OnUpdate() {}
+    virtual void OnUpdate(float deltaTime) {}
     // Called when an event is sent to the layer
     virtual void OnEvent(Event& event) {}
 

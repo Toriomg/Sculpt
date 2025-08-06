@@ -13,7 +13,7 @@ public:
     static void Init();
     static void Shutdown();
 
-    static void BeginScene(const Camera& camera);
+    static void BeginScene(const Matx4f& ViewProjectionMatrix);
     static void EndScene();
 
     // The main function to draw an object
