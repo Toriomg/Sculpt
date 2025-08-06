@@ -7,17 +7,22 @@ void RenderCommand::Init() {
 }
 
 void RenderCommand::SetClearColor(const Vec4& color) {
-    glClearColor(color.r, color.g, color.b, color.a);
+    glClearColor(color.x, color.y, color.z, color.w);
 }
 
 void RenderCommand::Clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) {
+void RenderCommand::Draw(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<IndexBuffer>& indexBuffer) {
+	//Bind the buffers before drawing
+	vertexArray->Bind();
+	indexBuffer->Bind();
+
+	// Draw the elements using the index buffer
     glDrawElements(
         GL_TRIANGLES,
-        vertexArray->GetIndexBuffer()->GetCount(),
+        indexBuffer->GetCount(),
         GL_UNSIGNED_INT,
         nullptr
     );

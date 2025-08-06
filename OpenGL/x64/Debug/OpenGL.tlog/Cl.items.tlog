@@ -2,6 +2,13 @@ C:\Users\Hector\source\repos\OpenGL\OpenGL\src\main.cpp;C:\Users\Hector\source\r
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Application.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Application.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\CoreUtils\Log.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Log.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\CoreUtils\Math\maths.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\maths.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Graphics\Buffers\IndexBuffer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\IndexBuffer.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Graphics\Buffers\VertexArray.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\VertexArray.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Graphics\Buffers\VertexBuffer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\VertexBuffer.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Graphics\Framebuffer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Framebuffer.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Graphics\RenderCommand.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\RenderCommand.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Graphics\Shader.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Shader.obj
+C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Graphics\Texture.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\Texture.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Layers\EditorLayer.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\EditorLayer.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\Layers\LayerStack.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\LayerStack.obj
 C:\Users\Hector\source\repos\OpenGL\OpenGL\src\Platform\System\Input\GlfwInput.cpp;C:\Users\Hector\source\repos\OpenGL\OpenGL\x64\Debug\GlfwInput.obj
