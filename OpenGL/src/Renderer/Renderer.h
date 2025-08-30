@@ -2,6 +2,7 @@
 
 #include "glhead.h"
 #include "Platform/CoreUtils/Math/maths.h"
+#include "Platform/Graphics/RenderCommand.h"
 
 class Mesh;
 class Material;
