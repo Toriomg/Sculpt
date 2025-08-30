@@ -1,7 +1,6 @@
 #include "Renderer.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "Platform/Graphics/RenderCommand.h"
 
 // This struct is a private implementation detail of the Renderer.
 // It holds data that is constant for an entire scene render pass.

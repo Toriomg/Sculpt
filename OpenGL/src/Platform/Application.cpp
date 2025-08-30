@@ -39,6 +39,7 @@ void Application::Run()
 }
 
 void Application::OnEvent(Event& e) {
+    CORE_LOG_INFO("Received event: {0}", e.GetName()); // Log every event
     // Use the dispatcher to route the event to the correct handler
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));

@@ -1,30 +1,28 @@
 #shader vertex
 #version 330 core
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec2 texCoord;
 
-out vec2 v_TexCoord;
+layout(location = 0) in vec3 a_Position; // The vertex position (from your VBO, layout.Push<float>(3))
 
-uniform mat4 u_MVP;
+uniform mat4 u_ViewProjection; // The combined view and projection matrix
+uniform mat4 u_Model;          // The model matrix for the object
 
-void main() {
-    gl_Position = u_MVP * position;
-    v_TexCoord = texCoord;
-};
+void main()
+{
+    // Combine transformations: model -> view -> projection
+    // Order matters: first model, then view, then projection
+    gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);
+}
 
 
-
+// --- Fragment Shader ---
 #shader fragment
 #version 330 core
 
-layout(location = 0) out vec4 color;
+out vec4 color; // The output color of this fragment
 
-in vec2 v_TexCoord;
+uniform vec4 u_Color; // A uniform color that we set from the C++ application
 
-uniform vec4 u_Color;
-uniform sampler2D u_Texture;
-
-void main() {
-    vec4 texColor = texture(u_Texture, v_TexCoord);
-    color = texColor;
-};
+void main()
+{
+    color = u_Color; // Simply output the uniform color for every pixel
+}
