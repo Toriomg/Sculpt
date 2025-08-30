@@ -96,6 +96,14 @@ void GlfwWindow::Init(const std::string& title, unsigned int width, unsigned int
         }
         });
 
+    glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
+        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+        // Create a MouseMovedEvent and send it to the callback
+        MouseMovedEvent event(static_cast<float>(xpos), static_cast<float>(ypos));
+        data.EventCallback(event);
+    });
+
 	glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
