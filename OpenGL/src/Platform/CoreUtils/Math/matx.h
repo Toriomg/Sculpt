@@ -138,16 +138,23 @@ public:
                       0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-    static Matx4f lookAt(const Vec3& Pos, const Vec3& target, const Vec3& up) {
-        Vec3 N = target.normalize();
-        Vec3 U = up.crossProduct(N).normalize();
-        Vec3 V = N.crossProduct(U);
-        Matx4f A = Matx4f(U.x, U.y, U.z, 0.0f,
-                      V.x, V.y, V.z, 0.0f,
-                      N.x, N.y, N.z, 0.0f,
-			          0.0f, 0.0f, 0.0f, 1.0f);
-		Matx4f B = Matx4f::translation(Vec3(-Pos.x, -Pos.y, -Pos.z));
-		return A * B;
+    static Matx4f lookAt(const Vec3& position, const Vec3& target, const Vec3& worldUp) {
+        // 1. Calculate the forward (Z) axis
+        Vec3 forward = (target - position).normalize();
+
+        // 2. Calculate the right (X) axis
+        Vec3 right = worldUp.crossProduct(forward).normalize();
+
+        // 3. Calculate the new up (Y) axis
+        Vec3 up = forward.crossProduct(right);
+
+        // 4. Create the final view matrix
+        return Matx4f(
+            right.x, right.y, right.z, -right.dotProduct(position),
+            up.x, up.y, up.z, -up.dotProduct(position),
+            -forward.x, -forward.y, -forward.z, forward.dotProduct(position), // Negate forward for right-handed systems
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
 	}
 
     static Matx4f orthographic(float left, float right, float bottom, float top, float zNear, float zFar) {

@@ -39,6 +39,10 @@ public:
 		return *this;
 	}
 
+	Vec3 operator-() const {
+		return Vec3(-x, -y, -z);
+	}
+
 	float length() const {
 		return sqrt(x * x + y * y + z * z);
 	}
@@ -49,8 +53,8 @@ public:
 		return Vec3(x / len, y / len, z / len);
 	}
 
-	Vec3 dotProduct(const Vec3& other) const {
-		return Vec3(x * other.x, y * other.y, z * other.z);
+	float dotProduct(const Vec3& other) const {
+		return x * other.x + y * other.y + z * other.z;
 	}
 
 	Vec3 crossProduct(const Vec3& other) const {

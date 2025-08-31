@@ -19,6 +19,10 @@ class Vec2 {
 		return Vec2(x / scalar, y / scalar);
 	}
 
+	Vec2 operator-() const {
+		return Vec2(-x, -y);
+	}
+
 	Vec2 dotProduct(const Vec2& other) const {
 		return Vec2(x * other.x, y * other.y);
 	}
