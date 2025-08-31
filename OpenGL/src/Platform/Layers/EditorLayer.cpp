@@ -102,7 +102,7 @@ bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
 bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
     float mouseX = e.GetX();
     float mouseY = e.GetY();
-    LOG_INFO("Mouse moved to ({0}, {1})", mouseX, mouseY);
+    //LOG_INFO("Mouse moved to ({0}, {1})", mouseX, mouseY);
 
     if (Input::IsMouseButtonPressed(MouseCode::Right))
     {
@@ -112,6 +112,7 @@ bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
         // Update camera orientation
         m_EditorCamera.SetPitch(m_EditorCamera.GetPitch() + delta.y);
         m_EditorCamera.SetYaw(m_EditorCamera.GetYaw() - delta.x); // Pitch, Yaw
+		LOG_TRACE("Camera Rotating. Pitch: {0}, Yaw: {1}", m_EditorCamera.GetPitch(), m_EditorCamera.GetYaw());
     }
     
     m_LastMousePosition = { mouseX, mouseY };
