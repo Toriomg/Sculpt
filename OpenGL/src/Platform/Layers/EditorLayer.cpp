@@ -107,7 +107,7 @@ bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
     if (Input::IsMouseButtonPressed(MouseCode::Right))
     {
         Vec2 currentPos = { mouseX, mouseY };
-        Vec2 delta = (currentPos - m_LastMousePosition) * 0.3f; // Sensitivity factor
+        Vec2 delta = (currentPos - m_LastMousePosition) * 0.1f; // Sensitivity factor
 
         // Update camera orientation
         m_EditorCamera.SetPitch(m_EditorCamera.GetPitch() + delta.y);
