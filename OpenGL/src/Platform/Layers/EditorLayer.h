@@ -1,7 +1,7 @@
 #pragma once
 #include "Platform/Layers/Layer.h"
 #include "Platform/System/Input/Input.h"
-//#include "Scene/Scene.h"
+#include "Core/Scene.h"
 //#include "UI/EditorUI.h"
 #include "Platform/System/Events/KeyboardEvent.h"
 #include "Platform/System/Events/MouseEvent.h"
@@ -29,7 +29,7 @@ private:
     bool OnKeyReleased(KeyReleasedEvent& e);
 
     // This layer now owns the core application state and UI
-    //std::unique_ptr<Scene> m_ActiveScene;
+    std::unique_ptr<Scene> m_ActiveScene;
     //std::unique_ptr<EditorUI> m_EditorUI;
 
     Camera m_EditorCamera;
