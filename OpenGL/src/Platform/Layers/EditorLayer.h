@@ -33,6 +33,9 @@ private:
     //std::unique_ptr<EditorUI> m_EditorUI;
 
     Camera m_EditorCamera;
+	
+    Entity m_CameraEntity;
+	Entity m_CubeEntity;
 
     // Our test objects
     std::shared_ptr<Mesh> m_CubeMesh;
