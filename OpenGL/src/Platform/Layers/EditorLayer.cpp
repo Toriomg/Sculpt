@@ -1,4 +1,5 @@
 #include "EditorLayer.h"
+#include "Core/Components/Component.h"
 
 EditorLayer::EditorLayer()
     : Layer("EditorLayer"){
@@ -7,6 +8,15 @@ EditorLayer::EditorLayer()
 void EditorLayer::OnAttach() {
     // This is where you can initialize resources, set up the scene, etc.
     CORE_LOG_INFO("EditorLayer attached!");
+
+	m_ActiveScene = std::make_unique<Scene>();
+
+    m_CameraEntity = m_ActiveScene->CreateGameObject("Main Camera");
+    auto& camComp = m_ActiveScene->AddComponent<CameraComponent>(m_CameraEntity);
+    auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
+    camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 20.0f));
+
+
     // --- Create a Cube Mesh ---
     // A cube has 8 vertices, but 24 are needed for correct normals/uvs per face.
     float vertices[] = {
@@ -60,6 +70,14 @@ void EditorLayer::OnAttach() {
 
     // Set the cube's initial position
     m_CubePosition = { 0.0f, 0.0f, 0.0f };
+	
+    
+    m_CubeEntity = m_ActiveScene->CreateGameObject("Cube");
+    std::shared_ptr<Shader> myShader = simpleShader;
+    std::shared_ptr<Material> myMaterial = m_CubeMaterial;
+    std::shared_ptr<Mesh> myCubeMesh = m_CubeMesh;
+
+    m_ActiveScene->AddComponent<MeshComponent>(m_CubeEntity, myCubeMesh, myMaterial);
 }
 
 void EditorLayer::OnUpdate(float deltaTime) {
@@ -112,7 +130,7 @@ bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
         // Update camera orientation
         m_EditorCamera.SetPitch(m_EditorCamera.GetPitch() + delta.y);
         m_EditorCamera.SetYaw(m_EditorCamera.GetYaw() - delta.x); // Pitch, Yaw
-		LOG_TRACE("Camera Rotating. Pitch: {0}, Yaw: {1}", m_EditorCamera.GetPitch(), m_EditorCamera.GetYaw());
+		//LOG_TRACE("Camera Rotating. Pitch: {0}, Yaw: {1}", m_EditorCamera.GetPitch(), m_EditorCamera.GetYaw());
     }
     
     m_LastMousePosition = { mouseX, mouseY };

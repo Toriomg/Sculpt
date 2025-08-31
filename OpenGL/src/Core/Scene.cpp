@@ -22,6 +22,7 @@ Entity Scene::CreateGameObject(const std::string& name)
     AddComponent<TransformComponent>(entity);
     // Add a name component for easier identification in the UI
     AddComponent<NameComponent>(entity, name);
+	LOG_INFO("Created GameObject with ID: {0} and Name: {1}", (uint32_t)entity, name);
     return entity;
 }
 
