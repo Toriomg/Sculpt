@@ -31,6 +31,18 @@ public:
         return m_Registry.get<T>(entity);
     }
 
+    template<typename T, typename... Args>
+    T& SetComponent(Entity entity, Args&&... args) {
+        if (HasComponent<T>(entity)) {
+            // Sobreescribimos el componente existente usando m_Registry.replace
+            return m_Registry.replace<T>(entity, std::forward<Args>(args)...);
+        }
+        else {
+            // Si no existe, lo creamos normalmente
+            return AddComponent<T>(entity, std::forward<Args>(args)...);
+        }
+    }
+
     // Check if an entity has a component
     template<typename T>
     bool HasComponent(Entity entity) {

@@ -57,7 +57,7 @@ void EditorLayer::OnAttach() {
 
     // --- Create a Material ---
     // 1. Create a shader from a file (assuming you have a Shader factory)
-    auto simpleShader = std::make_shared<Shader>("res/shaders/Basic.shader");
+    auto simpleShader = std::make_shared<Shader>("res/shaders/testTriangle.shader");
 
     // 2. Create the Material (Layer 3)
     m_CubeMaterial = std::make_shared<Material>(simpleShader);
@@ -78,23 +78,14 @@ void EditorLayer::OnAttach() {
     std::shared_ptr<Mesh> myCubeMesh = m_CubeMesh;
 
     m_ActiveScene->AddComponent<MeshComponent>(m_CubeEntity, myCubeMesh, myMaterial);
+	m_ActiveScene->SetComponent<TransformComponent>(m_CubeEntity, Matx4f::translation(m_CubePosition));
 }
 
 void EditorLayer::OnUpdate(float deltaTime) {
     
     // 2. Prepare for rendering
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.85f, 1.0f });
-    RenderCommand::Clear();
-
-    // 3. Begin the rendering pass
-    Renderer::BeginScene(m_EditorCamera.GetViewProjectionMatrix());
-
-    // 4. Submit our cube to the renderer
-    Matx4f transform = Matx4f::translation(m_CubePosition);
-    Renderer::Submit(m_CubeMesh, m_CubeMaterial, transform);
-
-    // 5. End the rendering pass
-    Renderer::EndScene();
+    m_ActiveScene->OnUpdate(deltaTime); 
 }
 
 void EditorLayer::OnEvent(Event& e) {
