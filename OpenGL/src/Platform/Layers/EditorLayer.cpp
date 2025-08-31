@@ -103,6 +103,18 @@ bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
     float mouseX = e.GetX();
     float mouseY = e.GetY();
     LOG_INFO("Mouse moved to ({0}, {1})", mouseX, mouseY);
+
+    if (Input::IsMouseButtonPressed(MouseCode::Right))
+    {
+        Vec2 currentPos = { mouseX, mouseY };
+        Vec2 delta = (currentPos - m_LastMousePosition) * 0.3f; // Sensitivity factor
+
+        // Update camera orientation
+        m_EditorCamera.SetPitch(m_EditorCamera.GetPitch() + delta.y);
+        m_EditorCamera.SetYaw(m_EditorCamera.GetYaw() - delta.x); // Pitch, Yaw
+    }
+    
+    m_LastMousePosition = { mouseX, mouseY };
     return false;
 }
 
