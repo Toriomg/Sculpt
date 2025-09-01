@@ -1,12 +1,13 @@
 #shader vertex
 #version 330 core
 layout(location = 0) in vec3 position;
-layout(location = 1) in vec2 texCoord;
-layout(location = 2) in vec3 normal;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 texCoord;
 
-uniform mat4 u_MVP;
+uniform mat4 u_ViewProjection;
 uniform mat4 u_Model;
 uniform sampler2D u_Textures[2];
+uniform vec4 u_Color;
 
 out vec4 v_Color;
 out vec2 v_TexCoord;
@@ -15,11 +16,12 @@ out vec3 v_WorldPos;
 
 void main()
 {
-	gl_Position = u_MVP * vec4(position, 1.0);
+	gl_Position = u_ViewProjection * u_Model * vec4(position, 1.0);
 	v_TexCoord = texCoord;
 
 	v_WorldPos = vec3(u_Model * vec4(position, 1.0));
 	v_Normal = mat3(transpose(inverse(u_Model))) * normal;
+	v_Color = u_Color;
 }
 
 #shader fragment
@@ -34,6 +36,7 @@ out vec4 FragColor;
 
 uniform sampler2D u_Textures[2];
 uniform vec3 u_cameraPos;
+
 
 // Model selection uniforms
 uniform bool u_IsSelected;
@@ -60,7 +63,7 @@ vec3 lighting(){
 	// DIFFUSE LIGHT
 	// Calculate diffuse lighting (Lambertian reflection)
 	vec3 lightDir = normalize(lightPos - v_WorldPos);
-	float diff = max(dot(faceNormal, lightDir), 0.0);
+	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = diff * lightColor;
 
 	// AMBIENT LIGHT
@@ -88,7 +91,7 @@ vec3 lighting(){
 
 void main()
 {
-	vec3 objectColor = texture(u_Textures[0], v_TexCoord).rgb;
+	vec3 objectColor = v_Color.rgb;//texture(u_Textures[0], v_TexCoord).rgb;
 	
 	vec3 baseColor;
 

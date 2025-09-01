@@ -48,6 +48,9 @@ void GlfwWindow::Init(const std::string& title, unsigned int width, unsigned int
         // You should probably throw an exception or assert here
     }
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+
     CORE_LOG_INFO("GLEW Initialized");
     CORE_LOG_INFO("OpenGL Info:");
     CORE_LOG_INFO("  Vendor: {0}", (const char*)glGetString(GL_VENDOR));
@@ -57,6 +60,7 @@ void GlfwWindow::Init(const std::string& title, unsigned int width, unsigned int
     // IMPORTANT: This connects WindowData struct to the GLFW window instance.
     glfwSetWindowUserPointer(m_Window, &m_Data);
     SetVSync(true);
+
 
 
     // --- Set GLFW callbacks ---
