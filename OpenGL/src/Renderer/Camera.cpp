@@ -53,8 +53,10 @@ void Camera::SetFarClip(float farClip) {
 // END OF SETTERS
 
 void Camera::RecalculateProjectionMatrix() {
-	float aspectRatio = m_ViewportWidth / m_ViewportHeight;
-
+	float aspectRatio = 16.0f / 9.0f; // Default aspect ratio
+	if (m_ViewportHeight > 0) {
+		aspectRatio = m_ViewportWidth / m_ViewportHeight;
+	}
 	switch (m_ProjectionType)
 	{
 		case Camera::ProjectionType::Perspective:{
@@ -66,7 +68,7 @@ void Camera::RecalculateProjectionMatrix() {
 
 			float orthoHalfWidth = orthoHalfHeight * aspectRatio;
 
-			Matx4f::orthographic(-orthoHalfWidth, orthoHalfWidth,
+			m_ProjectionMatrix = Matx4f::orthographic(-orthoHalfWidth, orthoHalfWidth,
 				-orthoHalfHeight, orthoHalfHeight,
 				m_NearClip, m_FarClip);
 			break;
