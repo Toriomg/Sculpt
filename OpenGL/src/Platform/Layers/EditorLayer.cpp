@@ -20,34 +20,63 @@ void EditorLayer::OnAttach() {
 
     // --- Create a Cube Mesh ---
     // A cube has 8 vertices, but 24 are needed for correct normals/uvs per face.
-    float vertices[] = {
-        // Positions          
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
+    float halfSize = 1.0f;
 
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f
+    float vertices[] = {
+        // Z+ (Front Face)
+    -halfSize, -halfSize,  halfSize,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
+     halfSize, -halfSize,  halfSize,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
+     halfSize,  halfSize,  halfSize,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
+    -halfSize,  halfSize,  halfSize,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,
+
+    // Z- (Back Face)
+    -halfSize, -halfSize, -halfSize,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+    -halfSize,  halfSize, -halfSize,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+     halfSize,  halfSize, -halfSize,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+     halfSize, -halfSize, -halfSize,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+     // Y+ (Top Face)
+     -halfSize,  halfSize, -halfSize,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+     -halfSize,  halfSize,  halfSize,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+      halfSize,  halfSize,  halfSize,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+      halfSize,  halfSize, -halfSize,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+
+      // Y- (Bottom Face)
+      -halfSize, -halfSize, -halfSize,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+       halfSize, -halfSize, -halfSize,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+       halfSize, -halfSize,  halfSize,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+      -halfSize, -halfSize,  halfSize,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+
+      // X+ (Right Face)
+       halfSize, -halfSize, -halfSize,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+       halfSize,  halfSize, -halfSize,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+       halfSize,  halfSize,  halfSize,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+       halfSize, -halfSize,  halfSize,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+
+       // X- (Left Face)
+       -halfSize, -halfSize, -halfSize, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+       -halfSize, -halfSize,  halfSize, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+       -halfSize,  halfSize,  halfSize, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+       -halfSize,  halfSize, -halfSize, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f
     };
 
     uint32_t indices[] = {
-        0, 1, 2, 2, 3, 0, // Front face
-        4, 5, 6, 6, 7, 4, // Back face
-        3, 2, 6, 6, 7, 3, // Top face
-        0, 1, 5, 5, 4, 0, // Bottom face
-        0, 3, 7, 7, 4, 0, // Left face
-        1, 2, 6, 6, 5, 1  // Right face
+    0, 1, 2,   2, 3, 0,       // Front
+    4, 5, 6,   6, 7, 4,       // Back
+    8, 9, 10,  10, 11, 8,      // Top
+    12, 13, 14, 14, 15, 12,    // Bottom
+    16, 17, 18, 18, 19, 16,    // Right
+    20, 21, 22, 22, 23, 20     // Left
     };
 
     auto vbo = std::make_shared<VertexBuffer>(&vertices, sizeof(vertices), true);
-    auto ibo = std::make_shared<IndexBuffer>(indices, 36); // 12 triangles * 3 indices
+    auto ibo = std::make_shared<IndexBuffer>(indices, sizeof(indices)); // 12 triangles * 3 indices
 
     // 2. Define the layout of the vertex data
     VertexBufferLayout layout;
-    layout.Push<float>(3); // One attribute: a vec3 for position
+    layout.Push<float>(3); // Position (vec3)
+    layout.Push<float>(3); // Normal (vec3)
+    layout.Push<float>(2); // Texture Coordinates (vec2)
 
     // 3. Create the state object (VAO) and link the buffers and layout
     auto vao = std::make_shared<VertexArray>();
