@@ -18,6 +18,13 @@ public:
     static std::shared_ptr<Mesh> CreatePyramid(float size);
     static std::shared_ptr<Mesh> CreateSphere(float radius, int sectors, int stacks);
 private:
+    static std::shared_ptr<Mesh> CreateMeshFromData(
+        const void* vertices,
+        uint32_t vertexSize,
+        const uint32_t* indices,
+        uint32_t indexCount
+    );
+
     std::shared_ptr<VertexArray> m_VertexArray;
     std::shared_ptr<IndexBuffer> m_IndexBuffer;
 };

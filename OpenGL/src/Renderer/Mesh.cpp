@@ -1,5 +1,26 @@
 #include "Mesh.h"
 
+std::shared_ptr<Mesh> Mesh::CreateMeshFromData(const void* vertices, uint32_t vertexSize, const uint32_t* indices, uint32_t indexCount)
+{
+    // 1. Create the low-level GPU buffers
+    auto vbo = std::make_shared<VertexBuffer>(vertices, vertexSize, true);
+    auto ibo = std::make_shared<IndexBuffer>(indices, indexCount);
+
+    // 2. Define the standard layout for all our primitives
+    VertexBufferLayout layout;
+    layout.Push<float>(3); // Position (vec3)
+    layout.Push<float>(3); // Normal (vec3)
+    layout.Push<float>(2); // Texture Coordinates (vec2)
+
+    // 3. Create the VAO and link everything together
+    auto vao = std::make_shared<VertexArray>();
+    vao->AddBufferPtr(vbo, layout);
+
+    // 4. Create and return the final high-level Mesh object
+    return std::make_shared<Mesh>(vao, ibo);
+}
+
+
 std::shared_ptr<Mesh> Mesh::CreateCube(float size) {
     float halfSize = size/2.0f;
     float vertices[] = {
@@ -49,21 +70,7 @@ std::shared_ptr<Mesh> Mesh::CreateCube(float size) {
     20, 21, 22, 22, 23, 20     // Left
     };
 
-    auto vbo = std::make_shared<VertexBuffer>(vertices, sizeof(vertices), true);
-    auto ibo = std::make_shared<IndexBuffer>(indices, sizeof(indices)); // 12 triangles * 3 indices
-
-    // 2. Define the layout of the vertex data
-    VertexBufferLayout layout;
-    layout.Push<float>(3); // Position (vec3)
-    layout.Push<float>(3); // Normal (vec3)
-    layout.Push<float>(2); // Texture Coordinates (vec2)
-
-    // 3. Create the state object (VAO) and link the buffers and layout
-    auto vao = std::make_shared<VertexArray>();
-    vao->AddBufferPtr(vbo, layout);
-
-    // 4. Create the high-level Mesh object (Layer 3)
-    return std::make_shared<Mesh>(vao, ibo);
+    return CreateMeshFromData(vertices, sizeof(vertices), indices, sizeof(indices)/sizeof(uint32_t));
 }
 // Add this method to Mesh.cpp
 std::shared_ptr<Mesh> Mesh::CreatePyramid(float size) {
@@ -107,18 +114,7 @@ std::shared_ptr<Mesh> Mesh::CreatePyramid(float size) {
         13, 14, 15               // Left
     };
 
-    auto vbo = std::make_shared<VertexBuffer>(vertices, sizeof(vertices), true);
-    auto ibo = std::make_shared<IndexBuffer>(indices, sizeof(indices));
-
-    VertexBufferLayout layout;
-    layout.Push<float>(3); // Position
-    layout.Push<float>(3); // Normal
-    layout.Push<float>(2); // TexCoord
-
-    auto vao = std::make_shared<VertexArray>();
-    vao->AddBufferPtr(vbo, layout);
-
-    return std::make_shared<Mesh>(vao, ibo);
+    return CreateMeshFromData(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(uint32_t));
 }
 
 // Add this method to Mesh.cpp
@@ -180,17 +176,5 @@ std::shared_ptr<Mesh> Mesh::CreateSphere(float radius, int sectors, int stacks) 
         }
     }
 
-    // Note: for std::vector, you get a pointer to the data with .data()
-    auto vbo = std::make_shared<VertexBuffer>(vertices.data(), vertices.size() * sizeof(float), true);
-    auto ibo = std::make_shared<IndexBuffer>(indices.data(), indices.size()); // This uses the element count directly, which is correct
-
-    VertexBufferLayout layout;
-    layout.Push<float>(3); // Position
-    layout.Push<float>(3); // Normal
-    layout.Push<float>(2); // TexCoord
-
-    auto vao = std::make_shared<VertexArray>();
-    vao->AddBufferPtr(vbo, layout);
-
-    return std::make_shared<Mesh>(vao, ibo);
+    return CreateMeshFromData(vertices.data(), vertices.size() * sizeof(float), indices.data(), indices.size());
 }
