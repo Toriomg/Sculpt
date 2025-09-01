@@ -63,7 +63,7 @@ private:
     Vec3 m_Front, m_Up, m_Right;
 
     float m_Pitch = 0.0f; // Rotation around X-axis (looking up/down)
-    float m_Yaw = -90.0f; // Rotation around Y-axis (looking left/right)
+    float m_Yaw = 0.0f; // Rotation around Y-axis (looking left/right)
 
     float m_ViewportWidth = 1280, m_ViewportHeight = 720;
 

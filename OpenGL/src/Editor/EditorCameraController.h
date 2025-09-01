@@ -16,5 +16,5 @@ private:
     // Input-related state
     Vec2 m_LastMousePosition = Vec2(0.0f, 0.0f);
     float m_MovementSpeed = 5.0f;
-    float m_MouseSensitivity = 1.0f;
+    float m_MouseSensitivity = 0.1f;
 };

@@ -21,12 +21,12 @@ void EditorCameraController::OnUpdate(float deltaTime)
     if (Input::IsKeyPressed(KeyCode::S))
         currentPosition -= m_CameraToControl->GetFrontDirection() * velocity;
     if (Input::IsKeyPressed(KeyCode::A))
-        currentPosition -= m_CameraToControl->GetRightDirection() * velocity;
-    if (Input::IsKeyPressed(KeyCode::D))
         currentPosition += m_CameraToControl->GetRightDirection() * velocity;
-    if (Input::IsKeyPressed(KeyCode::Z))
+    if (Input::IsKeyPressed(KeyCode::D))
+        currentPosition -= m_CameraToControl->GetRightDirection() * velocity;
+    if (Input::IsKeyPressed(KeyCode::LeftShift))
         currentPosition -= m_CameraToControl->GetUpDirection()    * velocity;
-    if (Input::IsKeyPressed(KeyCode::X))
+    if (Input::IsKeyPressed(KeyCode::Space))
         currentPosition += m_CameraToControl->GetUpDirection()    * velocity;
 
     if (tempPosition.x != currentPosition.x || tempPosition.y != currentPosition.y || tempPosition.z != currentPosition.z)
@@ -45,7 +45,7 @@ void EditorCameraController::OnUpdate(float deltaTime)
 
         float currentPitch = m_CameraToControl->GetPitch();
         float currentYaw = m_CameraToControl->GetYaw();
-
+        
         currentYaw += delta.x;
         currentPitch -= delta.y; // Invert Y-axis
 

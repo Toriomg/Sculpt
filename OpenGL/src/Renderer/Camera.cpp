@@ -101,7 +101,9 @@ void Camera::RecalculateViewMatrix() {
 	// Finalize vectors
 	m_Front.normalize();
 	m_Right = m_Front.crossProduct(worldUp).normalize();
-	m_Up = m_Up.crossProduct(m_Right).normalize();
+	//this is for inverted
+	//m_Up = m_Front.crossProduct(m_Right).normalize(); 
+	m_Up = m_Right.crossProduct(m_Front).normalize();
 
 	m_ViewMatrix = Matx4f::lookAt(m_Position, m_Position + m_Front, m_Up);
 
