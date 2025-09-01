@@ -32,7 +32,7 @@ private:
     // This layer now owns the core application state and UI
     std::unique_ptr<Scene> m_ActiveScene;
     //std::unique_ptr<EditorUI> m_EditorUI;
-    //std::unique_ptr<EditorCameraController> m_CameraController;
+    std::unique_ptr<EditorCameraController> m_CameraController;
 
     Camera m_EditorCamera;
 	
