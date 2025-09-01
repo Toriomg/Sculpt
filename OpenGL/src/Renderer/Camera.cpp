@@ -25,6 +25,11 @@ void Camera::SetPitch(float pitch) {
 	m_Pitch = pitch;
 	RecalculateViewMatrix();
 }
+void Camera::SetRotation(float pitch, float yaw) {
+	m_Yaw = yaw;
+	m_Pitch = pitch;
+	RecalculateViewMatrix();
+}
 
 void Camera::SetViewportSize(float width, float height) {
 	m_ViewportWidth = width;
@@ -91,14 +96,14 @@ void Camera::RecalculateViewMatrix() {
 
 	// Calculate right vector and apply pitch
 	Vec3 rightVector = yawedForward.crossProduct(worldUp).normalize();
-	Vec3 front = rotateVec3(yawedForward, rightVector, pitchInRadians);
+	m_Front = rotateVec3(yawedForward, rightVector, pitchInRadians);
 
 	// Finalize vectors
-	front.normalize();
-	Vec3 right = front.crossProduct(worldUp).normalize();
-	Vec3 up = right.crossProduct(front).normalize();
+	m_Front.normalize();
+	m_Right = m_Front.crossProduct(worldUp).normalize();
+	m_Up = m_Up.crossProduct(m_Right).normalize();
 
-	m_ViewMatrix = Matx4f::lookAt(m_Position, m_Position + front, up);
+	m_ViewMatrix = Matx4f::lookAt(m_Position, m_Position + m_Front, m_Up);
 
 	m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }
