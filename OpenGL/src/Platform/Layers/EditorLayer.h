@@ -5,6 +5,7 @@
 //#include "UI/EditorUI.h"
 #include "Platform/System/Events/KeyboardEvent.h"
 #include "Platform/System/Events/MouseEvent.h"
+#include "Platform/System/Events/WindowEvent.h"
 
 #include "Editor/EditorCameraController.h"
 // Temp
@@ -28,6 +29,7 @@ private:
 	bool OnMouseMoved(MouseMovedEvent& e);
     bool OnKeyPressed(KeyPressedEvent& e);
     bool OnKeyReleased(KeyReleasedEvent& e);
+    bool OnWindowResize(WindowResizeEvent& e);
 
     // This layer now owns the core application state and UI
     std::unique_ptr<Scene> m_ActiveScene;

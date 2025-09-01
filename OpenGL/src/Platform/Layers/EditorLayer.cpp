@@ -18,7 +18,8 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-	m_CubeMesh = Mesh::CreateSphere(3.0f, 100, 100);
+    //m_CubeMesh = Mesh::CreateSphere(3.0f, 100, 100);
+    m_CubeMesh = Mesh::CreatePyramid(1.0f);
 
     // --- Create a Material ---
     // 1. Create a shader from a file (assuming you have a Shader factory)
@@ -62,7 +63,8 @@ void EditorLayer::OnEvent(Event& e) {
     dispatcher.Dispatch<MouseButtonReleasedEvent>(std::bind(&EditorLayer::OnMouseButtonReleased, this, std::placeholders::_1));
     dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));
     dispatcher.Dispatch<KeyReleasedEvent>(std::bind(&EditorLayer::OnKeyReleased, this, std::placeholders::_1));
-	dispatcher.Dispatch<MouseMovedEvent>(std::bind(&EditorLayer::OnMouseMoved, this, std::placeholders::_1));
+    dispatcher.Dispatch<MouseMovedEvent>(std::bind(&EditorLayer::OnMouseMoved, this, std::placeholders::_1));
+    dispatcher.Dispatch<WindowResizeEvent>(std::bind(&EditorLayer::OnWindowResize, this, std::placeholders::_1));
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
@@ -78,22 +80,6 @@ bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
 bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
     float mouseX = e.GetX();
     float mouseY = e.GetY();
-    //LOG_INFO("Mouse moved to ({0}, {1})", mouseX, mouseY);
-    /*
-    if (Input::IsMouseButtonPressed(MouseCode::Right))
-    {
-		Camera& cam = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity).SceneCamera;
-        Vec2 currentPos = { mouseX, mouseY };
-        Vec2 delta = (currentPos - m_LastMousePosition) * 0.15f; // Sensitivity factor
-
-        // Update camera orientation
-        cam.SetPitch(cam.GetPitch() + delta.y);
-        cam.SetYaw(cam.GetYaw() - delta.x); // Pitch, Yaw
-		LOG_TRACE("Camera Rotating. Pitch: {0}, Yaw: {1}", cam.GetPitch(), cam.GetYaw());
-    }
-    
-    m_LastMousePosition = { mouseX, mouseY };
-    */
     return false;
 }
 
@@ -105,5 +91,30 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
 
 bool EditorLayer::OnKeyReleased(KeyReleasedEvent& e) {
     LOG_INFO("Key {0} was released!", Input::GetKeyName(e.GetKeyCode()));
+    return false;
+}
+
+bool EditorLayer::OnWindowResize(WindowResizeEvent& e)
+{
+    // Get the new width and height from the event object.
+    uint32_t width = e.GetWidth();
+    uint32_t height = e.GetHeight();
+
+    // Don't do anything if the window is minimized.
+    // A zero height will cause a division-by-zero in the aspect ratio calculation.
+    if (width == 0 || height == 0) {
+        return false;
+    }
+
+    // Get the camera component from our active scene.
+    auto& camComp = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
+
+    // Tell the camera its new viewport size.
+    camComp.SceneCamera.SetViewportSize(width, height);
+
+    // We can also tell our low-level renderer about the viewport change.
+    RenderCommand::SetViewport(0, 0, width, height);
+	CORE_LOG_INFO("Camera resized to {0}x{1}", camComp.SceneCamera.GetViewportWidth(), camComp.SceneCamera.GetViewportHeight());
+    // Return false to indicate that other layers might also want to process this event.
     return false;
 }

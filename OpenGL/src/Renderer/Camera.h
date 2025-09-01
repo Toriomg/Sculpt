@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Platform/CoreUtils/Math/maths.h"
+#include "Platform/CoreUtils/Log.h"
 
 class Camera {
 public:
@@ -29,6 +30,8 @@ public:
 
     // --- Viewport ---
     void SetViewportSize(float width, float height);
+	float GetViewportWidth() const { return m_ViewportWidth; }
+	float GetViewportHeight() const { return m_ViewportHeight; }
     float GetAspectRatio() const { return m_ViewportWidth/m_ViewportHeight; }
 
     void SetPerspectiveFOV(float fov);
@@ -48,7 +51,6 @@ public:
 private:
     void RecalculateProjectionMatrix();
     void RecalculateViewMatrix();
-
 private:
     ProjectionType m_ProjectionType = ProjectionType::Perspective;
     Matx4f m_ProjectionMatrix;
