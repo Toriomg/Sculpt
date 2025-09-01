@@ -1,5 +1,6 @@
 #include "EditorLayer.h"
 #include "Core/Components/Component.h"
+#include "Editor/EditorCameraController.h"
 
 EditorLayer::EditorLayer()
     : Layer("EditorLayer"){
@@ -74,6 +75,8 @@ void EditorLayer::OnAttach() {
 
     m_ActiveScene->AddComponent<MeshComponent>(m_CubeEntity, myCubeMesh, myMaterial);
 	m_ActiveScene->SetComponent<TransformComponent>(m_CubeEntity, Matx4f::translation(m_CubePosition));
+
+    //m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
 }
 
 void EditorLayer::OnUpdate(float deltaTime) {
@@ -81,6 +84,7 @@ void EditorLayer::OnUpdate(float deltaTime) {
     // 2. Prepare for rendering
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.85f, 1.0f });
     m_ActiveScene->OnUpdate(deltaTime); 
+	//m_CameraController->OnUpdate(deltaTime);
 }
 
 void EditorLayer::OnEvent(Event& e) {

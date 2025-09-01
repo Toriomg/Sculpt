@@ -25,6 +25,7 @@ public:
     float GetPitch() const { return m_Pitch; }
     void SetYaw(float yaw);
     void SetPitch(float pitch);
+    void SetRotation(float pitch, float yaw);
 
     // --- Viewport ---
     void SetViewportSize(float width, float height);
@@ -41,6 +42,9 @@ public:
     void SetNearClip(float nearClip);
     void SetFarClip(float farClip);
 
+    const Vec3& GetFrontDirection() const { return m_Front; }
+    const Vec3& GetUpDirection() const { return m_Up; }
+    const Vec3& GetRightDirection() const { return m_Right; }
 private:
     void RecalculateProjectionMatrix();
     void RecalculateViewMatrix();
@@ -56,6 +60,8 @@ private:
     */
     // Camera Transform
     Vec3 m_Position = { 0.0f, 0.0f, 5.0f }; // Start 5 units back
+    Vec3 m_Front, m_Up, m_Right;
+
     float m_Pitch = 0.0f; // Rotation around X-axis (looking up/down)
     float m_Yaw = -90.0f; // Rotation around Y-axis (looking left/right)
 
