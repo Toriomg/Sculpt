@@ -18,72 +18,7 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-    // --- Create a Cube Mesh ---
-    // A cube has 8 vertices, but 24 are needed for correct normals/uvs per face.
-    float halfSize = 1.0f;
-
-    float vertices[] = {
-        // Z+ (Front Face)
-    -halfSize, -halfSize,  halfSize,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
-     halfSize, -halfSize,  halfSize,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
-     halfSize,  halfSize,  halfSize,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
-    -halfSize,  halfSize,  halfSize,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,
-
-    // Z- (Back Face)
-    -halfSize, -halfSize, -halfSize,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-    -halfSize,  halfSize, -halfSize,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-     halfSize,  halfSize, -halfSize,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-     halfSize, -halfSize, -halfSize,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-
-     // Y+ (Top Face)
-     -halfSize,  halfSize, -halfSize,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-     -halfSize,  halfSize,  halfSize,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-      halfSize,  halfSize,  halfSize,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-      halfSize,  halfSize, -halfSize,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-
-      // Y- (Bottom Face)
-      -halfSize, -halfSize, -halfSize,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-       halfSize, -halfSize, -halfSize,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-       halfSize, -halfSize,  halfSize,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-      -halfSize, -halfSize,  halfSize,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-
-      // X+ (Right Face)
-       halfSize, -halfSize, -halfSize,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-       halfSize,  halfSize, -halfSize,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-       halfSize,  halfSize,  halfSize,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-       halfSize, -halfSize,  halfSize,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-
-       // X- (Left Face)
-       -halfSize, -halfSize, -halfSize, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-       -halfSize, -halfSize,  halfSize, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-       -halfSize,  halfSize,  halfSize, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-       -halfSize,  halfSize, -halfSize, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f
-    };
-
-    uint32_t indices[] = {
-    0, 1, 2,   2, 3, 0,       // Front
-    4, 5, 6,   6, 7, 4,       // Back
-    8, 9, 10,  10, 11, 8,      // Top
-    12, 13, 14, 14, 15, 12,    // Bottom
-    16, 17, 18, 18, 19, 16,    // Right
-    20, 21, 22, 22, 23, 20     // Left
-    };
-
-    auto vbo = std::make_shared<VertexBuffer>(&vertices, sizeof(vertices), true);
-    auto ibo = std::make_shared<IndexBuffer>(indices, sizeof(indices)); // 12 triangles * 3 indices
-
-    // 2. Define the layout of the vertex data
-    VertexBufferLayout layout;
-    layout.Push<float>(3); // Position (vec3)
-    layout.Push<float>(3); // Normal (vec3)
-    layout.Push<float>(2); // Texture Coordinates (vec2)
-
-    // 3. Create the state object (VAO) and link the buffers and layout
-    auto vao = std::make_shared<VertexArray>();
-    vao->AddBufferPtr(vbo, layout);
-
-    // 4. Create the high-level Mesh object (Layer 3)
-    m_CubeMesh = std::make_shared<Mesh>(vao, ibo);
+	m_CubeMesh = Mesh::CreateSphere(3.0f, 100, 100);
 
     // --- Create a Material ---
     // 1. Create a shader from a file (assuming you have a Shader factory)

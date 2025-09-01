@@ -86,7 +86,7 @@ vec3 lighting(){
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	vec3 specular = specularStrength * spec * lightColor;
 
-	return ambient + diffuse + specular;
+	return ambient;// + diffuse;// + specular;
 }
 
 void main()
