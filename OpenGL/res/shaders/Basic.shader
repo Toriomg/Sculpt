@@ -22,5 +22,5 @@ out vec4 color; // The output color of this fragment
 uniform vec4 u_Color; // A uniform color that we set from the C++ application
 void main()
 {
-    color = u_Color; // Simply output the uniform color for every pixel
+color = u_Color;
 }

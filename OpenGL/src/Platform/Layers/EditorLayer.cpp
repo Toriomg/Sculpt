@@ -14,8 +14,8 @@ void EditorLayer::OnAttach() {
     m_CameraEntity = m_ActiveScene->CreateGameObject("Main Camera");
     auto& camComp = m_ActiveScene->AddComponent<CameraComponent>(m_CameraEntity);
     auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
-    camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 20.0f));
-
+    camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
+    camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
     // --- Create a Cube Mesh ---
     // A cube has 8 vertices, but 24 are needed for correct normals/uvs per face.
@@ -57,16 +57,11 @@ void EditorLayer::OnAttach() {
 
     // --- Create a Material ---
     // 1. Create a shader from a file (assuming you have a Shader factory)
-    auto simpleShader = std::make_shared<Shader>("res/shaders/testTriangle.shader");
+    auto simpleShader = std::make_shared<Shader>("res/shaders/Basic.shader");
 
     // 2. Create the Material (Layer 3)
     m_CubeMaterial = std::make_shared<Material>(simpleShader);
 
-    // Set a uniform on the material's shader
-    m_CubeMaterial->GetShader()->Bind();
-    m_CubeMaterial->GetShader()->SetUniform4f("u_Color", 0.8f, 0.2f, 0.3f, 1.0f);
-    m_CubeMaterial->GetShader()->SetUniformMat4f("u_ViewProjection", m_EditorCamera.GetViewProjectionMatrix());
-    m_CubeMaterial->GetShader()->SetUniformMat4f("u_Model", Matx4f::translation(m_CubePosition));
 
     // Set the cube's initial position
     m_CubePosition = { 0.0f, 0.0f, 0.0f };
@@ -115,13 +110,14 @@ bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
 
     if (Input::IsMouseButtonPressed(MouseCode::Right))
     {
+		Camera& cam = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity).SceneCamera;
         Vec2 currentPos = { mouseX, mouseY };
-        Vec2 delta = (currentPos - m_LastMousePosition) * 0.1f; // Sensitivity factor
+        Vec2 delta = (currentPos - m_LastMousePosition) * 0.15f; // Sensitivity factor
 
         // Update camera orientation
-        m_EditorCamera.SetPitch(m_EditorCamera.GetPitch() + delta.y);
-        m_EditorCamera.SetYaw(m_EditorCamera.GetYaw() - delta.x); // Pitch, Yaw
-		//LOG_TRACE("Camera Rotating. Pitch: {0}, Yaw: {1}", m_EditorCamera.GetPitch(), m_EditorCamera.GetYaw());
+        cam.SetPitch(cam.GetPitch() + delta.y);
+        cam.SetYaw(cam.GetYaw() - delta.x); // Pitch, Yaw
+		LOG_TRACE("Camera Rotating. Pitch: {0}, Yaw: {1}", cam.GetPitch(), cam.GetYaw());
     }
     
     m_LastMousePosition = { mouseX, mouseY };

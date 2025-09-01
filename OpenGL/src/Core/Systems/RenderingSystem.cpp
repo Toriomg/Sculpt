@@ -20,6 +20,8 @@ void RenderingSystem::OnUpdate(float deltaTime)
             auto& camComp = view.get<CameraComponent>(entity);
             if (camComp.IsPrimary)
             {
+                auto& transformComp = view.get<TransformComponent>(entity);
+                camComp.SceneCamera.SetPosition(transformComp.GetTranslation());
                 mainCamera = &camComp.SceneCamera;
                 cameraTransform = view.get<TransformComponent>(entity).Transform;
                 break; // Found the primary camera, no need to look further.

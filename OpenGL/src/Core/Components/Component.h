@@ -32,6 +32,9 @@ struct TransformComponent : public Component
     TransformComponent(const Matx4f& transform)
         : Transform(transform) {
     }
+    Vec3 GetTranslation() const {
+        return Vec3(Transform.m[0][3], Transform.m[1][3], Transform.m[2][3]);
+	}
 };
 
 struct MeshComponent : public Component
