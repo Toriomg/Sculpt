@@ -3,6 +3,7 @@
 #include "Renderer/Camera.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/Material.h"
+#include "AssetManager/AssetManager.h"
 #include <memory>
 
 class ServiceLayer : public Layer {

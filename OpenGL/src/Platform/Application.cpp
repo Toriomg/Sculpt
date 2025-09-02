@@ -15,12 +15,16 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 	Time::Init();
 
     m_LayerStack.PushLayer(new EditorLayer());
+	m_LayerStack.PushLayer(new ServiceLayer());
 
 	CORE_LOG_INFO("OpenGL Initialized");
 }
 
 Application::~Application()
 {
+    for (Layer* layer : m_LayerStack) {
+		m_LayerStack.PopLayer(layer);
+    }
 	Input::Shutdown(); // Shutdown the input system
     CORE_LOG_INFO("Program CORRECTLY ended");
 }
