@@ -33,6 +33,7 @@ void GlfwWindow::Init(const std::string& title, unsigned int width, unsigned int
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
     m_Window = glfwCreateWindow((int)width, (int)height, m_Data.Title.c_str(), nullptr, nullptr);
     if (!m_Window)
@@ -48,8 +49,12 @@ void GlfwWindow::Init(const std::string& title, unsigned int width, unsigned int
         // You should probably throw an exception or assert here
     }
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
+	glEnable(GL_BLEND); // Enable blending for transparency
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Set blending function
+	glEnable(GL_DEPTH_TEST); // Enable depth testing for 3D rendering
+	glEnable(GL_CULL_FACE); // Enable face culling
+	glFrontFace(GL_CCW); // Define front faces as counter-clockwise
+	glCullFace(GL_BACK); // Cull back faces
 
     CORE_LOG_INFO("GLEW Initialized");
     CORE_LOG_INFO("OpenGL Info:");

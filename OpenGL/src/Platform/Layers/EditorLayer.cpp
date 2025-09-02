@@ -18,28 +18,39 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-    //m_CubeMesh = Mesh::CreateSphere(3.0f, 100, 100);
-    m_CubeMesh = Mesh::CreatePyramid(1.0f);
+    std::shared_ptr<Mesh> CubeMesh = Mesh::CreateCube(2.0f);
+    std::shared_ptr<Mesh> SphereMesh = Mesh::CreateSphere(1.0f, 100, 100);
+	std::shared_ptr<Mesh> PyramidMesh = Mesh::CreatePyramid(2.0f);
+    std::shared_ptr<Mesh> TorusMesh = Mesh::CreateTorus(1.0f, 0.5f, 100, 100);
 
     // --- Create a Material ---
-    // 1. Create a shader from a file (assuming you have a Shader factory)
     auto simpleShader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
-
-    // 2. Create the Material (Layer 3)
-    m_CubeMaterial = std::make_shared<Material>(simpleShader);
+    std::shared_ptr<Material> myMaterial = std::make_shared<Material>(simpleShader);
 
 
-    // Set the cube's initial position
-    m_CubePosition = { 0.0f, 0.0f, 0.0f };
+    // Set the initial positions
+    Vec3 CubePosition    = { 0.0f, 0.0f, 0.0f };
+    Vec3 SpherePosition  = { 5.0f, 0.0f, 0.0f };
+    Vec3 PyramidPosition = { -5.0f, 0.0f, 0.0f };
+    Vec3 TorusPosition   = {10.0f, 0.0f, 0.0f };
 	
     
     m_CubeEntity = m_ActiveScene->CreateGameObject("Cube");
-    std::shared_ptr<Shader> myShader = simpleShader;
-    std::shared_ptr<Material> myMaterial = m_CubeMaterial;
-    std::shared_ptr<Mesh> myCubeMesh = m_CubeMesh;
+    m_SphereEntity = m_ActiveScene->CreateGameObject("Sphere");
+    m_PyramidEntity = m_ActiveScene->CreateGameObject("Pyramid");
+    m_TorusEntity = m_ActiveScene->CreateGameObject("Torus");
 
-    m_ActiveScene->AddComponent<MeshComponent>(m_CubeEntity, myCubeMesh, myMaterial);
-	m_ActiveScene->SetComponent<TransformComponent>(m_CubeEntity, Matx4f::translation(m_CubePosition));
+    m_ActiveScene->AddComponent<MeshComponent>(m_CubeEntity, CubeMesh, myMaterial);
+    m_ActiveScene->SetComponent<TransformComponent>(m_CubeEntity, Matx4f::translation(CubePosition));
+
+    m_ActiveScene->AddComponent<MeshComponent>(m_SphereEntity, SphereMesh, myMaterial);
+    m_ActiveScene->SetComponent<TransformComponent>(m_SphereEntity, Matx4f::translation(SpherePosition));
+    
+    m_ActiveScene->AddComponent<MeshComponent>(m_PyramidEntity, PyramidMesh, myMaterial);
+    m_ActiveScene->SetComponent<TransformComponent>(m_PyramidEntity, Matx4f::translation(PyramidPosition));
+
+    m_ActiveScene->AddComponent<MeshComponent>(m_TorusEntity, TorusMesh, myMaterial);
+    m_ActiveScene->SetComponent<TransformComponent>(m_TorusEntity, Matx4f::translation(TorusPosition));
 
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
 }

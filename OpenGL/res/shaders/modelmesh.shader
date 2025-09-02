@@ -36,6 +36,7 @@ out vec4 FragColor;
 
 uniform sampler2D u_Textures[2];
 uniform vec3 u_cameraPos;
+uniform vec3 u_objectColor;
 
 
 // Model selection uniforms
@@ -57,8 +58,8 @@ vec3 lighting(){
 	vec3 faceNormal = normalize(cross(dFdx(v_WorldPos), dFdy(v_WorldPos)));
 
 	// Define light properties
-	vec3 lightColor = vec3(1.0, 1.0, 1.0); // A simple white light
-	vec3 lightPos = u_cameraPos;
+	vec3 lightColor = vec3(0.6); // A simple white light
+	vec3 lightPos = u_cameraPos;//vec3(0.0, 30.0, 0.0);
 
 	// DIFFUSE LIGHT
 	// Calculate diffuse lighting (Lambertian reflection)
@@ -68,30 +69,32 @@ vec3 lighting(){
 
 	// AMBIENT LIGHT
 	// Add a little bit of ambient light so things in shadow aren't pure black
-	float ambientStrength = 0.1;
+	float ambientStrength = 0.30;
 	vec3 ambient = ambientStrength * lightColor;
 
 	// SPECULAR light
-	float specularStrength = 0.5; // Controls the intensity of the highlight
-	float shininess = 32.0;       // Controls the size of the highlight (higher is smaller/sharper)
+	float specularStrength = 0.7; // Controls the intensity of the highlight
+	float shininess = 20.0;       // Controls the size of the highlight (higher is smaller/sharper)
 
 	// Calculate the direction the viewer is looking from (fragment to camera)
-	vec3 viewDir = normalize(u_cameraPos - v_WorldPos);
+	vec3 viewDir = normalize(u_cameraPos  - v_WorldPos);
 	
 	// Calculate the reflection direction of the light off the surface
 	// reflect() expects the direction *from* the light source, so we use -lightDir
-	vec3 reflectDir = reflect(-lightDir, norm);
+	//vec3 reflectDir = reflect(-lightDir, norm);
 
 	// Calculate the specular component
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-	vec3 specular = specularStrength * spec * lightColor;
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
+	vec3 specular = specularStrength * spec * vec3(1.0);
+	//specular = specular * u_objectColor;
 
-	return ambient + diffuse + specular;
+	return ambient * v_Color.rgb + diffuse * v_Color.rgb + specular;
 }
 
 void main()
 {
-	vec3 objectColor = v_Color.rgb;//texture(u_Textures[0], v_TexCoord).rgb;
+	vec3 objectColor = vec3(1.0,1.0,1.0);//texture(u_Textures[0], v_TexCoord).rgb;
 	
 	vec3 baseColor;
 
@@ -109,7 +112,7 @@ void main()
     }
 
 	// Combine lighting and the object's color
-	vec3 result = lighting() * baseColor;
+	vec3 result = baseColor *lighting();
 
 	if (u_IsVertexSelected) {
         // Calculate the distance from the current pixel's world position to the center of the selected vertex.

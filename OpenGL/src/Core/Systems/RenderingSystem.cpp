@@ -34,7 +34,6 @@ void RenderingSystem::OnUpdate(float deltaTime)
         // NOTE: For a true 3D camera, you'd pass the full camera object. For simplicity,
         // let's assume BeginScene can take the transform and camera properties.
         // A better design is Renderer::BeginScene(mainCamera, cameraTransform);
-        RenderCommand::Clear();
 
         Renderer::BeginScene(mainCamera->GetViewProjectionMatrix()); // Assuming the camera object itself has pos/rot
 

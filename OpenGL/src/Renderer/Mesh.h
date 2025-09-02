@@ -2,7 +2,7 @@
 
 #include "Platform/Graphics/Buffers/VertexArray.h"
 #include "Platform/Graphics/Buffers/IndexBuffer.h"
-
+#include "Platform/CoreUtils/Math/maths.h"
 #include "glhead.h"
 
 class Mesh {
@@ -17,6 +17,8 @@ public:
 	static std::shared_ptr<Mesh> CreateCube(float size);
     static std::shared_ptr<Mesh> CreatePyramid(float size);
     static std::shared_ptr<Mesh> CreateSphere(float radius, int sectors, int stacks);
+    static std::shared_ptr<Mesh> CreateTorus(float majorRadius, float minorRadius, int majorSegments, int minorSegments);
+    static std::shared_ptr<Mesh> CreateDodecahedron();
 private:
     static std::shared_ptr<Mesh> CreateMeshFromData(
         const void* vertices,

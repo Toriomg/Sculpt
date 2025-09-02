@@ -54,6 +54,7 @@ void Renderer::Submit(
     shader->SetUniformMat4f("u_ViewProjection", s_SceneData.View);
     shader->SetUniformMat4f("u_Model", transform);
     shader->SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
+    shader->SetUniform3f("u_objectColor", 0.0f, 1.0f, 0.0f);
 
 	RenderCommand::Draw(vertexArray, indexBuffer);
 }

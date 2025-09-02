@@ -39,12 +39,11 @@ private:
     Camera m_EditorCamera;
 	
     Entity m_CameraEntity;
-	Entity m_CubeEntity;
 
-    // Our test objects
-    std::shared_ptr<Mesh> m_CubeMesh;
-    std::shared_ptr<Material> m_CubeMaterial;
-    Vec3 m_CubePosition;
+    Entity m_CubeEntity;
+    Entity m_SphereEntity;
+    Entity m_PyramidEntity;
+    Entity m_TorusEntity;
 
     // Mouse state for camera rotation
     Vec2 m_LastMousePosition = Vec2( 0.0f, 0.0f );
