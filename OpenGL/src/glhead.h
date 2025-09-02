@@ -7,3 +7,4 @@
 #include <memory>
 #include <sstream>
 #include <cstdint>
+#include <map>

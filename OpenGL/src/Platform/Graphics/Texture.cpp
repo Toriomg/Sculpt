@@ -1,28 +1,22 @@
 #include "Texture.h"
-#include "stb_image/stb_image.h"
 
-Texture::Texture(const std::string& path)
-	: m_RendererID(0), m_FilePath(path), m_LocalBuffer(nullptr), m_Width(0), m_Height(0), m_BPP(0)
+Texture::Texture(const TextureSpecification& specification, const void* data)
+	: m_RendererID(0), m_Specification(specification)
 {
-	stbi_set_flip_vertically_on_load(1); // Flip the image vertically to match OpenGL's texture coordinate system
-	m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4); // Load the image with 4 channels (RGBA)
-
-	glGenTextures(1, &m_RendererID) ;
+	glGenTextures(1, &m_RendererID);
 	glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
-	// Upload the texture data to OpenGL
+	// Set texture filtering and wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Set texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	// Upload the texture data to the GPU
+	// NOTE: For now we assume RGBA8 format. This can be extended using the specification.
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specification.Width, m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-	if (m_LocalBuffer) {
-		stbi_image_free(m_LocalBuffer);
-	}
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Texture::~Texture() {

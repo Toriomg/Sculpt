@@ -85,6 +85,7 @@ std::shared_ptr<Mesh> Mesh::CreateCube(float size) {
         indices[i+2] = i+1;
     }
 
+    CORE_LOG_INFO("Square with {0} faces", indices.size() / 3);
     return CreateMeshFromData(vertices.data(), vertices.size() * sizeof(float), indices.data(), indices.size());
 }
 // Add this method to Mesh.cpp
@@ -128,7 +129,7 @@ std::shared_ptr<Mesh> Mesh::CreatePyramid(float size) {
         10, 12, 11,              // Right
         13, 15, 14               // Left
     };
-
+    CORE_LOG_INFO("Pyramid with {0} faces", sizeof(indices) / sizeof(uint32_t) / 3);
     return CreateMeshFromData(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(uint32_t));
 }
 
@@ -201,7 +202,7 @@ std::shared_ptr<Mesh> Mesh::CreateSphere(float radius, int sectors, int stacks) 
             }
         }
     }
-
+    CORE_LOG_INFO("Sphere with {0} faces", indices.size() / 3);
     return CreateMeshFromData(vertices.data(), vertices.size() * sizeof(float), indices.data(), indices.size());
 }
 
@@ -276,7 +277,7 @@ std::shared_ptr<Mesh> Mesh::CreateTorus(float majorRadius, float minorRadius, in
             indices.push_back(p3);
         }
     }
-
+    CORE_LOG_INFO("Torus with {0} faces", indices.size()/3);
     // Use the private helper to create the mesh from the generated data
     return CreateMeshFromData(vertices.data(), vertices.size() * sizeof(float), indices.data(), indices.size());
 }
@@ -385,6 +386,5 @@ std::shared_ptr<Mesh> Mesh::CreateDodecahedron() {
         indices.push_back(v3);
         indices.push_back(v4);
     }
-
     return CreateMeshFromData(vertices.data(), vertices.size() * sizeof(float), indices.data(), indices.size());
 }

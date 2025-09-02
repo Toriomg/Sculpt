@@ -1,21 +1,29 @@
 #pragma once
 #include <GL/glew.h>
 #include "glhead.h"
+#include "AssetManager/IAsset.h"
 
-class Texture
+struct TextureSpecification
+{
+	uint32_t Width = 1;
+	uint32_t Height = 1;
+	// You can add more formats later, e.g., RGB, Float textures, etc.
+	// GLenum Format = GL_RGBA8; 
+};
+
+class Texture : public IAsset
 {
 private:
-	unsigned int m_RendererID;
-	std::string m_FilePath;
-	unsigned char* m_LocalBuffer;
-	int m_Width, m_Height, m_BPP; // BPP: Bytes Per Pixel
+	uint32_t m_RendererID;
+	TextureSpecification m_Specification;
 public:
-	Texture(const std::string& path);
-	~Texture();
+	Texture(const TextureSpecification& specification, const void* data = nullptr);
+	virtual ~Texture();
 
 	void Bind(unsigned int slot = 0) const;
 	void Unbind() const;
 
-	inline int GetWidth() const { return m_Width; }
-	inline int GetHeight() const { return m_Height; }
+	inline int GetWidth() const { return m_Specification.Width; }
+	inline int GetHeight() const { return m_Specification.Height; }
+	uint32_t GetRendererID() const { return m_RendererID; }
 };

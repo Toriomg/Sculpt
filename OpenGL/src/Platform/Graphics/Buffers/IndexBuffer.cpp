@@ -4,7 +4,7 @@
 IndexBuffer::IndexBuffer(const unsigned int* data, unsigned int count)
 	: m_Count(count) // The count of indices IS the count passed in.
 {
-	CORE_LOG_ERROR(sizeof(unsigned int) == sizeof(GLuint)); // Good practice check
+	//CORE_LOG_ERROR(sizeof(unsigned int) == sizeof(GLuint)); // Good practice check
 
 	glGenBuffers(1, &m_RendererID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
