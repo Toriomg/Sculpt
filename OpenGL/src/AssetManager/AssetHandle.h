@@ -1,5 +1,6 @@
 #pragma once
 #include "glhead.h"
+#include "Platform/CoreUtils/Log.h"
 
 // A lightweight, non-owning handle to an asset.
 // This is what game objects will store instead of direct pointers.
@@ -17,6 +18,7 @@ struct AssetHandle {
     static AssetHandle Create() {
 		// Simple static counter for unique IDs
         static uint64_t s_Counter = 1; // Start at 1, 0 is invalid
+		CORE_LOG_TRACE("Creating AssetHandle with ID {0}", s_Counter);
         return AssetHandle(s_Counter++);
     }
 };

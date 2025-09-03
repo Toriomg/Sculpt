@@ -22,6 +22,7 @@ std::shared_ptr<IAsset> TextureLoader::Load(const std::string& filepath) {
     TextureSpecification spec;
     spec.Width = width;
     spec.Height = height;
+	spec.channels = 4;
 
     // 3. Create the GPU Texture object using the loaded data
     std::shared_ptr<Texture> texture = std::make_shared<Texture>(spec, data);

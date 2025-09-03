@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "AssetManager/AssetManager.h"
 
 // This struct is a private implementation detail of the Renderer.
 // It holds data that is constant for an entire scene render pass.
@@ -17,6 +18,7 @@ Public API implementation
 */
 
 void Renderer::Init() {
+	CORE_LOG_TRACE("Initializing Renderer");
 	RenderCommand::Init();
 }
 
@@ -55,6 +57,22 @@ void Renderer::Submit(
     shader->SetUniformMat4f("u_Model", transform);
     shader->SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
     shader->SetUniform3f("u_objectColor", 0.0f, 1.0f, 0.0f);
+    
+    AssetHandle textureHandle = material->GetTextureHandle();
+	CORE_LOG_CRITICAL("Texture Handle ID: {0}", textureHandle.ID);
+
+    if (textureHandle) {
+        auto texture = std::static_pointer_cast<Texture>(AssetManager::Get(textureHandle));
+        if (texture)
+        {
+            int textureSlot = 0;
+            // Tell OpenGL to place our texture object into the chosen slot.
+            texture->Bind(textureSlot);
+            // and tell it to get its data from slot 0.
+            shader->SetUniform1i("u_Texture", textureSlot); // The value is the SLOT, not the texture ID!
+
+        }
+    }
 
 	RenderCommand::Draw(vertexArray, indexBuffer);
 }

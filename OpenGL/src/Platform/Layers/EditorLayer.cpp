@@ -1,6 +1,7 @@
 #include "EditorLayer.h"
 #include "Core/Components/Component.h"
 #include "Editor/EditorCameraController.h"
+#include "AssetManager/AssetManager.h"
 
 EditorLayer::EditorLayer()
     : Layer("EditorLayer"){
@@ -26,12 +27,13 @@ void EditorLayer::OnAttach() {
     // --- Create a Material ---
     auto simpleShader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
     std::shared_ptr<Material> myMaterial = std::make_shared<Material>(simpleShader);
+	myMaterial->SetTexture(AssetManager::Load("res/textures/texture1.png"));
 
 
     // Set the initial positions
     Vec3 CubePosition    = { 0.0f, 0.0f, 0.0f };
     Vec3 SpherePosition  = { 5.0f, 0.0f, 0.0f };
-    Vec3 PyramidPosition = { -5.0f, 0.0f, 0.0f };
+    Vec3 PyramidPosition = {-5.0f, 0.0f, 0.0f };
     Vec3 TorusPosition   = {10.0f, 0.0f, 0.0f };
 	
     

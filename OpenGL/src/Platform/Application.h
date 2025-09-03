@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "glhead.h"
 #include "Platform/System/Time.h"
 #include "Platform/System/Input/Input.h"
@@ -10,6 +9,8 @@
 #include "Platform/Layers/LayerStack.h"
 #include "Platform/Layers/EditorLayer.h"
 #include "Platform/Layers/ServiceLayer.h"
+
+#include "AssetManager/AssetManager.h"
 
 class Application
 {

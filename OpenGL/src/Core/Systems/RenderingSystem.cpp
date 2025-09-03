@@ -4,6 +4,7 @@
 #include "Renderer/Renderer.h" // The system needs to talk to the Renderer API
 #include "Renderer/Camera.h"   // To find the main camera
 
+
 void RenderingSystem::OnUpdate(float deltaTime)
 {
     // Safety check: ensure we have a scene to work with.
@@ -29,11 +30,7 @@ void RenderingSystem::OnUpdate(float deltaTime)
     // 2. If we found a camera, begin the rendering process.
     if (mainCamera)
     {
-        //LOG_TRACE("Exists camera");
-        // Tell the Renderer to start a new frame, providing the camera's data.
-        // NOTE: For a true 3D camera, you'd pass the full camera object. For simplicity,
-        // let's assume BeginScene can take the transform and camera properties.
-        // A better design is Renderer::BeginScene(mainCamera, cameraTransform);
+
 
         Renderer::BeginScene(mainCamera->GetViewProjectionMatrix()); // Assuming the camera object itself has pos/rot
 

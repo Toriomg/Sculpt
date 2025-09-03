@@ -4,6 +4,8 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
     : m_Window(nullptr), m_AppName(name), m_Width(width), m_Height(height)
 {
 	Log::Init(); // Initialize the logging system
+	AssetManager::Init(); // Initialize the Asset Manager
+	Renderer::Init(); // Initialize the Renderer
 
     m_Window = std::unique_ptr<Window>(Window::Create());
     Input::Init(m_Window.get());
@@ -15,16 +17,12 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 	Time::Init();
 
     m_LayerStack.PushLayer(new EditorLayer());
-	m_LayerStack.PushLayer(new ServiceLayer());
 
 	CORE_LOG_INFO("OpenGL Initialized");
 }
 
 Application::~Application()
 {
-    for (Layer* layer : m_LayerStack) {
-		m_LayerStack.PopLayer(layer);
-    }
 	Input::Shutdown(); // Shutdown the input system
     CORE_LOG_INFO("Program CORRECTLY ended");
 }

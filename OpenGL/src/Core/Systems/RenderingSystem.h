@@ -6,7 +6,7 @@ class Renderer;
 class RenderingSystem : public System
 {
 public:
-    RenderingSystem() = default;
+    RenderingSystem()  = default;
     ~RenderingSystem() = default;
 
     // This is the main logic function that will be called by the Scene every frame.

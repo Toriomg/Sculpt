@@ -7,6 +7,7 @@ struct TextureSpecification
 {
 	uint32_t Width = 1;
 	uint32_t Height = 1;
+	int channels = 4; // Default to RGBA
 	// You can add more formats later, e.g., RGB, Float textures, etc.
 	// GLenum Format = GL_RGBA8; 
 };

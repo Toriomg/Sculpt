@@ -1,3 +1,4 @@
+#pragma once
 #include "glhead.h"
 #include "AssetHandle.h"
 #include "IAsset.h"

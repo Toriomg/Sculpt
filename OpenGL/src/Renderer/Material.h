@@ -3,17 +3,19 @@
 #include "Platform/Graphics/Texture.h"
 #include "Platform/Graphics/Shader.h"
 
+#include "AssetManager/AssetHandle.h"    
+
 #include "glhead.h"
 class Material {
 public:
     Material(std::shared_ptr<Shader> shader) : m_Shader(shader) {}
 
-    void SetTexture(std::shared_ptr<Texture> texture) { m_Texture = texture; }
+    void SetTexture(AssetHandle textureHandle) { m_TextureHandle = textureHandle; }
 
     const std::shared_ptr<Shader>& GetShader() const { return m_Shader; }
-    const std::shared_ptr<Texture>& GetTexture() const { return m_Texture; }
+    AssetHandle GetTextureHandle() const { return m_TextureHandle; }
 
 private:
     std::shared_ptr<Shader> m_Shader;
-    std::shared_ptr<Texture> m_Texture; // For simplicity, one texture for now
+    AssetHandle m_TextureHandle; // For simplicity, one texture for now
 }; 

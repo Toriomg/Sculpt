@@ -6,7 +6,7 @@ layout(location = 2) in vec2 texCoord;
 
 uniform mat4 u_ViewProjection;
 uniform mat4 u_Model;
-uniform sampler2D u_Textures[2];
+uniform sampler2D u_Texture;
 uniform vec4 u_Color;
 
 out vec4 v_Color;
@@ -34,7 +34,7 @@ in vec3 v_WorldPos;
 
 out vec4 FragColor;
 
-uniform sampler2D u_Textures[2];
+uniform sampler2D u_Texture;
 uniform vec3 u_cameraPos;
 uniform vec3 u_objectColor;
 
@@ -94,7 +94,8 @@ vec3 lighting(){
 
 void main()
 {
-	vec3 objectColor = vec3(1.0,1.0,1.0);//texture(u_Textures[0], v_TexCoord).rgb;
+
+	vec3 objectColor = texture(u_Texture, v_TexCoord).rgb;
 	
 	vec3 baseColor;
 
