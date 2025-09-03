@@ -88,9 +88,13 @@ unsigned int Shader::CompileShader(const std::string& source, unsigned int type)
 	if (result == GL_FALSE) { // If compilation failed
 		int length;
 		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length); // Get the length of the error message
-		char* message = (char*)_malloca(length * sizeof(char)); // Create a buffer for the error message
-		glGetShaderInfoLog(id, length, &length, message); // Get the error message
-		LOG_ERROR("Failed to compile {0} shader! From the file: {1}", type == GL_VERTEX_SHADER ? "vertex" : "fragment", m_FilePath);
+
+		std::vector<char> message(length);
+		glGetShaderInfoLog(id, length, &length, message.data());
+
+		LOG_ERROR("Failed to compile {0} shader! \n\t\tSource File: {1} \n\t\tGLSL Error: {2}",
+			(type == GL_VERTEX_SHADER ? "vertex" : "fragment"), m_FilePath, message.data());
+
 		glDeleteShader(id); // Delete the shader object
 		return 0; // Return -1 to indicate failure
 	}
@@ -104,10 +108,50 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 	unsigned int vs = CompileShader(vertexShader, GL_VERTEX_SHADER); // Compile the vertex shader
 	unsigned int fs = CompileShader(fragmentShader, GL_FRAGMENT_SHADER); // Compile the vertex shader
 
+	// If compilation failed, vs or fs will be 0. Abort creation.
+	if (vs == 0 || fs == 0) {
+		// The error message was already printed inside CompileShader
+		glDeleteProgram(program); // Clean up the program object
+		if (vs != 0) glDeleteShader(vs); // Clean up the successfully compiled shader
+		if (fs != 0) glDeleteShader(fs); // Clean up the successfully compiled shader
+		return 0;
+	}
+
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);
 	glLinkProgram(program); // Link the shader program
+
+	int linkResult;
+	glGetProgramiv(program, GL_LINK_STATUS, &linkResult);
+	if (linkResult == GL_FALSE) {
+		int length;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+		std::vector<char> message(length);
+		glGetProgramInfoLog(program, length, &length, message.data());
+
+		LOG_ERROR("Failed to link shader program!\n\t\tSource File: {0}\n\t\tGLSL Linker Error : {1}",
+			m_FilePath, message.data());
+
+		glDeleteProgram(program);
+		glDeleteShader(vs);
+		glDeleteShader(fs);
+		return 0;
+	}
+
 	glValidateProgram(program); // Validate the shader program
+
+	int validateResult;
+	glGetProgramiv(program, GL_VALIDATE_STATUS, &validateResult);
+	if (validateResult == GL_FALSE) {
+		int length;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+		std::vector<char> message(length);
+		glGetProgramInfoLog(program, length, &length, message.data());
+
+		LOG_ERROR("Failed to validate shader program!\n\t\tSource File: {0}\n\t\tGLSL Validater Error : {1}",
+			m_FilePath, message.data());
+
+	}
 
 	glDeleteShader(vs); // Delete the vertex shader object
 	glDeleteShader(fs); // Delete the fragment shader object
