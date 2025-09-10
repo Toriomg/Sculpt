@@ -61,18 +61,25 @@ ShaderProgramSource Shader::ParseShader(const std::string& filepath) {
 			// Check if the shader is a vertex shader
 			if (line.find("vertex") != std::string::npos) {
 				type = ShaderType::VERTEX; // Set the shader type to VERTEX
+				CORE_LOG_TRACE("Shader Parser: Found Vertex Shader section");
 			}
 			// Check if the shader is a fragment shader
 			else if (line.find("fragment") != std::string::npos) {
 				type = ShaderType::FRAGMENT; // Set the shader type to FRAGMENT
+				CORE_LOG_TRACE("Shader Parser: Found Fragment Shader section");
 			}
 		}
 		else {
 			// If the line does not contain a shader directive
 			// Append the line to the appropriate shader type's stringstream
-			ss[(int)type] << line << '\n';
+			if (type != ShaderType::NONE) {
+				ss[(int)type] << line << '\n';
+			}
 		}
 	}
+
+	CORE_LOG_TRACE("Vertex Shader Source:\n---\n{0}\n---", ss[0].str());
+	CORE_LOG_TRACE("Fragment Shader Source:\n---\n{0}\n---", ss[1].str());
 
 	return { ss[0].str(), ss[1].str() }; // Return the vertex and fragment shader sources as a ShaderProgramSource struct
 }
@@ -87,13 +94,12 @@ unsigned int Shader::CompileShader(const std::string& source, unsigned int type)
 	GLCall(glGetShaderiv(id, GL_COMPILE_STATUS, &result)); // Check if the shader compiled successfully
 	if (result == GL_FALSE) { // If compilation failed
 		int length;
-		GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length)); // Get the length of the error message
+		GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
 
-		std::vector<char> message(length);
-		GLCall(glGetShaderInfoLog(id, length, &length, message.data()));
+		std::vector<char> message(length); // <-- If length is 0, vector is empty
+		GLCall(glGetShaderInfoLog(id, length, &length, message.data())); // <-- message.data() might be null
 
-		LOG_ERROR("Failed to compile {0} shader! \n\t\tSource File: {1} \n\t\tGLSL Error: {2}",
-			(type == GL_VERTEX_SHADER ? "vertex" : "fragment"), m_FilePath, message.data());
+		LOG_ERROR("...", message.data());
 
 		GLCall(glDeleteShader(id)); // Delete the shader object
 		return 0; // Return -1 to indicate failure
