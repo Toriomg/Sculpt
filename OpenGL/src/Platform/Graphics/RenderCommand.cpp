@@ -3,7 +3,7 @@
 
 void RenderCommand::Init() {
     // Enable features you'll always want, like depth testing
-	CORE_LOG_CRITICAL("Initializing RenderCommand");
+	CORE_LOG_INFO("Initializing RenderCommand");
     GLCall(glEnable(GL_DEPTH_TEST));
 }
 

@@ -18,7 +18,8 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 
     m_LayerStack.PushLayer(new EditorLayer());
 
-	CORE_LOG_INFO("OpenGL Initialized");
+	CORE_LOG_INFO("Application Initialized");
+	LOG_SEPARATOR();
 }
 
 Application::~Application()

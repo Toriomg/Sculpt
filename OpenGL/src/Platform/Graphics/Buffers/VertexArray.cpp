@@ -1,11 +1,11 @@
 #include "VertexArray.h"
 
 VertexArray::VertexArray() {
-	glGenVertexArrays(1, &m_RendererID); // Generate a Vertex Array Object (VAO)
+	GLCall(glGenVertexArrays(1, &m_RendererID)); // Generate a Vertex Array Object (VAO)
 }
 
 VertexArray::~VertexArray() {
-	glDeleteVertexArrays(1, &m_RendererID); // Delete the VAO
+	GLCall(glDeleteVertexArrays(1, &m_RendererID)); // Delete the VAO
 }
 
 void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout) {
@@ -15,8 +15,8 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
 	unsigned int offset = 0;
 	for (unsigned int i = 0; i < elements.size(); i++) {
 		const auto& element = elements[i];
-		glEnableVertexAttribArray(i);
-		glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)offset);
+		GLCall(glEnableVertexAttribArray(i));
+		GLCall(glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)offset));
 		offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
 	}
 }
@@ -29,8 +29,8 @@ void VertexArray::AddBufferPtr(const std::shared_ptr<VertexBuffer>& vb, const Ve
 	unsigned int offset = 0;
 	for (unsigned int i = 0; i < elements.size(); i++) {
 		const auto& element = elements[i];
-		glEnableVertexAttribArray(i);
-		glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)offset);
+		GLCall(glEnableVertexAttribArray(i));
+		GLCall(glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)offset));
 		offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
 	}
 
@@ -39,9 +39,9 @@ void VertexArray::AddBufferPtr(const std::shared_ptr<VertexBuffer>& vb, const Ve
 }
 
 void VertexArray::Bind() const {
-	glBindVertexArray(m_RendererID); // Bind the VAO
+	GLCall(glBindVertexArray(m_RendererID)); // Bind the VAO
 }
 
 void VertexArray::Unbind() const {
-	glBindVertexArray(0); // Unbind the VAO
+	GLCall(glBindVertexArray(0)); // Unbind the VAO
 }

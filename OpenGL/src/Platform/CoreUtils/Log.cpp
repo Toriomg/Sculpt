@@ -14,8 +14,8 @@ void Log::Init() {
     // --- Configure the Sinks' Pattern ---
     // [Timestamp] [Logger Name] [Log Level]: Message
     // Example: [2023-10-27 15:30:00.123] [APP] [info]: Hello World!
-    logSinks[0]->set_pattern("%^[%T] [%n]: %v%$");
-    logSinks[1]->set_pattern("[%T] [%l] %n: %v");
+    logSinks[0]->set_pattern("%^[%n] [%s:%#]: %v%$");
+    logSinks[1]->set_pattern("[%l] [%n] [%s:%#]: %v");
 
     // --- Create the Loggers ---
     // Core logger for the engine itself

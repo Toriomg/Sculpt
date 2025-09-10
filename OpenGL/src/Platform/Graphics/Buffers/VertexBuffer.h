@@ -1,6 +1,6 @@
 #pragma once
 #include "Platform/CoreUtils/Log.h"
-#include <GL/glew.h>
+#include "glewDbg.h"
 
 class VertexBuffer {
 private:

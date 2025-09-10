@@ -18,7 +18,7 @@ Public API implementation
 */
 
 void Renderer::Init() {
-	CORE_LOG_TRACE("Initializing Renderer");
+	CORE_LOG_INFO("Initializing Renderer");
 	RenderCommand::Init();
 }
 

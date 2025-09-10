@@ -25,7 +25,10 @@ void EditorLayer::OnAttach() {
     std::shared_ptr<Mesh> TorusMesh = Mesh::CreateTorus(1.0f, 0.5f, 100, 100);
 
     // --- Create a Material ---
-    auto simpleShader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
+    auto simpleShader = std::make_shared<Shader>(
+        //"res/shaders/test/testTexture.shader"
+        "res/shaders/modelmesh.shader"
+    );
     std::shared_ptr<Material> myMaterial = std::make_shared<Material>(simpleShader);
 	myMaterial->SetTexture(AssetManager::Load("res/textures/texture1.png"));
 

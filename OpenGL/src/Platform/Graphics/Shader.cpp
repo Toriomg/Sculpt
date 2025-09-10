@@ -30,13 +30,13 @@ Shader::Shader(const std::string& vertFilepath, const std::string& fragFilepath)
 }
 
 Shader::~Shader() {
-	glDeleteProgram(m_RendererID); // Delete the shader program
+	GLCall(glDeleteProgram(m_RendererID)); // Delete the shader program
 }
 
 std::string Shader::ReadFile(const std::string& filepath) {
 	std::ifstream file(filepath);
 	if (!file.is_open()) {
-		std::cerr << "Error: Could not open shader file: " << filepath << std::endl;
+		LOG_ERROR( "Error: Could not open shader file: {0}", filepath);
 		return ""; // Return empty string on failure
 	}
 	std::stringstream buffer;
@@ -80,22 +80,22 @@ ShaderProgramSource Shader::ParseShader(const std::string& filepath) {
 unsigned int Shader::CompileShader(const std::string& source, unsigned int type) {
 	unsigned int id = glCreateShader(type); // Create a shader object of the specified type
 	const char* src = source.c_str(); // Convert the source string to a C-style string
-	glShaderSource(id, 1, &src, nullptr); // Attach the source code to the shader object
-	glCompileShader(id); // Compile the shader
+	GLCall(glShaderSource(id, 1, &src, nullptr)); // Attach the source code to the shader object
+	GLCall(glCompileShader(id)); // Compile the shader
 
 	int result;
-	glGetShaderiv(id, GL_COMPILE_STATUS, &result); // Check if the shader compiled successfully
+	GLCall(glGetShaderiv(id, GL_COMPILE_STATUS, &result)); // Check if the shader compiled successfully
 	if (result == GL_FALSE) { // If compilation failed
 		int length;
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length); // Get the length of the error message
+		GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length)); // Get the length of the error message
 
 		std::vector<char> message(length);
-		glGetShaderInfoLog(id, length, &length, message.data());
+		GLCall(glGetShaderInfoLog(id, length, &length, message.data()));
 
 		LOG_ERROR("Failed to compile {0} shader! \n\t\tSource File: {1} \n\t\tGLSL Error: {2}",
 			(type == GL_VERTEX_SHADER ? "vertex" : "fragment"), m_FilePath, message.data());
 
-		glDeleteShader(id); // Delete the shader object
+		GLCall(glDeleteShader(id)); // Delete the shader object
 		return 0; // Return -1 to indicate failure
 	}
 
@@ -111,101 +111,114 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 	// If compilation failed, vs or fs will be 0. Abort creation.
 	if (vs == 0 || fs == 0) {
 		// The error message was already printed inside CompileShader
-		glDeleteProgram(program); // Clean up the program object
-		if (vs != 0) glDeleteShader(vs); // Clean up the successfully compiled shader
-		if (fs != 0) glDeleteShader(fs); // Clean up the successfully compiled shader
+		GLCall(glDeleteProgram(program)); // Clean up the program objec)t
+		// Clean up the successfully compiled shader
+		if (vs != 0) GLCall(glDeleteShader(vs));
+		if (fs != 0) GLCall(glDeleteShader(fs));
 		return 0;
 	}
 
-	glAttachShader(program, vs);
-	glAttachShader(program, fs);
-	glLinkProgram(program); // Link the shader program
+	GLCall(glAttachShader(program, vs));
+	GLCall(glAttachShader(program, fs));
+	// Link the shader program
+	GLCall(glLinkProgram(program)); 
 
 	int linkResult;
-	glGetProgramiv(program, GL_LINK_STATUS, &linkResult);
+	GLCall(glGetProgramiv(program, GL_LINK_STATUS, &linkResult));
 	if (linkResult == GL_FALSE) {
 		int length;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+		GLCall(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length));
 		std::vector<char> message(length);
-		glGetProgramInfoLog(program, length, &length, message.data());
+		GLCall(glGetProgramInfoLog(program, length, &length, message.data()));
 
 		LOG_ERROR("Failed to link shader program!\n\t\tSource File: {0}\n\t\tGLSL Linker Error : {1}",
 			m_FilePath, message.data());
 
-		glDeleteProgram(program);
-		glDeleteShader(vs);
-		glDeleteShader(fs);
+		GLCall(glDeleteProgram(program));
+		GLCall(glDeleteShader(vs));
+		GLCall(glDeleteShader(fs));
 		return 0;
 	}
 
-	glValidateProgram(program); // Validate the shader program
+	// Validate the shader program
+	GLCall(glValidateProgram(program)); 
 
 	int validateResult;
-	glGetProgramiv(program, GL_VALIDATE_STATUS, &validateResult);
+	GLCall(glGetProgramiv(program, GL_VALIDATE_STATUS, &validateResult));
 	if (validateResult == GL_FALSE) {
 		int length;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+		GLCall(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length));
 		std::vector<char> message(length);
-		glGetProgramInfoLog(program, length, &length, message.data());
+		GLCall(glGetProgramInfoLog(program, length, &length, message.data()));
 
 		LOG_ERROR("Failed to validate shader program!\n\t\tSource File: {0}\n\t\tGLSL Validater Error : {1}",
 			m_FilePath, message.data());
 
 	}
 
-	glDeleteShader(vs); // Delete the vertex shader object
-	glDeleteShader(fs); // Delete the fragment shader object
+	GLCall(glDeleteShader(vs)); // Delete the vertex shader object
+	GLCall(glDeleteShader(fs)); // Delete the fragment shader object
 	CORE_LOG_TRACE("Shader {0} Created correctly", m_FilePath);
 	return program; // Return the shader program ID
 }
 
 void Shader::Bind() const {
-	glUseProgram(m_RendererID); // Bind the shader program for use
+	// Bind the shader program for use
+	GLCall(glUseProgram(m_RendererID));
 }
 
 void Shader::Unbind() const {
-	glUseProgram(0); // Unbind the shader program
+	// Unbind the shader program
+	GLCall(glUseProgram(0));
 }
 
 // Uniform setters for various types
 
 void Shader::SetUniform1i(const std::string& name, int value) {
-	glUniform1i(GetUniformLocation(name), value); // Set an integer uniform variable in the shader
+	// Set an integer uniform variable in the shader
+	GLCall(glUniform1i(GetUniformLocation(name), value));
 }
 
 void Shader::SetUniform1ui(const std::string& name, unsigned int value) {
-	glUniform1ui(GetUniformLocation(name), value); // Set an integer uniform variable in the shader
+	// Set an integer uniform variable in the shader
+	GLCall(glUniform1ui(GetUniformLocation(name), value));
 }
 
 
 void Shader::SetUniform1iv(const std::string& name, const int* array, int size) {
-	glUniform1iv(GetUniformLocation(name), size, array); // Set an array of integer uniform variables in the shader
+	// Set an array of integer uniform variables in the shader
+	GLCall(glUniform1iv(GetUniformLocation(name), size, array));
 }
 
 void Shader::SetUniform1f(const std::string& name, float v) {
-	glUniform1f(GetUniformLocation(name), v);
+	GLCall(glUniform1f(GetUniformLocation(name), v));
 }
 
 void Shader::SetUniform3f(const std::string& name, float v0, float v1, float v2) {
-	glUniform3f(GetUniformLocation(name), v0, v1, v2); // Set a 3D float uniform variable in the shader
+	// Set a 3D float uniform variable in the shader
+	GLCall(glUniform3f(GetUniformLocation(name), v0, v1, v2));
 }
 
 void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3) {
-	glUniform4f(GetUniformLocation(name), v0, v1, v2, v3); // Set a 4D float uniform variable in the shader
+	// Set a 4D float uniform variable in the shader
+	GLCall(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
 }
 
 void Shader::SetUniformMat4f(const std::string& name, const Matx4f& matrix) {
-	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_TRUE, &matrix.m[0][0]); // Set a 4x4 matrix uniform variable in the shader
+	// Set a 4x4 matrix uniform variable in the shader
+	GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_TRUE, &matrix.m[0][0]));
 }
 
 GLint Shader::GetUniformLocation(const std::string& name) const {
 	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end()) {
-		return m_UniformLocationCache[name]; // Return cached location if it exists
+		// Return cached location if it exists
+		return m_UniformLocationCache[name]; 
 	}
 	GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 	if (location == -1) {
 		LOG_ERROR("Warning: uniform {0} doesn't exist!", name);
 	}
-	m_UniformLocationCache[name] = location; // Cache the uniform location if found
+	// Cache the uniform location if found
+	m_UniformLocationCache[name] = location; 
 	return location;
 }

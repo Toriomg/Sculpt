@@ -20,6 +20,10 @@ Texture::Texture(const TextureSpecification& specification, const void* data)
 	}
 
 	GLCall(glGenTextures(1, &m_RendererID));
+	CORE_LOG_INFO("Generated Texture ID: {0}", m_RendererID);
+	if (m_RendererID == 0) {
+		CORE_LOG_ERROR("Failed to generate texture ID!");
+	}
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 
 	// Set texture filtering and wrapping parameters
