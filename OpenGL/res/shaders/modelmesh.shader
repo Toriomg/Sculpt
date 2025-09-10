@@ -132,5 +132,5 @@ void main()
     }
 
 	// Final color output
-	FragColor = vec4(result, 1.0);
+	FragColor = vec4(objectColor, 1.0);
 }

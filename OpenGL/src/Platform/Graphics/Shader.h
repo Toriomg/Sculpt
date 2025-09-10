@@ -2,7 +2,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <GL/glew.h> // Include GLEW for OpenGL function pointers
+#include <glewDBG.h>
 
 #include "Platform/CoreUtils/Math/maths.h"
 #include "Platform/CoreUtils/Log.h"

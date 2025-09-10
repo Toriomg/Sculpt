@@ -5,10 +5,10 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 {
 	Log::Init(); // Initialize the logging system
 	AssetManager::Init(); // Initialize the Asset Manager
-	Renderer::Init(); // Initialize the Renderer
 
     m_Window = std::unique_ptr<Window>(Window::Create());
     Input::Init(m_Window.get());
+	Renderer::Init(); // Initialize the Renderer
 
 	m_Window->SetVSync(true);
     m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));

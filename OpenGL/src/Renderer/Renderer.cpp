@@ -59,7 +59,7 @@ void Renderer::Submit(
     shader->SetUniform3f("u_objectColor", 0.0f, 1.0f, 0.0f);
     
     AssetHandle textureHandle = material->GetTextureHandle();
-	LOG_TRACE("Texture Handle ID: {0}", textureHandle.ID);
+	//LOG_TRACE("Texture Handle ID: {0}", textureHandle.ID);
 
     if (textureHandle) {
         auto texture = std::static_pointer_cast<Texture>(AssetManager::Get(textureHandle));

@@ -19,34 +19,34 @@ Texture::Texture(const TextureSpecification& specification, const void* data)
 		CORE_LOG_ERROR("Unsupported number of texture channels: {0}", m_Specification.channels);
 	}
 
-	glGenTextures(1, &m_RendererID);
-	glBindTexture(GL_TEXTURE_2D, m_RendererID);
+	GLCall(glGenTextures(1, &m_RendererID));
+	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 
 	// Set texture filtering and wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
 	// Upload the texture data to the GPU
 	if (internalFormat != 0 && dataFormat != 0)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Specification.Width, m_Specification.Height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Specification.Width, m_Specification.Height, 0, dataFormat, GL_UNSIGNED_BYTE, data));
+		GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 	}
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 Texture::~Texture() {
-	glDeleteTextures(1, &m_RendererID); // Delete the texture from OpenGL
+	GLCall(glDeleteTextures(1, &m_RendererID)); // Delete the texture from OpenGL
 }
 
 void Texture::Bind(unsigned int slot) const {
-	glActiveTexture(GL_TEXTURE0 + slot); // Activate the texture unit
-	glBindTexture(GL_TEXTURE_2D, m_RendererID); // Bind the texture to the specified slot
+	GLCall(glActiveTexture(GL_TEXTURE0 + slot)); // Activate the texture unit
+	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID)); // Bind the texture to the specified slot
 }
 
 void Texture::Unbind() const {
-	glBindTexture(GL_TEXTURE_2D, 0); // Unbind the texture
+	GLCall(glBindTexture(GL_TEXTURE_2D, 0)); // Unbind the texture
 }
