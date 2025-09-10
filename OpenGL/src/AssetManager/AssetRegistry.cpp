@@ -12,8 +12,9 @@ std::shared_ptr<IAsset> AssetRegistry::Get(AssetHandle handle) {
     if (it != m_Assets.end()) {
         // Attempt to promote the weak_ptr to a shared_ptr.
         // If the object has been deleted, this will return nullptr.
-        return it->second.lock();
+        return it->second;
     }
+	CORE_LOG_WARN("Asset with handle ID {0} not found in registry.", handle.ID);
     return nullptr;
 }
 

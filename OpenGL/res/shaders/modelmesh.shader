@@ -94,7 +94,10 @@ vec3 lighting(){
 
 void main()
 {
-
+	/*
+	vec4 texColor = texture(u_Texture, v_TexCoord);
+	FragColor = vec4(v_TexCoord.x, v_TexCoord.y, 0.0, 1.0);
+	*/
 	vec3 objectColor = texture(u_Texture, v_TexCoord).rgb;
 	
 	vec3 baseColor;

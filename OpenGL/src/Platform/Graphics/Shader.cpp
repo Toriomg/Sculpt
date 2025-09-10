@@ -78,8 +78,8 @@ ShaderProgramSource Shader::ParseShader(const std::string& filepath) {
 		}
 	}
 
-	CORE_LOG_TRACE("Vertex Shader Source:\n---\n{0}\n---", ss[0].str());
-	CORE_LOG_TRACE("Fragment Shader Source:\n---\n{0}\n---", ss[1].str());
+	//CORE_LOG_TRACE("Vertex Shader Source:\n---\n{0}\n---", ss[0].str());
+	//CORE_LOG_TRACE("Fragment Shader Source:\n---\n{0}\n---", ss[1].str());
 
 	return { ss[0].str(), ss[1].str() }; // Return the vertex and fragment shader sources as a ShaderProgramSource struct
 }

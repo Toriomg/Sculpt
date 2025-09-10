@@ -15,5 +15,5 @@ public:
 	// Should be done automatically when the last shared_ptr to an asset is destroyed,
     void Unload(AssetHandle handle);
 private:
-    std::map<AssetHandle, std::weak_ptr<IAsset>> m_Assets;
+    std::map<AssetHandle, std::shared_ptr<IAsset>> m_Assets;
 };
