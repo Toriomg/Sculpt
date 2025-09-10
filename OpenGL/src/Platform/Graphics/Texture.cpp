@@ -3,6 +3,22 @@
 Texture::Texture(const TextureSpecification& specification, const void* data)
 	: m_RendererID(0), m_Specification(specification)
 {
+	GLenum internalFormat = 0, dataFormat = 0;
+	if (m_Specification.channels == 4)
+	{
+		internalFormat = GL_RGBA8;
+		dataFormat = GL_RGBA;
+	}
+	else if (m_Specification.channels == 3)
+	{
+		internalFormat = GL_RGB8;
+		dataFormat = GL_RGB;
+	}
+	else
+	{
+		CORE_LOG_ERROR("Unsupported number of texture channels: {0}", m_Specification.channels);
+	}
+
 	glGenTextures(1, &m_RendererID);
 	glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
@@ -13,10 +29,11 @@ Texture::Texture(const TextureSpecification& specification, const void* data)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	// Upload the texture data to the GPU
-	// NOTE: For now we assume RGBA8 format. This can be extended using the specification.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specification.Width, m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
+	if (internalFormat != 0 && dataFormat != 0)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Specification.Width, m_Specification.Height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -27,7 +27,7 @@ void EditorLayer::OnAttach() {
     // --- Create a Material ---
     auto simpleShader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
     std::shared_ptr<Material> myMaterial = std::make_shared<Material>(simpleShader);
-	myMaterial->SetTexture(AssetManager::Load("res/textures/texture3.png"));
+	myMaterial->SetTexture(AssetManager::Load("res/textures/texture1.png"));
 
 
     // Set the initial positions

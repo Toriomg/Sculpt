@@ -75,4 +75,5 @@ void Renderer::Submit(
     }
 
 	RenderCommand::Draw(vertexArray, indexBuffer);
+	shader->Unbind();
 }

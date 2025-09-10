@@ -8,7 +8,7 @@ std::shared_ptr<IAsset> TextureLoader::Load(const std::string& filepath) {
 
     // 1. Load the pixel data from the file into a CPU buffer
     stbi_set_flip_vertically_on_load(1);
-    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 4); // Force 4 channels (RGBA)
+    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0); // Force 4 channels (RGBA)
 
     if (data == nullptr) {
         LOG_ERROR("TextureLoader: Failed to load image from {0}", filepath);
