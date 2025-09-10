@@ -2,6 +2,7 @@
 #include "Loader/LoaderSystem.h"
 #include "AssetRegistry.h"
 #include "Loader/TextureLoader.h"
+#include "Loader/MeshLoader.h"
 
 // This struct holds the static instance data
 struct AssetManagerData {
@@ -18,7 +19,7 @@ void AssetManager::Init() {
     // --- Register all your concrete loaders here ---
 	// TODO: Implement MeshLoader
     //s_Data->loaders.RegisterLoader(".fbx", std::make_unique<MeshLoader>());
-    //s_Data->loaders.RegisterLoader(".obj", std::make_unique<MeshLoader>());
+    s_Data->loaders.RegisterLoader(".obj", std::make_unique<MeshLoader>());
     s_Data->loaders.RegisterLoader(".png", std::make_unique<TextureLoader>());
     s_Data->loaders.RegisterLoader(".jpg", std::make_unique<TextureLoader>());
 

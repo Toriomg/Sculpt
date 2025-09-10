@@ -19,7 +19,8 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-    std::shared_ptr<Mesh> CubeMesh = Mesh::CreateCube(2.0f);
+    AssetHandle AHO = AssetManager::Load("res/models/dragon.obj");
+    std::shared_ptr<Mesh> CubeMesh = std::static_pointer_cast<Mesh>(AssetManager::Get(AHO));
     std::shared_ptr<Mesh> SphereMesh = Mesh::CreateSphere(1.0f, 100, 100);
 	std::shared_ptr<Mesh> PyramidMesh = Mesh::CreatePyramid(2.0f);
     std::shared_ptr<Mesh> TorusMesh = Mesh::CreateTorus(1.0f, 0.5f, 100, 100);

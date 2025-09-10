@@ -89,7 +89,7 @@ vec3 lighting(){
 	vec3 specular = specularStrength * spec * vec3(1.0);
 	//specular = specular * u_objectColor;
 
-	return ambient * v_Color.rgb + diffuse * v_Color.rgb + specular;
+	return ambient + diffuse + specular;
 }
 
 void main()
@@ -135,5 +135,5 @@ void main()
     }
 
 	// Final color output
-	FragColor = vec4(objectColor, 1.0);
+	FragColor = vec4(result, 1.0);
 }

@@ -65,7 +65,7 @@ void Renderer::Submit(
         auto texture = std::static_pointer_cast<Texture>(AssetManager::Get(textureHandle));
         if (texture)
         {
-            CORE_LOG_INFO("Binding Texture ID {0} to slot 0 for object with transform...", texture->GetRendererID());
+            //CORE_LOG_INFO("Binding Texture ID {0} to slot 0...", texture->GetRendererID());
             int textureSlot = 0;
             // Tell OpenGL to place our texture object into the chosen slot.
             texture->Bind(textureSlot);
