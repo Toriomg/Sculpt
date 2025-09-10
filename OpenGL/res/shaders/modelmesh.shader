@@ -20,7 +20,7 @@ void main()
 	v_TexCoord = texCoord;
 
 	v_WorldPos = vec3(u_Model * vec4(position, 1.0));
-	v_Normal = mat3(transpose(inverse(u_Model))) * normal;
+	v_Normal = mat3(u_Model) * normal;
 	v_Color = u_Color;
 }
 
@@ -53,12 +53,12 @@ uniform vec4 u_VertexHighlightColor;
 uniform float u_VertexHighlightRadius;
 
 
-vec3 lighting(){
+vec3 lighting(vec3 baseColor){
 	vec3 norm = normalize(v_Normal);
 	vec3 faceNormal = normalize(cross(dFdx(v_WorldPos), dFdy(v_WorldPos)));
 
 	// Define light properties
-	vec3 lightColor = vec3(0.6); // A simple white light
+	vec3 lightColor = vec3(0.8); // A simple white light
 	vec3 lightPos = u_cameraPos;//vec3(0.0, 30.0, 0.0);
 
 	// DIFFUSE LIGHT
@@ -69,12 +69,12 @@ vec3 lighting(){
 
 	// AMBIENT LIGHT
 	// Add a little bit of ambient light so things in shadow aren't pure black
-	float ambientStrength = 0.30;
+	float ambientStrength = 0.25;
 	vec3 ambient = ambientStrength * lightColor;
 
 	// SPECULAR light
-	float specularStrength = 0.7; // Controls the intensity of the highlight
-	float shininess = 20.0;       // Controls the size of the highlight (higher is smaller/sharper)
+	float specularStrength = 0.5; // Controls the intensity of the highlight
+	float shininess = 64.0;       // Controls the size of the highlight (higher is smaller/sharper)
 
 	// Calculate the direction the viewer is looking from (fragment to camera)
 	vec3 viewDir = normalize(u_cameraPos  - v_WorldPos);
@@ -89,7 +89,7 @@ vec3 lighting(){
 	vec3 specular = specularStrength * spec * vec3(1.0);
 	//specular = specular * u_objectColor;
 
-	return ambient + diffuse + specular;
+	return (ambient * baseColor) + (diffuse * baseColor) + specular;
 }
 
 void main()
@@ -116,7 +116,7 @@ void main()
     }
 
 	// Combine lighting and the object's color
-	vec3 result = baseColor *lighting();
+	vec3 result = lighting(baseColor);
 
 	if (u_IsVertexSelected) {
         // Calculate the distance from the current pixel's world position to the center of the selected vertex.
