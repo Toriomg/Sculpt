@@ -44,7 +44,7 @@ std::string Shader::ReadFile(const std::string& filepath) {
 	return buffer.str();
 }
 
-ShaderProgramSource Shader::ParseShader(const std::string& filepath) {
+ShaderProgramSource Shader::ParseShader(const std::string& filepath) { // static
 	std::ifstream stream(filepath); // Open the shader file
 
 	enum class ShaderType {
@@ -99,7 +99,7 @@ unsigned int Shader::CompileShader(const std::string& source, unsigned int type)
 		std::vector<char> message(length); // <-- If length is 0, vector is empty
 		GLCall(glGetShaderInfoLog(id, length, &length, message.data())); // <-- message.data() might be null
 
-		LOG_ERROR("...", message.data());
+		LOG_ERROR("Failed to compile shader:\n{0}", message.data());
 
 		GLCall(glDeleteShader(id)); // Delete the shader object
 		return 0; // Return -1 to indicate failure
@@ -216,15 +216,11 @@ void Shader::SetUniformMat4f(const std::string& name, const Matx4f& matrix) {
 }
 
 GLint Shader::GetUniformLocation(const std::string& name) const {
-	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end()) {
-		// Return cached location if it exists
-		return m_UniformLocationCache[name]; 
+	auto [it, inserted] = m_UniformLocationCache.try_emplace(name, -1);
+	if (inserted) {
+		it->second = glGetUniformLocation(m_RendererID, name.c_str());
+		if (it->second == -1)
+			LOG_ERROR("Warning: uniform '{0}' doesn't exist!", name);
 	}
-	GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-	if (location == -1) {
-		LOG_ERROR("Warning: uniform {0} doesn't exist!", name);
-	}
-	// Cache the uniform location if found
-	m_UniformLocationCache[name] = location; 
-	return location;
+	return it->second;
 }

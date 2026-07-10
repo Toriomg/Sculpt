@@ -21,6 +21,7 @@ find_package(assimp REQUIRED)
 
 file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 list(FILTER APP_SOURCES EXCLUDE REGEX ".*/vendor/.*")
+list(FILTER APP_SOURCES EXCLUDE REGEX ".*/Platform/System/Input\\.cpp$")
 
 set(VENDOR_SOURCES
     src/vendor/imgui/imgui.cpp

@@ -15,9 +15,7 @@
 #define ASSERT(x) if (!(x)) DEBUG_BREAK();
 
 // Main debug macro
-#define GLCall(x) GLClearError();\
-    x;\
-    ASSERT(GLLogCall(#x, __FILE__, __LINE__))
+#define GLCall(x) do { GLClearError(); x; ASSERT(GLLogCall(#x, __FILE__, __LINE__)); } while(0)
 
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);

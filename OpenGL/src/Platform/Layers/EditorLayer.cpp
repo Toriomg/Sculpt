@@ -19,8 +19,7 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-    AssetHandle AHO = AssetManager::Load("res/models/monkey.obj");
-    std::shared_ptr<Mesh> CubeMesh = std::static_pointer_cast<Mesh>(AssetManager::Get(AHO));
+    std::shared_ptr<Mesh> CubeMesh = Mesh::CreateCube(1.0f);
     std::shared_ptr<Mesh> SphereMesh = Mesh::CreateSphere(1.0f, 100, 100);
 	std::shared_ptr<Mesh> PyramidMesh = Mesh::CreatePyramid(2.0f);
     std::shared_ptr<Mesh> TorusMesh = Mesh::CreateTorus(1.0f, 0.5f, 100, 100);
@@ -76,12 +75,12 @@ void EditorLayer::OnUpdate(float deltaTime) {
 void EditorLayer::OnEvent(Event& e) {
     // This layer uses its own dispatcher to handle only the events it cares about.
     EventDispatcher dispatcher(e);
-    dispatcher.Dispatch<MouseButtonPressedEvent>(std::bind(&EditorLayer::OnMouseButtonPressed, this, std::placeholders::_1));
-    dispatcher.Dispatch<MouseButtonReleasedEvent>(std::bind(&EditorLayer::OnMouseButtonReleased, this, std::placeholders::_1));
-    dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));
-    dispatcher.Dispatch<KeyReleasedEvent>(std::bind(&EditorLayer::OnKeyReleased, this, std::placeholders::_1));
-    dispatcher.Dispatch<MouseMovedEvent>(std::bind(&EditorLayer::OnMouseMoved, this, std::placeholders::_1));
-    dispatcher.Dispatch<WindowResizeEvent>(std::bind(&EditorLayer::OnWindowResize, this, std::placeholders::_1));
+    dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& e)  { return OnMouseButtonPressed(e); });
+    dispatcher.Dispatch<MouseButtonReleasedEvent>([this](MouseButtonReleasedEvent& e) { return OnMouseButtonReleased(e); });
+    dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e)                  { return OnKeyPressed(e); });
+    dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& e)                { return OnKeyReleased(e); });
+    dispatcher.Dispatch<MouseMovedEvent>([this](MouseMovedEvent& e)                  { return OnMouseMoved(e); });
+    dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& e)              { return OnWindowResize(e); });
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
@@ -95,8 +94,6 @@ bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
 }
 
 bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
-    float mouseX = e.GetX();
-    float mouseY = e.GetY();
     return false;
 }
 

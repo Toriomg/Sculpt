@@ -11,7 +11,7 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 	Renderer::Init(); // Initialize the Renderer
 
 	m_Window->SetVSync(true);
-    m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
+    m_Window->SetEventCallback([this](Event& e) { OnEvent(e); });
 
     // Setup Time
 	Time::Init();
@@ -44,7 +44,7 @@ void Application::Run()
 void Application::OnEvent(Event& e) {
     // Use the dispatcher to route the event to the correct handler
     EventDispatcher dispatcher(e);
-    dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
+    dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) { return OnWindowClose(e); });
 
     for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
         // If a layer has handled the event, stop processing.

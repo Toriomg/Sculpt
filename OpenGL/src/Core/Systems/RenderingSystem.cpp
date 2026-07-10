@@ -36,7 +36,6 @@ void RenderingSystem::OnUpdate(float deltaTime)
 
         // 3. Find all entities that are renderable and submit them.
         auto group = m_Scene->GetAllEntitiesWith<TransformComponent, MeshComponent>();
-        unsigned int debugRenderEntities = 0;
         for (auto entity : group)
         {
             auto& transform = group.get<TransformComponent>(entity).Transform;
@@ -44,20 +43,16 @@ void RenderingSystem::OnUpdate(float deltaTime)
 
             if (!meshComp.MeshAsset || !meshComp.MaterialAsset) {
                 LOG_WARN("Entity {0} is missing a Mesh or Material!", (uint32_t)entity);
-                continue; // Skip if mesh or material is missing.
+                continue;
             }
 
             meshComp.MaterialAsset->GetShader()->Bind();
-            // Now set the camera position
             meshComp.MaterialAsset->GetShader()->SetUniform3f("u_cameraPos",
                 mainCamera->GetPosition().x,
                 mainCamera->GetPosition().y,
                 mainCamera->GetPosition().z);
-            // Submit this entity to the renderer to be drawn.
             Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, transform);
-            debugRenderEntities++;
         }
-        //CORE_LOG_INFO("{0} Rendered entities", debugRenderEntities);
         // Tell the Renderer we are done with this frame.
         Renderer::EndScene();
     }

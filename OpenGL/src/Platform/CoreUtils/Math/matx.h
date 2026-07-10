@@ -2,11 +2,12 @@
 #include <GL/glew.h>
 #include "vec4.h"
 #include <cmath>
+#include <numbers>
 
-#define M_PI 3.141592653589793f
+inline constexpr float PI_F = std::numbers::pi_v<float>;
 
 static inline float radians(float degrees) {
-    return degrees * M_PI / 180.0f;
+    return degrees * PI_F / 180.0f;
 }
 
 class Matx4f {
@@ -87,27 +88,27 @@ public:
     }
 
     static Matx4f rotationX(float angle) {
-		radians(angle);
+        float rad = radians(angle);
         return Matx4f(1.0f, 0.0f, 0.0f, 0.0f,
-                      0.0f, cos(angle), -sin(angle), 0.0f,
-                      0.0f, sin(angle), cos(angle), 0.0f,
+                      0.0f, cos(rad), -sin(rad), 0.0f,
+                      0.0f, sin(rad),  cos(rad), 0.0f,
                       0.0f, 0.0f, 0.0f, 1.0f);
-	}
+    }
 
     static Matx4f rotationY(float angle) {
-        radians(angle);
-        return Matx4f(cos(angle), 0.0f, sin(angle), 0.0f,
-                      0.0f, 1.0f, 0.0f, 0.0f,
-                      -sin(angle), 0.0f, cos(angle), 0.0f,
-                      0.0f, 0.0f, 0.0f, 1.0f);
-	}
+        float rad = radians(angle);
+        return Matx4f( cos(rad), 0.0f, sin(rad), 0.0f,
+                       0.0f,     1.0f, 0.0f,     0.0f,
+                      -sin(rad), 0.0f, cos(rad), 0.0f,
+                       0.0f,     0.0f, 0.0f,     1.0f);
+    }
 
-    static Matx4f rotationZ(float angle){
-        radians(angle);
-        return Matx4f(cos(angle),-sin(angle), 0.0f, 0.0f,
-                      sin(angle), cos(angle), 0.0f, 0.0f,
-                      0.0f      , 0.0f      , 1.0f, 0.0f,
-			          0.0f      , 0.0f      , 0.0f, 1.0f);
+    static Matx4f rotationZ(float angle) {
+        float rad = radians(angle);
+        return Matx4f(cos(rad), -sin(rad), 0.0f, 0.0f,
+                      sin(rad),  cos(rad), 0.0f, 0.0f,
+                      0.0f,      0.0f,     1.0f, 0.0f,
+                      0.0f,      0.0f,     0.0f, 1.0f);
     }
 
     static Matx4f rotation(const Vec3& axis, float angle) {
@@ -165,7 +166,7 @@ public:
     }
 
     static Matx4f perspective(float fov, float aspectRatio, float zNear, float zFar) {
-        float tanHalfFov = tan(fov * M_PI / 360.0f);
+        float tanHalfFov = tan(fov * PI_F / 360.0f);
         float f = 1.0f / tanHalfFov;
 
         float A = -(zFar + zNear) / (zFar - zNear);
