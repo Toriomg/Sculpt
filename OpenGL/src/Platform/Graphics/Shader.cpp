@@ -6,18 +6,18 @@
 
 #include "Shader.h"
 
-Shader::Shader(const std::string& filepath)
+Shader::Shader(std::string_view filepath)
 	: m_FilePath(filepath), m_RendererID(0)
 {
-	/*Builder function for a single vertex and fragment shaders file*/
-	ShaderProgramSource source = ParseShader(filepath); // Parse the shader fill
-	m_RendererID = CreateShader(source.VertexSource, source.FragmentSource); // Create the shader program
+	ShaderProgramSource source = ParseShader(m_FilePath);
+	m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
 }
 
-Shader::Shader(const std::string& vertFilepath, const std::string& fragFilepath) {
-	/*Builder function for two separate vertex and fragment shaders files*/
-	std::string vertexSource = ReadFile(vertFilepath);
-	std::string fragmentSource = ReadFile(fragFilepath);
+Shader::Shader(std::string_view vertFilepath, std::string_view fragFilepath)
+	: m_FilePath(vertFilepath), m_RendererID(0)
+{
+	std::string vertexSource   = ReadFile(std::string(vertFilepath));
+	std::string fragmentSource = ReadFile(std::string(fragFilepath));
 
 	// Check if reading was successful before proceeding
 	if (vertexSource.empty() || fragmentSource.empty()) {
@@ -33,8 +33,8 @@ Shader::~Shader() {
 	GLCall(glDeleteProgram(m_RendererID)); // Delete the shader program
 }
 
-std::string Shader::ReadFile(const std::string& filepath) {
-	std::ifstream file(filepath);
+std::string Shader::ReadFile(std::string_view filepath) {
+	std::ifstream file{std::string(filepath)};
 	if (!file.is_open()) {
 		LOG_ERROR( "Error: Could not open shader file: {0}", filepath);
 		return ""; // Return empty string on failure
@@ -44,8 +44,8 @@ std::string Shader::ReadFile(const std::string& filepath) {
 	return buffer.str();
 }
 
-ShaderProgramSource Shader::ParseShader(const std::string& filepath) { // static
-	std::ifstream stream(filepath); // Open the shader file
+ShaderProgramSource Shader::ParseShader(std::string_view filepath) {
+	std::ifstream stream{std::string(filepath)};
 
 	enum class ShaderType {
 		NONE = -1, VERTEX = 0, FRAGMENT = 1
@@ -73,7 +73,7 @@ ShaderProgramSource Shader::ParseShader(const std::string& filepath) { // static
 			// If the line does not contain a shader directive
 			// Append the line to the appropriate shader type's stringstream
 			if (type != ShaderType::NONE) {
-				ss[(int)type] << line << '\n';
+				ss[static_cast<int>(type)] << line << '\n';
 			}
 		}
 	}

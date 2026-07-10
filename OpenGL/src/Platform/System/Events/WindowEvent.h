@@ -12,7 +12,7 @@ public:
 
     static EventType GetStaticType() { return EventType::WindowResize; }
     virtual EventType GetEventType() const override { return GetStaticType(); }
-    virtual const char* GetName() const override { return "WindowResize"; }
+    std::string_view GetName() const override { return "WindowResize"; }
 
 private:
     unsigned int m_Width, m_Height;
@@ -24,5 +24,5 @@ public:
 
     static EventType GetStaticType() { return EventType::WindowClose; }
     virtual EventType GetEventType() const override { return GetStaticType(); }
-    virtual const char* GetName() const override { return "WindowClose"; }
+    std::string_view GetName() const override { return "WindowClose"; }
 };

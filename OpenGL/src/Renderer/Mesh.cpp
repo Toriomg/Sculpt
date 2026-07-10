@@ -86,7 +86,7 @@ std::shared_ptr<Mesh> Mesh::CreateCube(float size) {
     }
 
     CORE_LOG_INFO("Square with {0} faces", indices.size() / 3);
-    return CreateMeshFromData(vertices.data(), vertices.size() * sizeof(float), indices.data(), indices.size());
+    return CreateMeshFromData(vertices.data(), static_cast<uint32_t>(vertices.size() * sizeof(float)), indices.data(), static_cast<uint32_t>(indices.size()));
 }
 // Add this method to Mesh.cpp
 std::shared_ptr<Mesh> Mesh::CreatePyramid(float size) {
@@ -166,8 +166,8 @@ std::shared_ptr<Mesh> Mesh::CreateSphere(float radius, int sectors, int stacks) 
             vertices.push_back(nz);
 
             // Texture coords
-            float u = (float)j / sectors;
-            float v = (float)i / stacks;
+            float u = static_cast<float>(j) / sectors;
+            float v = static_cast<float>(i) / stacks;
             vertices.push_back(u);
             vertices.push_back(v);
         }
@@ -203,7 +203,7 @@ std::shared_ptr<Mesh> Mesh::CreateSphere(float radius, int sectors, int stacks) 
         }
     }
     CORE_LOG_INFO("Sphere with {0} faces", indices.size() / 3);
-    return CreateMeshFromData(vertices.data(), vertices.size() * sizeof(float), indices.data(), indices.size());
+    return CreateMeshFromData(vertices.data(), static_cast<uint32_t>(vertices.size() * sizeof(float)), indices.data(), static_cast<uint32_t>(indices.size()));
 }
 
 std::shared_ptr<Mesh> Mesh::CreateTorus(float majorRadius, float minorRadius, int majorSegments, int minorSegments)
@@ -215,11 +215,11 @@ std::shared_ptr<Mesh> Mesh::CreateTorus(float majorRadius, float minorRadius, in
 
     // Generate vertices
     for (int i = 0; i <= minorSegments; ++i) {
-        float v = (float)i / minorSegments;
+        float v = static_cast<float>(i) / minorSegments;
         float minorAngle = v * 2.0f * PI;
 
         for (int j = 0; j <= majorSegments; ++j) {
-            float u = (float)j / majorSegments;
+            float u = static_cast<float>(j) / majorSegments;
             float majorAngle = u * 2.0f * PI;
 
             // --- Vertex Position ---
@@ -279,7 +279,7 @@ std::shared_ptr<Mesh> Mesh::CreateTorus(float majorRadius, float minorRadius, in
     }
     CORE_LOG_INFO("Torus with {0} faces", indices.size()/3);
     // Use the private helper to create the mesh from the generated data
-    return CreateMeshFromData(vertices.data(), vertices.size() * sizeof(float), indices.data(), indices.size());
+    return CreateMeshFromData(vertices.data(), static_cast<uint32_t>(vertices.size() * sizeof(float)), indices.data(), static_cast<uint32_t>(indices.size()));
 }
 
 std::shared_ptr<Mesh> Mesh::CreateDodecahedron() {
@@ -386,5 +386,5 @@ std::shared_ptr<Mesh> Mesh::CreateDodecahedron() {
         indices.push_back(v3);
         indices.push_back(v4);
     }
-    return CreateMeshFromData(vertices.data(), vertices.size() * sizeof(float), indices.data(), indices.size());
+    return CreateMeshFromData(vertices.data(), static_cast<uint32_t>(vertices.size() * sizeof(float)), indices.data(), static_cast<uint32_t>(indices.size()));
 }

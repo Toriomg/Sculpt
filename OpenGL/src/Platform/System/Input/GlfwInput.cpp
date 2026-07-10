@@ -25,7 +25,7 @@ bool GlfwInput::IsMouseButtonPressedImpl(MouseCode button) {
 Vec2 GlfwInput::GetMousePositionImpl() {
     double xpos, ypos;
     glfwGetCursorPos(m_NativeWindow, &xpos, &ypos);
-    return Vec2((float)xpos, (float)ypos);
+    return Vec2(static_cast<float>(xpos), static_cast<float>(ypos));
 }
 
 std::string GlfwInput::GetKeyNameImpl(int keycode) const {

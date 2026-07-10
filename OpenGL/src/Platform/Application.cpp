@@ -6,7 +6,7 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 	Log::Init(); // Initialize the logging system
 	AssetManager::Init(); // Initialize the Asset Manager
 
-    m_Window = std::unique_ptr<Window>(Window::Create());
+    m_Window = Window::Create();
     Input::Init(m_Window.get());
 	Renderer::Init(); // Initialize the Renderer
 
@@ -16,7 +16,7 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
     // Setup Time
 	Time::Init();
 
-    m_LayerStack.PushLayer(new EditorLayer());
+    m_LayerStack.PushLayer(std::make_unique<EditorLayer>());
 
 	CORE_LOG_INFO("Application Initialized");
 	LOG_SEPARATOR();
@@ -34,7 +34,7 @@ void Application::Run()
     {
 		Time::Update();
 		Input::OnUpdate(); // Update the input system
-        for (Layer* layer : m_LayerStack) {
+        for (auto& layer : m_LayerStack) {
             layer->OnUpdate(Time::GetDeltaTime());
         }
         m_Window->OnUpdate();

@@ -1,4 +1,5 @@
 #pragma once
+#include <string_view>
 
 enum class EventType {
     None = 0,
@@ -12,7 +13,7 @@ class Event {
 public:
     virtual ~Event() = default;
     virtual EventType GetEventType() const = 0;
-    virtual const char* GetName() const = 0;
+    virtual std::string_view GetName() const = 0;
     bool Handled = false; // Flag to see if an event has been consumed
 };
 

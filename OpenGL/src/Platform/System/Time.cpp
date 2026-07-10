@@ -9,7 +9,7 @@ float Time::s_DeltaTime = 0.0f;
 void Time::Init()
 {
     // Get the initial time when the application starts
-    s_LastFrameTime = (float)glfwGetTime();
+    s_LastFrameTime = static_cast<float>(glfwGetTime());
     s_Time = s_LastFrameTime;
     s_DeltaTime = 0.0f;
 }
@@ -17,7 +17,7 @@ void Time::Init()
 void Time::Update()
 {
     // Get the current time from GLFW
-    float currentTime = (float)glfwGetTime();
+    float currentTime = static_cast<float>(glfwGetTime());
 
     // Calculate the difference in time from the last frame
     s_DeltaTime = currentTime - s_LastFrameTime;

@@ -11,7 +11,7 @@ public:
     // Static type for the dispatcher
     static EventType GetStaticType() { return EventType::MouseButtonPressed; }
     virtual EventType GetEventType() const override { return GetStaticType(); }
-    virtual const char* GetName() const override { return "MouseButtonPressed"; }
+    std::string_view GetName() const override { return "MouseButtonPressed"; }
 private:
     int m_Button;
 };
@@ -25,7 +25,7 @@ public:
     // Static type for the dispatcher
     static EventType GetStaticType() { return EventType::MouseButtonReleased; }
     virtual EventType GetEventType() const override { return GetStaticType(); }
-    virtual const char* GetName() const override { return "MouseButtonReleased"; }
+    std::string_view GetName() const override { return "MouseButtonReleased"; }
 private:
     int m_Button;
 };
@@ -38,7 +38,7 @@ public:
     // Static type for the dispatcher
     static EventType GetStaticType() { return EventType::MouseMoved; }
     virtual EventType GetEventType() const override { return GetStaticType(); }
-	virtual const char* GetName() const override { return "MouseMoved"; }
+	std::string_view GetName() const override { return "MouseMoved"; }
     private:
 		float m_X, m_Y;
 };
@@ -51,7 +51,7 @@ public:
     // Static type for the dispatcher
     static EventType GetStaticType() { return EventType::MouseScrolled; }
     virtual EventType GetEventType() const override { return GetStaticType(); }
-    virtual const char* GetName() const override { return "MouseScrolled"; }
+    std::string_view GetName() const override { return "MouseScrolled"; }
 private:
 		float m_XOffset, m_YOffset;
 };

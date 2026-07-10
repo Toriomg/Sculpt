@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include "glewDbg.h"
 
@@ -18,8 +19,8 @@ private:
 	unsigned int m_RendererID;
 	mutable std::unordered_map<std::string, GLint> m_UniformLocationCache;
 public:
-	Shader(const std::string& filepath);
-	Shader(const std::string& vertFilepath, const std::string& fragFilepath);
+	explicit Shader(std::string_view filepath);
+	Shader(std::string_view vertFilepath, std::string_view fragFilepath);
 	~Shader();
 
 	void Bind() const;
@@ -34,8 +35,8 @@ public:
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
 	void SetUniformMat4f(const std::string& name, const Matx4f& matrix);
 private:
-	static std::string ReadFile(const std::string& filepath);
-	static ShaderProgramSource ParseShader(const std::string& filepath);
+	static std::string ReadFile(std::string_view filepath);
+	static ShaderProgramSource ParseShader(std::string_view filepath);
 	unsigned int CompileShader(const std::string& source, unsigned int type);
 	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
 	GLint GetUniformLocation(const std::string& name) const;
