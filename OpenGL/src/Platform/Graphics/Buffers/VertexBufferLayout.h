@@ -33,28 +33,27 @@ public:
 
     template<typename T>
     void Push(unsigned int count) {
-        static_assert(std::is_same<T, void>::value, "Unsupported type");
-    }
-
-    // Explicit specializations (now inside class, compiler-specific)
-    template<>
-    void Push<float>(unsigned int count) {
-        m_Elements.push_back({ GL_FLOAT, count, GL_FALSE });
-        m_Stride += count * VertexBufferElement::GetSizeOfType(GL_FLOAT);
-    }
-
-    template<>
-    void Push<unsigned int>(unsigned int count) {
-        m_Elements.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
-        m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_INT);
-    }
-
-    template<>
-    void Push<unsigned char>(unsigned int count) {
-        m_Elements.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
-        m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_BYTE);
+        static_assert(sizeof(T) == 0, "Unsupported vertex attribute type");
     }
 
     inline const std::vector<VertexBufferElement>& GetElements() const { return m_Elements; }
     inline unsigned int GetStride() const { return m_Stride; }
 };
+
+template<>
+inline void VertexBufferLayout::Push<float>(unsigned int count) {
+    m_Elements.push_back({ GL_FLOAT, count, GL_FALSE });
+    m_Stride += count * VertexBufferElement::GetSizeOfType(GL_FLOAT);
+}
+
+template<>
+inline void VertexBufferLayout::Push<unsigned int>(unsigned int count) {
+    m_Elements.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
+    m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_INT);
+}
+
+template<>
+inline void VertexBufferLayout::Push<unsigned char>(unsigned int count) {
+    m_Elements.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
+    m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_BYTE);
+}

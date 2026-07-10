@@ -2,7 +2,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <glewDBG.h>
+#include "glewDbg.h"
 
 #include "Platform/CoreUtils/Math/maths.h"
 #include "Platform/CoreUtils/Log.h"

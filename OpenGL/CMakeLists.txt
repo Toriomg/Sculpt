@@ -1,44 +1,76 @@
 # Set the minimum required version of CMake.
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.25)
 
-# Set the project name and language.
+# Set compiler before project() so CMake uses it from the start
+if(NOT DEFINED CMAKE_CXX_COMPILER)
+    set(CMAKE_CXX_COMPILER clang++)
+endif()
+
 project(MyOpenGLProject CXX)
 
-# Use the C++17 standard.
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(GLEW REQUIRED)
-find_package(glfw3 REQUIRED)
-# --- Assimp Integration ---
-# Since you have the assimp source code in 'src/vendor/assimp',
-# we can tell CMake to build it as part of our project.
-# This is a very clean and common way to handle vendored libraries.
+find_package(OpenGL REQUIRED)
+find_package(GLEW   REQUIRED)
+find_package(glfw3  REQUIRED)
+find_package(assimp REQUIRED)
 
-# Disable building assimp's tools/tests to speed up the build.
-set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Disable Assimp Tests")
-set(ASSIMP_INSTALL OFF CACHE BOOL "Disable Assimp Install")
+# --- Sources ---
 
-# Add the assimp subdirectory. CMake will find its CMakeLists.txt
-# and create a library target named 'assimp'.
-add_subdirectory(src/vendor/assimp)
+file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
+list(FILTER APP_SOURCES EXCLUDE REGEX ".*/vendor/.*")
 
-# --- Your Application ---
+set(VENDOR_SOURCES
+    src/vendor/imgui/imgui.cpp
+    src/vendor/imgui/imgui_draw.cpp
+    src/vendor/imgui/imgui_tables.cpp
+    src/vendor/imgui/imgui_widgets.cpp
+    src/vendor/imgui/imgui_demo.cpp
+    src/vendor/imgui/backends/imgui_impl_glfw.cpp
+    src/vendor/imgui/backends/imgui_impl_opengl3.cpp
+    src/vendor/stb_image/stb_image.cpp
+)
 
-# Create your executable.
-# You will need to list all your .cpp files here.
-# For now, let's assume you have a main.cpp inside the 'src' folder.
-add_executable(MyOpenGLApp src/main.cpp) # <--- Add your other .cpp files here!
+add_executable(MyOpenGLApp ${APP_SOURCES} ${VENDOR_SOURCES})
 
-# Tell your application where to find its own header files.
-# This adds the entire 'src' directory to the include path.
-target_include_directories(MyOpenGLApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+# --- Include paths ---
 
-# Link your application against the assimp library.
-# CMake automatically handles including assimp's headers and linking the library
-# because we used add_subdirectory().
+target_include_directories(MyOpenGLApp PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/vendor
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/vendor/imgui
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GLEW/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GLFW/include
+)
+
+# --- Compiler flags ---
+
+target_compile_options(MyOpenGLApp PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wno-unused-parameter
+    $<$<CONFIG:Debug>:  -O0 -g -fsanitize=address,undefined>
+    $<$<CONFIG:Release>:-O2 -DNDEBUG>
+)
+
+target_link_options(MyOpenGLApp PRIVATE
+    $<$<CONFIG:Debug>:-fsanitize=address,undefined>
+)
+
+# --- Vendor: suppress warnings on code that isn't ours ---
+
+set_source_files_properties(${VENDOR_SOURCES} PROPERTIES
+    COMPILE_FLAGS "-w"
+)
+
+# --- Link ---
+
 target_link_libraries(MyOpenGLApp PRIVATE
-    assimp
+    OpenGL::GL
+    assimp::assimp
     GLEW::glew
-    glfw3
+    glfw
 )

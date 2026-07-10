@@ -1,6 +1,6 @@
 #pragma once
 #include "Platform/CoreUtils/Log.h"
-#include "glewDBG.h"
+#include "glewDbg.h"
 
 class IndexBuffer {
 public:

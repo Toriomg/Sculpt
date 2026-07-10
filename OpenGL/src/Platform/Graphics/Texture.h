@@ -1,5 +1,5 @@
 #pragma once
-#include "glewDBG.h"
+#include "glewDbg.h"
 #include "glhead.h"
 #include "AssetManager/IAsset.h"
 
