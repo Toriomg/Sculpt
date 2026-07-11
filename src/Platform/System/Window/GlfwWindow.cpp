@@ -102,12 +102,7 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
         CORE_LOG_WARN("glewInit() returned an error — OpenGL may still be available.");
     }
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
 
     CORE_LOG_INFO("OpenGL Info:");
     CORE_LOG_INFO("  Vendor: {0}",   reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
