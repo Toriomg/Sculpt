@@ -9,6 +9,7 @@
 #include "Platform/System/Events/WindowEvent.hpp"
 
 #include "Editor/EditorCameraController.hpp"
+#include "Editor/InfGrid.hpp"
 // Temp
 #include "Renderer/Camera.hpp"
 #include "Renderer/Material.hpp"
@@ -37,6 +38,7 @@ private:
     std::unique_ptr<Scene> m_ActiveScene;
     //std::unique_ptr<EditorUI> m_EditorUI;
     std::unique_ptr<EditorCameraController> m_CameraController;
+    std::unique_ptr<InfGrid> m_Grid;
 
     Camera m_EditorCamera;
 	

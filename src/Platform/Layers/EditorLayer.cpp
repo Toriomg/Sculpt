@@ -67,6 +67,7 @@ void EditorLayer::OnAttach() {
     // Stores a raw pointer into the ECS component. If m_CameraEntity is ever destroyed
     // or the registry reallocates, this pointer would dangle — safe only while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
+    m_Grid = std::make_unique<InfGrid>();
 }
 
 void EditorLayer::OnUpdate(float deltaTime) {
@@ -80,6 +81,13 @@ void EditorLayer::OnUpdate(float deltaTime) {
 
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.85f, 1.0f });
     m_ActiveScene->OnUpdate(deltaTime);
+
+    // Grid is drawn after scene geometry so it only covers pixels at maximum depth (no geometry).
+    m_Grid->Draw(
+        camComp.SceneCamera.GetViewMatrix(),
+        camComp.SceneCamera.GetProjectionMatrix(),
+        camComp.SceneCamera.GetPosition()
+    );
 }
 
 void EditorLayer::OnEvent(Event& e) {
