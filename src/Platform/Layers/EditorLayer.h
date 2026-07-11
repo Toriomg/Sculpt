@@ -40,7 +40,7 @@ private:
 	
     Entity m_CameraEntity;
 
-    Entity m_CubeEntity;
+    Entity m_MonkeyEntity;
     Entity m_SphereEntity;
     Entity m_PyramidEntity;
     Entity m_TorusEntity;

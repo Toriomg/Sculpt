@@ -19,7 +19,7 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-    std::shared_ptr<Mesh> CubeMesh = Mesh::CreateCube(1.0f);
+    auto monkeyMesh = std::static_pointer_cast<Mesh>(AssetManager::Get(AssetManager::Load("res/models/monkey.obj")));
     std::shared_ptr<Mesh> SphereMesh = Mesh::CreateSphere(1.0f, 100, 100);
 	std::shared_ptr<Mesh> PyramidMesh = Mesh::CreatePyramid(2.0f);
     std::shared_ptr<Mesh> TorusMesh = Mesh::CreateTorus(1.0f, 0.5f, 100, 100);
@@ -34,19 +34,18 @@ void EditorLayer::OnAttach() {
 
 
     // Set the initial positions
-    Vec3 CubePosition    = { 0.0f, 0.0f, 0.0f };
+    Vec3 MonkeyPosition  = { 0.0f, 0.0f, 0.0f };
     Vec3 SpherePosition  = { 5.0f, 0.0f, 0.0f };
     Vec3 PyramidPosition = {-5.0f, 0.0f, 0.0f };
     Vec3 TorusPosition   = {10.0f, 0.0f, 0.0f };
-	
-    
-    m_CubeEntity = m_ActiveScene->CreateGameObject("Cube");
+
+    m_MonkeyEntity = m_ActiveScene->CreateGameObject("Monkey");
     m_SphereEntity = m_ActiveScene->CreateGameObject("Sphere");
     m_PyramidEntity = m_ActiveScene->CreateGameObject("Pyramid");
     m_TorusEntity = m_ActiveScene->CreateGameObject("Torus");
 
-    m_ActiveScene->AddComponent<MeshComponent>(m_CubeEntity, CubeMesh, myMaterial);
-    m_ActiveScene->SetComponent<TransformComponent>(m_CubeEntity, Matx4f::translation(CubePosition));
+    m_ActiveScene->AddComponent<MeshComponent>(m_MonkeyEntity, monkeyMesh, myMaterial);
+    m_ActiveScene->SetComponent<TransformComponent>(m_MonkeyEntity, Matx4f::translation(MonkeyPosition));
 
     m_ActiveScene->AddComponent<MeshComponent>(m_SphereEntity, SphereMesh, myMaterial);
     m_ActiveScene->SetComponent<TransformComponent>(m_SphereEntity, Matx4f::translation(SpherePosition));
