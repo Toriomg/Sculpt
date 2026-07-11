@@ -19,10 +19,10 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-    auto monkeyMesh = std::static_pointer_cast<Mesh>(AssetManager::Get(AssetManager::Load("res/models/dragon.obj")));
-    std::shared_ptr<Mesh> SphereMesh = Mesh::CreateSphere(1.0f, 100, 100);
+    auto monkeyMesh = std::static_pointer_cast<Mesh>(AssetManager::Get(AssetManager::Load("res/models/monkey.obj")));
+    std::shared_ptr<Mesh> SphereMesh = Mesh::CreateSphere(1.0f, 32, 32);
 	std::shared_ptr<Mesh> PyramidMesh = Mesh::CreateDodecahedron(2.0f);
-    std::shared_ptr<Mesh> TorusMesh = Mesh::CreateTorus(1.0f, 0.5f, 100, 100);
+    std::shared_ptr<Mesh> TorusMesh = Mesh::CreateTorus(1.0f, 0.5f, 32, 32);
 
     // --- Create a Material ---
     auto simpleShader = std::make_shared<Shader>(
