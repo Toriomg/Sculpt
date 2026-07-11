@@ -4,7 +4,7 @@
 
 #include "MeshLoader.h"
 #include "Renderer/Mesh.h"
-#include "glhead.h"
+#include "Core/glhead.h"
 
 
 std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
@@ -34,7 +34,7 @@ std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
 
-        // Posición
+        // Posiciï¿½n
         vertex.pos.x = mesh->mVertices[i].x;
         vertex.pos.y = mesh->mVertices[i].y;
         vertex.pos.z = mesh->mVertices[i].z;
@@ -50,8 +50,8 @@ std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
         }
 
         // Coordenadas de Textura (UVs)
-        // Assimp permite hasta 8 sets de coordenadas de textura por vértice.
-        // Normalmente, solo nos interesa el primero (índice 0).
+        // Assimp permite hasta 8 sets de coordenadas de textura por vï¿½rtice.
+        // Normalmente, solo nos interesa el primero (ï¿½ndice 0).
         if (mesh->mTextureCoords[0]) {
             vertex.texCoord.x = mesh->mTextureCoords[0][i].x;
             vertex.texCoord.y = mesh->mTextureCoords[0][i].y;
@@ -60,19 +60,19 @@ std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
             vertex.texCoord = { 0.0f, 0.0f };
         }
 
-        // Aquí también podrías extraer tangentes, bitangentes, colores de vértice, etc. si tu struct Vertex los soporta.
+        // Aquï¿½ tambiï¿½n podrï¿½as extraer tangentes, bitangentes, colores de vï¿½rtice, etc. si tu struct Vertex los soporta.
         // if (mesh->HasTangentsAndBitangents()) {
         //     vertex.tangent.x = mesh->mTangents[i].x; ...
         // }
 
         vertices.push_back(vertex);
     }
-    // 5. Extraer los datos de los índices
+    // 5. Extraer los datos de los ï¿½ndices
     std::vector<unsigned int> indices;
-    // Cada cara ('face') en Assimp es un primitivo (en nuestro caso, un triángulo gracias a aiProcess_Triangulate).
+    // Cada cara ('face') en Assimp es un primitivo (en nuestro caso, un triï¿½ngulo gracias a aiProcess_Triangulate).
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
-        // Recorremos los índices de la cara y los añadimos a nuestra lista de índices.
+        // Recorremos los ï¿½ndices de la cara y los aï¿½adimos a nuestra lista de ï¿½ndices.
         for (unsigned int j = 0; j < face.mNumIndices; j++) {
             indices.push_back(face.mIndices[j]);
         }
@@ -86,7 +86,7 @@ std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
 
     return Mesh::CreateMeshFromData(
         vertices.data(),
-        vertices.size() * sizeof(Vertex), // CreateMeshFromData espera el tamaño total en bytes
+        vertices.size() * sizeof(Vertex), // CreateMeshFromData espera el tamaï¿½o total en bytes
         indices.data(),
         indices.size());
 }

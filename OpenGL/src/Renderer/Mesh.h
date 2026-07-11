@@ -5,7 +5,7 @@
 #include "Platform/Graphics/Vertex.h"
 #include "Platform/CoreUtils/Math/maths.h"
 #include "AssetManager/IAsset.h"
-#include "glhead.h"
+#include "Core/glhead.h"
 
 class Mesh : public IAsset {
 public:

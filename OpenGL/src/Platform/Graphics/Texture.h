@@ -1,6 +1,6 @@
 #pragma once
-#include "glewDbg.h"
-#include "glhead.h"
+#include "Platform/CoreUtils/glewDbg.h"
+#include "Core/glhead.h"
 #include "AssetManager/IAsset.h"
 
 struct TextureSpecification

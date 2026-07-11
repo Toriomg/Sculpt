@@ -3,7 +3,7 @@
 #include "Platform/Graphics/Buffers/VertexArray.h"
 #include "Platform/Graphics/Buffers/IndexBuffer.h"
 #include "Platform/CoreUtils/Math/maths.h"
-#include "glhead.h"
+#include "Core/glhead.h"
 
 // RenderCommand is a singleton class that encapsulates OpenGL rendering commands.
 class RenderCommand {

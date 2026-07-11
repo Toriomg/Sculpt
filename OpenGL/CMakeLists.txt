@@ -42,8 +42,6 @@ target_include_directories(MyOpenGLApp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vendor
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vendor/imgui
-    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GLEW/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GLFW/include
 )
 
 # --- Compiler flags ---

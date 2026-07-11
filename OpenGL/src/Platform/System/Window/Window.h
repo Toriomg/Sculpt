@@ -1,6 +1,5 @@
 #pragma once
-#include <glhead.h>
-#include "glhead.h"
+#include "Core/glhead.h"
 #include <memory>
 #include <string_view>
 

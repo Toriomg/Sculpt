@@ -1,5 +1,5 @@
 #include "RenderCommand.h"
-#include "glewDbg.h"
+#include "Platform/CoreUtils/glewDbg.h"
 
 void RenderCommand::Init() {
     // Enable features you'll always want, like depth testing
