@@ -41,8 +41,10 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
     }
 
     glfwMakeContextCurrent(m_Window);
+    glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
         CORE_LOG_CRITICAL("FATAL: Failed to initialize GLEW!");
+        return;
     }
 
     glEnable(GL_BLEND);
