@@ -12,11 +12,8 @@ struct NameComponent : public Component {
     std::string Name;
 
     NameComponent() = default;
-
-    // Copy constructor
     NameComponent(const NameComponent&) = default;
-
-    // The crucial constructor that takes a string
+    NameComponent& operator=(const NameComponent&) = default;
     NameComponent(const std::string& name)
         : Name(name) {
     }
@@ -26,9 +23,9 @@ struct TransformComponent : public Component
 {
     Matx4f Transform = Matx4f::identity();
 
-    // Default constructors are fine
     TransformComponent() = default;
     TransformComponent(const TransformComponent&) = default;
+    TransformComponent& operator=(const TransformComponent&) = default;
     TransformComponent(const Matx4f& transform)
         : Transform(transform) {
     }
@@ -44,6 +41,7 @@ struct MeshComponent : public Component
 
     MeshComponent() = default;
     MeshComponent(const MeshComponent&) = default;
+    MeshComponent& operator=(const MeshComponent&) = default;
     MeshComponent(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material)
         : MeshAsset(mesh), MaterialAsset(material) {
     }
@@ -51,10 +49,10 @@ struct MeshComponent : public Component
 
 struct CameraComponent : public Component
 {
-    // The component owns the actual Camera object
     Camera SceneCamera;
-    bool IsPrimary = true; // Is this the main camera for the scene?
+    bool IsPrimary = true;
 
     CameraComponent() = default;
     CameraComponent(const CameraComponent&) = default;
+    CameraComponent& operator=(const CameraComponent&) = default;
 };
