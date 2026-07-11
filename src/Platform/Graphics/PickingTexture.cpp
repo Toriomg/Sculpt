@@ -103,10 +103,15 @@ PickingResult PickingTexture::ReadPixel(uint32_t x, uint32_t y) const {
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
-    result.SelectedEntity = static_cast<entt::entity>(idData[0]);
+    if (idData[0] == 0u) {
+        result.SelectedEntity = entt::null;
+        result.Valid = false;
+    } else {
+        result.SelectedEntity = static_cast<entt::entity>(idData[0] - 1u);
+        result.Valid = true;
+    }
     result.PrimitiveID = idData[1];
     result.WorldPosition = Vec3(worldPos[0], worldPos[1], worldPos[2]);
-    result.Valid = idData[0] != 0u;
 
     return result;
 }

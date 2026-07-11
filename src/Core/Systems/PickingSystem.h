@@ -4,6 +4,7 @@
 #include <memory>
 
 class Shader;
+class Camera;
 
 class PickingSystem : public System {
 public:
@@ -20,7 +21,7 @@ public:
 
 private:
     void ExecutePickingPass();
-    void RenderPickingPass();
+    void RenderPickingPass(const Camera& camera);
 
     std::unique_ptr<PickingTexture> m_PickingTexture;
     std::unique_ptr<Shader> m_PickingShader;

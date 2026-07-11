@@ -35,9 +35,8 @@ void PickingSystem::ExecutePickingPass() {
         return;
     }
 
-    auto cameraView = m_Scene->GetAllEntitiesWith<CameraComponent>();
     Camera* camera = nullptr;
-
+    auto cameraView = m_Scene->GetAllEntitiesWith<CameraComponent>();
     for (auto entity : cameraView) {
         auto& cam = cameraView.get<CameraComponent>(entity);
         if (cam.IsPrimary) {
@@ -50,33 +49,24 @@ void PickingSystem::ExecutePickingPass() {
         return;
     }
 
-    RenderPickingPass();
+    uint32_t cameraWidth = static_cast<uint32_t>(camera->GetViewportWidth());
+    uint32_t cameraHeight = static_cast<uint32_t>(camera->GetViewportHeight());
+    if (cameraWidth != m_ViewportWidth || cameraHeight != m_ViewportHeight) {
+        OnWindowResize(cameraWidth, cameraHeight);
+    }
+
+    RenderPickingPass(*camera);
     m_LastResult = m_PickingTexture->ReadPixel(m_PickX, m_PickY);
 }
 
-void PickingSystem::RenderPickingPass() {
+void PickingSystem::RenderPickingPass(const Camera& camera) {
     m_PickingTexture->Bind();
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    auto cameraView = m_Scene->GetAllEntitiesWith<CameraComponent>();
-    Camera* camera = nullptr;
-
-    for (auto entity : cameraView) {
-        auto& cam = cameraView.get<CameraComponent>(entity);
-        if (cam.IsPrimary) {
-            camera = &cam.SceneCamera;
-            break;
-        }
-    }
-
-    if (!camera) {
-        m_PickingTexture->Unbind();
-        return;
-    }
+    glEnable(GL_DEPTH_TEST);
 
     m_PickingShader->Bind();
-    m_PickingShader->SetUniformMat4f("u_ViewProjection", camera->GetViewProjectionMatrix());
+    m_PickingShader->SetUniformMat4f("u_ViewProjection", camera.GetViewProjectionMatrix());
 
     auto group = m_Scene->GetAllEntitiesWith<TransformComponent, MeshComponent, SelectionComponent>();
 
@@ -84,21 +74,24 @@ void PickingSystem::RenderPickingPass() {
         auto& transform = group.get<TransformComponent>(entity);
         auto& mesh = group.get<MeshComponent>(entity);
 
-        uint32_t entityID = static_cast<uint32_t>(entity);
-        m_PickingShader->SetUniform1ui("objectID", entityID);
+        if (!mesh.MeshAsset) {
+            continue;
+        }
+
+        uint32_t entityID = static_cast<uint32_t>(entity) + 1u;
+        m_PickingShader->SetUniform1ui("u_ObjectID", entityID);
         m_PickingShader->SetUniformMat4f("u_Model", transform.Transform);
 
-        if (mesh.MeshAsset) {
-            auto va = mesh.MeshAsset->GetVertexArray();
-            auto ib = mesh.MeshAsset->GetIndexBuffer();
+        auto va = mesh.MeshAsset->GetVertexArray();
+        auto ib = mesh.MeshAsset->GetIndexBuffer();
 
-            va->Bind();
-            ib->Bind();
-            glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr);
-        }
+        va->Bind();
+        ib->Bind();
+        glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr);
     }
 
     m_PickingTexture->Unbind();
+    glViewport(0, 0, m_ViewportWidth, m_ViewportHeight);
 }
 
 void PickingSystem::OnWindowResize(uint32_t width, uint32_t height) {

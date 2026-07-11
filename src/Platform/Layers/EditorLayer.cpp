@@ -92,7 +92,7 @@ void EditorLayer::OnEvent(Event& e) {
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
-    if (e.GetMouseButton() != 0) { // 0 = left button
+    if (e.GetMouseButton() != 0) {
         return false;
     }
 
@@ -100,9 +100,10 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
     bool isShiftHeld = Input::IsKeyPressed(KeyCode::LeftShift);
 
     auto selSystem = m_ActiveScene->GetSystem<SelectionSystem>();
-    if (selSystem) {
-        selSystem->OnMouseClick(static_cast<uint32_t>(mousePos.x), static_cast<uint32_t>(mousePos.y), isShiftHeld);
+    if (!selSystem) {
+        return false;
     }
+    selSystem->OnMouseClick(static_cast<uint32_t>(mousePos.x), static_cast<uint32_t>(mousePos.y), isShiftHeld);
 
     return true;
 }
