@@ -1,4 +1,4 @@
-#type vertex
+#shader vertex
 #version 330 core
 
 uniform mat4 u_view;
@@ -29,7 +29,7 @@ void main()
     gl_Position = vec4(vertices[indices[gl_VertexID]].xy, 1.0, 1.0);
 }
 
-#type fragment
+#shader fragment
 #version 330 core
 
 in vec3 v_worldPos;
