@@ -9,6 +9,7 @@ public:
 
     // This is where the input polling happens.
     void OnUpdate(float deltaTime);
+    void OnScrolled(float yOffset);
 
 private:
     Camera* m_CameraToControl; // A pointer, does not own the camera
@@ -17,4 +18,5 @@ private:
     Vec2 m_LastMousePosition = Vec2(0.0f, 0.0f);
     float m_MovementSpeed = 5.0f;
     float m_MouseSensitivity = 0.1f;
+    float m_ScrollSpeed = 1.0f;
 };

@@ -1,6 +1,5 @@
 #include "EditorCameraController.h"
-#include "Platform/System/Input/Input.h" // It depends on the Input service
-#include "Platform/CoreUtils/Log.h"
+#include "Platform/System/Input/Input.h"
 
 EditorCameraController::EditorCameraController(Camera* camera)
     : m_CameraToControl(camera) {
@@ -28,11 +27,6 @@ void EditorCameraController::OnUpdate(float deltaTime)
     if (Input::IsKeyPressed(KeyCode::Space))
         currentPosition += m_CameraToControl->GetUpDirection()    * velocity;
 
-	/*
-    Vec3 tempPosition = currentPosition; // For debugging
-    if (tempPosition.x != currentPosition.x || tempPosition.y != currentPosition.y || tempPosition.z != currentPosition.z)
-		LOG_INFO("Camera Moved to: ({0}, {1}, {2})", currentPosition.x, currentPosition.y, currentPosition.z);
-    */
     m_CameraToControl->SetPosition(currentPosition);
 
 
@@ -56,10 +50,18 @@ void EditorCameraController::OnUpdate(float deltaTime)
         if (currentPitch < -89.0f) currentPitch = -89.0f;
 
         m_CameraToControl->SetRotation(currentPitch, currentYaw);
-		//LOG_INFO("Camera Rotated {0}, {1}", currentPitch, currentYaw);
     }
     else
     {
         m_LastMousePosition = Input::GetMousePosition();
     }
+}
+
+void EditorCameraController::OnScrolled(float yOffset)
+{
+    if (!m_CameraToControl) return;
+
+    Vec3 position = m_CameraToControl->GetPosition();
+    position += m_CameraToControl->GetFrontDirection() * (yOffset * m_ScrollSpeed);
+    m_CameraToControl->SetPosition(position);
 }

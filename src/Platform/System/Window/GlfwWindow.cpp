@@ -41,46 +41,22 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
     }
 
     glfwMakeContextCurrent(m_Window);
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK) {
-        CORE_LOG_CRITICAL("FATAL: Failed to initialize GLEW!");
-        return;
-    }
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
-
-    CORE_LOG_INFO("GLEW Initialized");
-    CORE_LOG_INFO("OpenGL Info:");
-    CORE_LOG_INFO("  Vendor: {0}",   reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
-    CORE_LOG_INFO("  Renderer: {0}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-    CORE_LOG_INFO("  Version: {0}",  reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-
+    // Register all GLFW callbacks before GLEW init — they are independent of OpenGL.
     glfwSetWindowUserPointer(m_Window, &m_Data);
     SetVSync(true);
+
+    glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
+        auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+        WindowCloseEvent event;
+        data.EventCallback(event);
+    });
 
     glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int w, int h) {
         auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
         data.Width  = static_cast<uint32_t>(w);
         data.Height = static_cast<uint32_t>(h);
         WindowResizeEvent event(data.Width, data.Height);
-        data.EventCallback(event);
-        CORE_LOG_INFO("Framebuffer resized to {0}, {1}", w, h);
-    });
-
-    // Fire an initial resize so the camera and viewport are set correctly at startup
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(m_Window, &fbWidth, &fbHeight);
-    m_Data.Width  = static_cast<uint32_t>(fbWidth);
-    m_Data.Height = static_cast<uint32_t>(fbHeight);
-
-    glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
-        auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
-        WindowCloseEvent event;
         data.EventCallback(event);
     });
 
@@ -106,6 +82,37 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
             case GLFW_REPEAT:  { KeyPressedEvent  e(key, true);  data.EventCallback(e); break; }
         }
     });
+
+    glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
+        auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+        MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
+        data.EventCallback(event);
+    });
+
+    // Fire an initial resize so the camera and viewport are set correctly at startup
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(m_Window, &fbWidth, &fbHeight);
+    m_Data.Width  = static_cast<uint32_t>(fbWidth);
+    m_Data.Height = static_cast<uint32_t>(fbHeight);
+
+    // GLEW init — on some Linux configurations (XWayland, Mesa) this returns an error
+    // but OpenGL functions are still available. Treat as non-fatal.
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK) {
+        CORE_LOG_WARN("glewInit() returned an error — OpenGL may still be available.");
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
+
+    CORE_LOG_INFO("OpenGL Info:");
+    CORE_LOG_INFO("  Vendor: {0}",   reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+    CORE_LOG_INFO("  Renderer: {0}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+    CORE_LOG_INFO("  Version: {0}",  reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 }
 
 void GlfwWindow::Shutdown() {

@@ -79,6 +79,7 @@ void EditorLayer::OnEvent(Event& e) {
     dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e)                  { return OnKeyPressed(e); });
     dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& e)                { return OnKeyReleased(e); });
     dispatcher.Dispatch<MouseMovedEvent>([this](MouseMovedEvent& e)                  { return OnMouseMoved(e); });
+    dispatcher.Dispatch<MouseScrolledEvent>([this](MouseScrolledEvent& e)            { return OnMouseScrolled(e); });
     dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& e)              { return OnWindowResize(e); });
 }
 
@@ -93,6 +94,11 @@ bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
 }
 
 bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
+    return false;
+}
+
+bool EditorLayer::OnMouseScrolled(MouseScrolledEvent& e) {
+    m_CameraController->OnScrolled(e.GetYOffset());
     return false;
 }
 

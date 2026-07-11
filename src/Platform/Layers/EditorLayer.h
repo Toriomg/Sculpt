@@ -27,6 +27,7 @@ private:
     bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
     bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
 	bool OnMouseMoved(MouseMovedEvent& e);
+    bool OnMouseScrolled(MouseScrolledEvent& e);
     bool OnKeyPressed(KeyPressedEvent& e);
     bool OnKeyReleased(KeyReleasedEvent& e);
     bool OnWindowResize(WindowResizeEvent& e);
