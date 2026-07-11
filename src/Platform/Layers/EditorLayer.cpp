@@ -21,7 +21,7 @@ void EditorLayer::OnAttach() {
 
     auto monkeyMesh = std::static_pointer_cast<Mesh>(AssetManager::Get(AssetManager::Load("res/models/dragon.obj")));
     std::shared_ptr<Mesh> SphereMesh = Mesh::CreateSphere(1.0f, 100, 100);
-	std::shared_ptr<Mesh> PyramidMesh = Mesh::CreatePyramid(2.0f);
+	std::shared_ptr<Mesh> PyramidMesh = Mesh::CreateDodecahedron(2.0f);
     std::shared_ptr<Mesh> TorusMesh = Mesh::CreateTorus(1.0f, 0.5f, 100, 100);
 
     // --- Create a Material ---

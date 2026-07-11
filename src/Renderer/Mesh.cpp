@@ -282,109 +282,96 @@ std::shared_ptr<Mesh> Mesh::CreateTorus(float majorRadius, float minorRadius, in
     return CreateMeshFromData(vertices.data(), static_cast<uint32_t>(vertices.size() * sizeof(float)), indices.data(), static_cast<uint32_t>(indices.size()));
 }
 
-std::shared_ptr<Mesh> Mesh::CreateDodecahedron() {
-	//ITS INCORRECT BUT I DONT CARE
+std::shared_ptr<Mesh> Mesh::CreateDodecahedron(float size) {
+    const float phi = (1.0f + std::sqrt(5.0f)) * 0.5f;
+    const float invPhi = 1.0f / phi;
+    // Scale so the circumradius (distance from center to any vertex) equals `size`.
+    // Raw cube-corner vertices (±1,±1,±1) have length sqrt(3) — the max among all 20.
+    const float scale = size / std::sqrt(3.0f);
+
+    const float rawVertices[20][3] = {
+        {  1,  1,  1 }, { -1,  1,  1 }, { -1, -1,  1 }, {  1, -1,  1 },
+        {  1,  1, -1 }, { -1,  1, -1 }, { -1, -1, -1 }, {  1, -1, -1 },
+        {  0,  phi,  invPhi }, {  0, -phi,  invPhi }, {  0,  phi, -invPhi }, {  0, -phi, -invPhi },
+        {  invPhi,  0,  phi }, { -invPhi,  0,  phi }, {  invPhi,  0, -phi }, { -invPhi,  0, -phi },
+        {  phi,  invPhi,  0 }, { -phi,  invPhi,  0 }, {  phi, -invPhi,  0 }, { -phi, -invPhi,  0 }
+    };
+
+    const uint32_t faces[12][5] = {
+        { 0,  8, 10,  4, 16 },
+        { 0, 16, 18,  3, 12 },
+        { 0, 12, 13,  1,  8 },
+        { 1, 13,  2, 19, 17 },
+        { 1, 17,  5, 10,  8 },
+        { 2, 13, 12,  3,  9 },
+        { 3, 18,  7, 11,  9 },
+        { 4, 10,  5, 15, 14 },
+        { 4, 14,  7, 18, 16 },
+        { 5, 17, 19,  6, 15 },
+        { 6, 19,  2,  9, 11 },
+        { 7, 14, 15,  6, 11 }
+    };
+
+    constexpr int kFaceCount = 12;
+    constexpr int kFaceVerts = 5;
+    constexpr int kFloatsPerVertex = 8;
+    constexpr float kTwoPi = 2.0f * std::numbers::pi_v<float>;
+
     std::vector<float> vertices;
+    vertices.reserve(kFaceCount * kFaceVerts * kFloatsPerVertex);
     std::vector<uint32_t> indices;
+    indices.reserve(kFaceCount * 3 * 3);
 
-    const float PI = 3.14159265359f;
+    for (int f = 0; f < kFaceCount; ++f) {
+        // Flat-shaded: compute one outward normal per pentagonal face.
+        const uint32_t i0 = faces[f][0], i1 = faces[f][1], i2 = faces[f][2];
+        const float e1x = rawVertices[i1][0] - rawVertices[i0][0];
+        const float e1y = rawVertices[i1][1] - rawVertices[i0][1];
+        const float e1z = rawVertices[i1][2] - rawVertices[i0][2];
+        const float e2x = rawVertices[i2][0] - rawVertices[i0][0];
+        const float e2y = rawVertices[i2][1] - rawVertices[i0][1];
+        const float e2z = rawVertices[i2][2] - rawVertices[i0][2];
+        float nx = e1y * e2z - e1z * e2y;
+        float ny = e1z * e2x - e1x * e2z;
+        float nz = e1x * e2y - e1y * e2x;
+        // Flip if it points inward (dodecahedron is convex + centered at origin).
+        if (nx * rawVertices[i0][0] + ny * rawVertices[i0][1] + nz * rawVertices[i0][2] < 0.0f) {
+            nx = -nx; ny = -ny; nz = -nz;
+        }
+        const float nlen = std::sqrt(nx * nx + ny * ny + nz * nz);
+        nx /= nlen; ny /= nlen; nz /= nlen;
 
-    // --- VERTEX GENERATION ---
-    // A dodecahedron has 20 vertices. We can define them using the golden ratio.
-    const float phi = (1.0f + sqrt(5.0f)) * 0.5f; // Golden ratio
-    const float inv_phi = 1.0f / phi;            // 1 / phi
+        const uint32_t baseIndex = static_cast<uint32_t>(vertices.size() / kFloatsPerVertex);
+        for (int k = 0; k < kFaceVerts; ++k) {
+            const uint32_t vi = faces[f][k];
+            vertices.push_back(rawVertices[vi][0] * scale);
+            vertices.push_back(rawVertices[vi][1] * scale);
+            vertices.push_back(rawVertices[vi][2] * scale);
 
-    // The raw vertices of a dodecahedron
-    std::vector<float> raw_vertices = {
-        // (±1, ±1, ±1) - 8 vertices of a cube
-         1,  1,  1,
-        -1,  1,  1,
-        -1, -1,  1,
-         1, -1,  1,
-         1,  1, -1,
-        -1,  1, -1,
-        -1, -1, -1,
-         1, -1, -1,
-         // (0, ±φ, ±1/φ)
-          0,  phi,  inv_phi,
-          0, -phi,  inv_phi,
-          0,  phi, -inv_phi,
-          0, -phi, -inv_phi,
-          // (±1/φ, 0, ±φ)
-           inv_phi,  0,  phi,
-          -inv_phi,  0,  phi,
-           inv_phi,  0, -phi,
-          -inv_phi,  0, -phi,
-          // (±φ, ±1/φ, 0)
-           phi,  inv_phi,  0,
-          -phi,  inv_phi,  0,
-           phi, -inv_phi,  0,
-          -phi, -inv_phi,  0
-    };
+            vertices.push_back(nx);
+            vertices.push_back(ny);
+            vertices.push_back(nz);
 
-    // Process vertices: normalize positions and calculate normals/UVs
-    for (size_t i = 0; i < raw_vertices.size(); i += 3) {
-        float x = raw_vertices[i];
-        float y = raw_vertices[i + 1];
-        float z = raw_vertices[i + 2];
+            const float angle = std::numbers::pi_v<float> * 0.5f + kTwoPi * k / kFaceVerts;
+            vertices.push_back(0.5f + 0.5f * std::cos(angle));
+            vertices.push_back(0.5f + 0.5f * std::sin(angle));
+        }
 
-        // Normalize the vertex position to make it unit-sized
-        float length = sqrt(x * x + y * y + z * z);
-        float nx = x / length;
-        float ny = y / length;
-        float nz = z / length;
-
-        // Position
-        vertices.push_back(nx);
-        vertices.push_back(ny);
-        vertices.push_back(nz);
-
-        // Normal (for a sphere-like shape, it's the same as the normalized position)
-        vertices.push_back(nx);
-        vertices.push_back(ny);
-        vertices.push_back(nz);
-
-        // Texture Coordinates (using spherical projection)
-        float u = 0.5f + atan2(nz, nx) / (2.0f * PI);
-        float v = 0.5f - asin(ny) / PI;
-        vertices.push_back(u);
-        vertices.push_back(v);
+        // Triangle fan from the first face vertex.
+        indices.push_back(baseIndex + 0);
+        indices.push_back(baseIndex + 1);
+        indices.push_back(baseIndex + 2);
+        indices.push_back(baseIndex + 0);
+        indices.push_back(baseIndex + 2);
+        indices.push_back(baseIndex + 3);
+        indices.push_back(baseIndex + 0);
+        indices.push_back(baseIndex + 3);
+        indices.push_back(baseIndex + 4);
     }
 
-    const uint32_t final_faces[12][5] = {
-        {0, 8, 10, 4, 16},
-        {0, 16, 18, 3, 12},
-        {0, 12, 13, 1, 8},
-        {1, 13, 2, 19, 17},
-        {1, 17, 5, 10, 8},
-        {2, 13, 12, 3, 9},
-        {3, 18, 7, 11, 9},
-        {4, 10, 5, 15, 14},
-        {4, 14, 6, 18, 16},
-        {5, 17, 19, 6, 15},
-        {6, 19, 2, 9, 11},
-        {7, 14, 15, 6, 11}
-    };
-    for (int i = 0; i < 12; ++i) {
-        uint32_t v0 = final_faces[i][0];
-        uint32_t v1 = final_faces[i][1];
-        uint32_t v2 = final_faces[i][2];
-        uint32_t v3 = final_faces[i][3];
-        uint32_t v4 = final_faces[i][4];
-
-        // Triangulate the pentagon using a fan model from the first vertex (v0).
-        // Since the face vertices (v0-v4) are in CCW order, this creates CCW triangles.
-        indices.push_back(v0);
-        indices.push_back(v1);
-        indices.push_back(v2);
-
-        indices.push_back(v0);
-        indices.push_back(v2);
-        indices.push_back(v3);
-
-        indices.push_back(v0);
-        indices.push_back(v3);
-        indices.push_back(v4);
-    }
-    return CreateMeshFromData(vertices.data(), static_cast<uint32_t>(vertices.size() * sizeof(float)), indices.data(), static_cast<uint32_t>(indices.size()));
+    CORE_LOG_INFO("Dodecahedron with {0} faces", indices.size() / 3);
+    return CreateMeshFromData(vertices.data(),
+        static_cast<uint32_t>(vertices.size() * sizeof(float)),
+        indices.data(),
+        static_cast<uint32_t>(indices.size()));
 }
