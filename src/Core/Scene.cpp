@@ -1,9 +1,9 @@
-#include "Scene.h"
-#include "Components/Component.h"
+#include "Scene.hpp"
+#include "Components/Component.hpp"
 //Systems
-#include "Systems/PickingSystem.h"
-#include "Systems/SelectionSystem.h"
-#include "Systems/RenderingSystem.h"
+#include "Systems/PickingSystem.hpp"
+#include "Systems/SelectionSystem.hpp"
+#include "Systems/RenderingSystem.hpp"
 
 Scene::Scene()
 {

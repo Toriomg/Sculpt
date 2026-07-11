@@ -1,4 +1,4 @@
-#include "GLDebug.h"
+#include "GLDebug.hpp"
 
 void GLClearError()
 {

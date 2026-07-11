@@ -1,4 +1,4 @@
-#include "LoaderSystem.h"
+#include "LoaderSystem.hpp"
 #include <filesystem>
 
 void LoaderSystem::RegisterLoader(const std::string& extension, std::unique_ptr<IAssetLoader> loader) {

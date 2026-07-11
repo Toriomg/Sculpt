@@ -1,5 +1,5 @@
-#include "TextureLoader.h"
-#include "Platform/Graphics/Texture.h"
+#include "TextureLoader.hpp"
+#include "Platform/Graphics/Texture.hpp"
 
 #include "stb_image/stb_image.h"
 

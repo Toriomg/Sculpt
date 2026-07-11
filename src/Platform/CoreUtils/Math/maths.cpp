@@ -1,4 +1,4 @@
-#include "maths.h"
+#include "maths.hpp"
 
 Vec3 rotateVec3(const Vec3& v, const Vec3& axis, float angle) {
     Quaternion rotationQ(axis, angle);

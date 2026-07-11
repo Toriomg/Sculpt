@@ -1,11 +1,11 @@
-#include "EditorLayer.h"
-#include "Core/Components/Component.h"
-#include "Core/Systems/SelectionSystem.h"
-#include "Core/Systems/PickingSystem.h"
-#include "Editor/EditorCameraController.h"
-#include "AssetManager/AssetManager.h"
-#include "Platform/System/Input/Input.h"
-#include "Platform/System/Input/KeyCodes.h"
+#include "EditorLayer.hpp"
+#include "Core/Components/Component.hpp"
+#include "Core/Systems/SelectionSystem.hpp"
+#include "Core/Systems/PickingSystem.hpp"
+#include "Editor/EditorCameraController.hpp"
+#include "AssetManager/AssetManager.hpp"
+#include "Platform/System/Input/Input.hpp"
+#include "Platform/System/Input/KeyCodes.hpp"
 
 EditorLayer::EditorLayer()
     : Layer("EditorLayer"){

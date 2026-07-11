@@ -1,4 +1,4 @@
-#include "AssetRegistry.h"
+#include "AssetRegistry.hpp"
 
 
 void AssetRegistry::Register(std::shared_ptr<IAsset> asset) {

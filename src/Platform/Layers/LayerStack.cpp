@@ -1,4 +1,4 @@
-#include "LayerStack.h"
+#include "LayerStack.hpp"
 #include <algorithm>
 
 void LayerStack::PushLayer(std::unique_ptr<Layer> layer) {

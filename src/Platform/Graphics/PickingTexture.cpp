@@ -1,4 +1,4 @@
-#include "PickingTexture.h"
+#include "PickingTexture.hpp"
 #include <GL/glew.h>
 
 PickingTexture::PickingTexture(uint32_t width, uint32_t height)

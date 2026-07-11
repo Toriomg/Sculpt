@@ -1,6 +1,6 @@
 // In: Platform/System/Input.cpp
 
-#include "Input.h"
+#include "Input.hpp"
 
 void InputManager::Init(GLFWwindow* window) {
     m_Window = window;

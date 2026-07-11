@@ -1,8 +1,8 @@
-#include "AssetManager.h"
-#include "Loader/LoaderSystem.h"
-#include "AssetRegistry.h"
-#include "Loader/TextureLoader.h"
-#include "Loader/MeshLoader.h"
+#include "AssetManager.hpp"
+#include "Loader/LoaderSystem.hpp"
+#include "AssetRegistry.hpp"
+#include "Loader/TextureLoader.hpp"
+#include "Loader/MeshLoader.hpp"
 #include <optional>
 
 struct AssetManagerData {

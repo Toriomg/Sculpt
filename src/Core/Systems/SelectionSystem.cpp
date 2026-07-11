@@ -1,7 +1,7 @@
-#include "SelectionSystem.h"
-#include "PickingSystem.h"
-#include "Core/Scene.h"
-#include "Core/Components/Component.h"
+#include "SelectionSystem.hpp"
+#include "PickingSystem.hpp"
+#include "Core/Scene.hpp"
+#include "Core/Components/Component.hpp"
 
 void SelectionContext::Select(Entity entity, bool additive) {
     if (!additive) {

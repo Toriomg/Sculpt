@@ -1,5 +1,5 @@
-#include "GlfwWindow.h"
-#include "Platform/CoreUtils/Log.h"
+#include "GlfwWindow.hpp"
+#include "Platform/CoreUtils/Log.hpp"
 
 std::unique_ptr<Window> Window::Create(std::string_view title, uint32_t width, uint32_t height) {
     return std::make_unique<GlfwWindow>(title, width, height);

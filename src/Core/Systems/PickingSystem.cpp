@@ -1,9 +1,9 @@
-#include "PickingSystem.h"
-#include "Core/Scene.h"
-#include "Core/Components/Component.h"
-#include "Platform/Graphics/Shader.h"
-#include "Renderer/Mesh.h"
-#include "Renderer/Camera.h"
+#include "PickingSystem.hpp"
+#include "Core/Scene.hpp"
+#include "Core/Components/Component.hpp"
+#include "Platform/Graphics/Shader.hpp"
+#include "Renderer/Mesh.hpp"
+#include "Renderer/Camera.hpp"
 #include <GL/glew.h>
 
 PickingSystem::PickingSystem()

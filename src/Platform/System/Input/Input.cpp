@@ -1,5 +1,5 @@
-#include "Input.h"
-#include "Platform/System/Input/GlfwInput.h"
+#include "Input.hpp"
+#include "Platform/System/Input/GlfwInput.hpp"
 
 // Define the static member variable
 std::unique_ptr<Input::InputImpl> Input::s_Instance;

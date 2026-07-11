@@ -1,4 +1,4 @@
-﻿#include "Mesh.h"
+﻿#include "Mesh.hpp"
 
 std::shared_ptr<Mesh> Mesh::CreateMeshFromData(const void* vertices, uint32_t vertexSize, const uint32_t* indices, uint32_t indexCount)
 {

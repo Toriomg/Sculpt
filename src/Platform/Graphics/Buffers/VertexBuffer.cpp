@@ -1,4 +1,4 @@
-#include "VertexBuffer.h"
+#include "VertexBuffer.hpp"
 
 
 VertexBuffer::VertexBuffer(const void* data, unsigned int size, bool static_draw)

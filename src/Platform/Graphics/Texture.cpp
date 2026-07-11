@@ -1,4 +1,4 @@
-#include "Texture.h"
+#include "Texture.hpp"
 
 Texture::Texture(const TextureSpecification& specification, const void* data)
 	: m_RendererID(0), m_Specification(specification)

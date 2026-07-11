@@ -1,7 +1,7 @@
-#include "Renderer.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "AssetManager/AssetManager.h"
+#include "Renderer.hpp"
+#include "Material.hpp"
+#include "Mesh.hpp"
+#include "AssetManager/AssetManager.hpp"
 
 // This struct is a private implementation detail of the Renderer.
 // It holds data that is constant for an entire scene render pass.

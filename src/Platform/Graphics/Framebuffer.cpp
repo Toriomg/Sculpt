@@ -1,4 +1,4 @@
-#include "Framebuffer.h"
+#include "Framebuffer.hpp"
 #include <GL/glew.h>
 #include <cassert> // For assert
 

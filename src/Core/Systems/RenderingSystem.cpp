@@ -1,10 +1,10 @@
-#include "RenderingSystem.h"
-#include "SelectionSystem.h"
-#include "Core/Scene.h"
-#include "Core/Components/Component.h"
-#include "Renderer/Renderer.h"
-#include "Renderer/Camera.h"
-#include "Platform/Graphics/Shader.h"
+#include "RenderingSystem.hpp"
+#include "SelectionSystem.hpp"
+#include "Core/Scene.hpp"
+#include "Core/Components/Component.hpp"
+#include "Renderer/Renderer.hpp"
+#include "Renderer/Camera.hpp"
+#include "Platform/Graphics/Shader.hpp"
 
 
 void RenderingSystem::OnUpdate(float deltaTime)

@@ -2,8 +2,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "MeshLoader.h"
-#include "Renderer/Mesh.h"
+#include "MeshLoader.hpp"
+#include "Renderer/Mesh.hpp"
 
 
 std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {

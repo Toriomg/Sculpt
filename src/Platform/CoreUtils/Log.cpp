@@ -1,4 +1,4 @@
-#include "Log.h"
+#include "Log.hpp"
 
 // Define the static member variables
 std::shared_ptr<spdlog::logger> Log::s_CoreLogger;

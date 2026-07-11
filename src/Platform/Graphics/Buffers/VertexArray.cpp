@@ -1,4 +1,4 @@
-#include "VertexArray.h"
+#include "VertexArray.hpp"
 
 VertexArray::VertexArray() {
 	GLCall(glGenVertexArrays(1, &m_RendererID)); // Generate a Vertex Array Object (VAO)

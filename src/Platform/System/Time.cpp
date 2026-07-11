@@ -1,4 +1,4 @@
-#include "Time.h"
+#include "Time.hpp"
 #include <GLFW/glfw3.h> // We use GLFW to get the high-resolution time
 
 // Initialize the static member variables

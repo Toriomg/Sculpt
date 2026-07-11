@@ -1,5 +1,5 @@
-#include "EditorCameraController.h"
-#include "Platform/System/Input/Input.h"
+#include "EditorCameraController.hpp"
+#include "Platform/System/Input/Input.hpp"
 
 EditorCameraController::EditorCameraController(Camera* camera)
     : m_CameraToControl(camera) {

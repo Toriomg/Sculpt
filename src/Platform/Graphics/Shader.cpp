@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-#include "Shader.h"
+#include "Shader.hpp"
 
 Shader::Shader(std::string_view filepath)
 	: m_FilePath(filepath), m_RendererID(0)
