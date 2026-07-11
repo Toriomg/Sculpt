@@ -18,6 +18,10 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 
     m_LayerStack.PushLayer(std::make_unique<EditorLayer>());
 
+    // Initialize viewport and camera projection with the actual framebuffer size
+    WindowResizeEvent initResize(m_Window->GetWidth(), m_Window->GetHeight());
+    OnEvent(initResize);
+
 	CORE_LOG_INFO("Application Initialized");
 	LOG_SEPARATOR();
 }

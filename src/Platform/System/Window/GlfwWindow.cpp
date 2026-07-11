@@ -63,14 +63,20 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
     glfwSetWindowUserPointer(m_Window, &m_Data);
     SetVSync(true);
 
-    glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int w, int h) {
+    glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int w, int h) {
         auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
         data.Width  = static_cast<uint32_t>(w);
         data.Height = static_cast<uint32_t>(h);
         WindowResizeEvent event(data.Width, data.Height);
         data.EventCallback(event);
-        CORE_LOG_INFO("Window resized to {0}, {1}", w, h);
+        CORE_LOG_INFO("Framebuffer resized to {0}, {1}", w, h);
     });
+
+    // Fire an initial resize so the camera and viewport are set correctly at startup
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(m_Window, &fbWidth, &fbHeight);
+    m_Data.Width  = static_cast<uint32_t>(fbWidth);
+    m_Data.Height = static_cast<uint32_t>(fbHeight);
 
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
         auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
@@ -110,6 +116,19 @@ void GlfwWindow::Shutdown() {
 void GlfwWindow::OnUpdate() {
     glfwPollEvents();
     glfwSwapBuffers(m_Window);
+
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(m_Window, &fbWidth, &fbHeight);
+    if (static_cast<uint32_t>(fbWidth) != m_Data.Width ||
+        static_cast<uint32_t>(fbHeight) != m_Data.Height)
+    {
+        m_Data.Width  = static_cast<uint32_t>(fbWidth);
+        m_Data.Height = static_cast<uint32_t>(fbHeight);
+        if (m_Data.EventCallback) {
+            WindowResizeEvent event(m_Data.Width, m_Data.Height);
+            m_Data.EventCallback(event);
+        }
+    }
 }
 
 void GlfwWindow::SetVSync(bool enabled) {
