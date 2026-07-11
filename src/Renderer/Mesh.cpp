@@ -315,7 +315,7 @@ std::shared_ptr<Mesh> Mesh::CreateDodecahedron(float size) {
     constexpr int kFaceCount = 12;
     constexpr int kFaceVerts = 5;
     constexpr int kFloatsPerVertex = 8;
-    constexpr float kTwoPi = 2.0f * std::numbers::pi_v<float>;
+    constexpr float kTwoPi = 2.0f * PI_F;
 
     std::vector<float> vertices;
     vertices.reserve(kFaceCount * kFaceVerts * kFloatsPerVertex);
@@ -352,7 +352,7 @@ std::shared_ptr<Mesh> Mesh::CreateDodecahedron(float size) {
             vertices.push_back(ny);
             vertices.push_back(nz);
 
-            const float angle = std::numbers::pi_v<float> * 0.5f + kTwoPi * k / kFaceVerts;
+            const float angle = PI_F * 0.5f + kTwoPi * k / kFaceVerts;
             vertices.push_back(0.5f + 0.5f * std::cos(angle));
             vertices.push_back(0.5f + 0.5f * std::sin(angle));
         }
