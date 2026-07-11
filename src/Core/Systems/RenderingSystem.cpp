@@ -1,8 +1,10 @@
 #include "RenderingSystem.h"
+#include "SelectionSystem.h"
 #include "Core/Scene.h"
 #include "Core/Components/Component.h"
-#include "Renderer/Renderer.h" // The system needs to talk to the Renderer API
-#include "Renderer/Camera.h"   // To find the main camera
+#include "Renderer/Renderer.h"
+#include "Renderer/Camera.h"
+#include "Platform/Graphics/Shader.h"
 
 
 void RenderingSystem::OnUpdate(float deltaTime)
@@ -32,7 +34,13 @@ void RenderingSystem::OnUpdate(float deltaTime)
     {
 
 
-        Renderer::BeginScene(mainCamera->GetViewProjectionMatrix()); // Assuming the camera object itself has pos/rot
+        Renderer::BeginScene(mainCamera->GetViewProjectionMatrix());
+
+        auto selectionSystem = m_Scene->GetSystem<SelectionSystem>();
+        const SelectionContext* selectionContext = nullptr;
+        if (selectionSystem) {
+            selectionContext = &selectionSystem->GetSelectionContext();
+        }
 
         // 3. Find all entities that are renderable and submit them.
         auto group = m_Scene->GetAllEntitiesWith<TransformComponent, MeshComponent>();
@@ -51,6 +59,13 @@ void RenderingSystem::OnUpdate(float deltaTime)
                 mainCamera->GetPosition().x,
                 mainCamera->GetPosition().y,
                 mainCamera->GetPosition().z);
+
+            bool isSelected = selectionContext && selectionContext->IsEntitySelected(entity);
+            meshComp.MaterialAsset->GetShader()->SetUniform1i("u_IsSelected", isSelected ? 1 : 0);
+            if (isSelected) {
+                meshComp.MaterialAsset->GetShader()->SetUniform4f("u_HighlightColor", 1.0f, 1.0f, 0.0f, 1.0f);
+            }
+
             Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, transform);
         }
         // Tell the Renderer we are done with this frame.

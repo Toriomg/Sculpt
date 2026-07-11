@@ -1,11 +1,15 @@
 #include "Scene.h"
 #include "Components/Component.h"
 //Systems
+#include "Systems/PickingSystem.h"
+#include "Systems/SelectionSystem.h"
 #include "Systems/RenderingSystem.h"
 
 Scene::Scene()
 {
 	// Initialize systems to the scene
+    m_Systems.emplace_back(std::make_unique<PickingSystem>());
+    m_Systems.emplace_back(std::make_unique<SelectionSystem>());
     m_Systems.emplace_back(std::make_unique<RenderingSystem>());
 
     //Attach systems to the scene

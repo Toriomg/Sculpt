@@ -61,6 +61,17 @@ public:
         return m_Registry.view<Components...>();
     }
 
+    // Get a system by type
+    template<typename T>
+    T* GetSystem() {
+        for (auto& system : m_Systems) {
+            if (auto* castedSystem = dynamic_cast<T*>(system.get())) {
+                return castedSystem;
+            }
+        }
+        return nullptr;
+    }
+
 private:
     // The core ECS registry that stores all entities and components
     entt::registry m_Registry;

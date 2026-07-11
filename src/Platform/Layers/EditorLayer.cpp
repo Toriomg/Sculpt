@@ -1,7 +1,11 @@
 #include "EditorLayer.h"
 #include "Core/Components/Component.h"
+#include "Core/Systems/SelectionSystem.h"
+#include "Core/Systems/PickingSystem.h"
 #include "Editor/EditorCameraController.h"
 #include "AssetManager/AssetManager.h"
+#include "Platform/System/Input/Input.h"
+#include "Platform/System/Input/KeyCodes.h"
 
 EditorLayer::EditorLayer()
     : Layer("EditorLayer"){
@@ -46,15 +50,19 @@ void EditorLayer::OnAttach() {
 
     m_ActiveScene->AddComponent<MeshComponent>(m_MonkeyEntity, monkeyMesh, myMaterial);
     m_ActiveScene->SetComponent<TransformComponent>(m_MonkeyEntity, Matx4f::translation(MonkeyPosition));
+    m_ActiveScene->AddComponent<SelectionComponent>(m_MonkeyEntity);
 
     m_ActiveScene->AddComponent<MeshComponent>(m_SphereEntity, SphereMesh, myMaterial);
     m_ActiveScene->SetComponent<TransformComponent>(m_SphereEntity, Matx4f::translation(SpherePosition));
-    
+    m_ActiveScene->AddComponent<SelectionComponent>(m_SphereEntity);
+
     m_ActiveScene->AddComponent<MeshComponent>(m_PyramidEntity, PyramidMesh, myMaterial);
     m_ActiveScene->SetComponent<TransformComponent>(m_PyramidEntity, Matx4f::translation(PyramidPosition));
+    m_ActiveScene->AddComponent<SelectionComponent>(m_PyramidEntity);
 
     m_ActiveScene->AddComponent<MeshComponent>(m_TorusEntity, TorusMesh, myMaterial);
     m_ActiveScene->SetComponent<TransformComponent>(m_TorusEntity, Matx4f::translation(TorusPosition));
+    m_ActiveScene->AddComponent<SelectionComponent>(m_TorusEntity);
 
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
 }
@@ -84,8 +92,19 @@ void EditorLayer::OnEvent(Event& e) {
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
-    LOG_INFO("Mouse button {0} was pressed!", e.GetMouseButton());
-    return false;
+    if (e.GetMouseButton() != 0) { // 0 = left button
+        return false;
+    }
+
+    Vec2 mousePos = Input::GetMousePosition();
+    bool isShiftHeld = Input::IsKeyPressed(KeyCode::LeftShift);
+
+    auto selSystem = m_ActiveScene->GetSystem<SelectionSystem>();
+    if (selSystem) {
+        selSystem->OnMouseClick(static_cast<uint32_t>(mousePos.x), static_cast<uint32_t>(mousePos.y), isShiftHeld);
+    }
+
+    return true;
 }
 
 bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
@@ -133,6 +152,12 @@ bool EditorLayer::OnWindowResize(WindowResizeEvent& e)
 
     // We can also tell our low-level renderer about the viewport change.
     RenderCommand::SetViewport(0, 0, width, height);
+
+    auto pickSystem = m_ActiveScene->GetSystem<PickingSystem>();
+    if (pickSystem) {
+        pickSystem->OnWindowResize(width, height);
+    }
+
 	CORE_LOG_INFO("Camera resized to {0}x{1}", camComp.SceneCamera.GetViewportWidth(), camComp.SceneCamera.GetViewportHeight());
     // Return false to indicate that other layers might also want to process this event.
     return false;

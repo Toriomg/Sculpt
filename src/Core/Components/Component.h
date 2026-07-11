@@ -56,3 +56,17 @@ struct CameraComponent : public Component
     CameraComponent(const CameraComponent&) = default;
     CameraComponent& operator=(const CameraComponent&) = default;
 };
+
+struct SelectionComponent : public Component
+{
+    uint32_t SelectionGroup = 0;
+    uint32_t CustomData = 0;
+    bool AllowsOutline = true;
+
+    SelectionComponent() = default;
+    SelectionComponent(const SelectionComponent&) = default;
+    SelectionComponent& operator=(const SelectionComponent&) = default;
+    SelectionComponent(uint32_t group)
+        : SelectionGroup(group) {
+    }
+};
