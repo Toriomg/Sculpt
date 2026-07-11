@@ -22,6 +22,7 @@ public:
     static std::shared_ptr<Mesh> CreateSphere(float radius, int sectors, int stacks);
     static std::shared_ptr<Mesh> CreateTorus(float majorRadius, float minorRadius, int majorSegments, int minorSegments);
     static std::shared_ptr<Mesh> CreateDodecahedron(float size);
+    static std::shared_ptr<Mesh> CreateIcosahedron(float size);
     static std::shared_ptr<Mesh> CreateMeshFromData(
         const void* vertices,
         uint32_t vertexSize,

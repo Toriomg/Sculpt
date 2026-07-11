@@ -375,3 +375,79 @@ std::shared_ptr<Mesh> Mesh::CreateDodecahedron(float size) {
         indices.data(),
         static_cast<uint32_t>(indices.size()));
 }
+
+std::shared_ptr<Mesh> Mesh::CreateIcosahedron(float size) {
+    const float phi = (1.0f + std::sqrt(5.0f)) * 0.5f;
+    // Scale so the circumradius (distance from center to any vertex) equals `size`.
+    // Raw vertices have length sqrt(1 + phi^2) = sqrt(phi + 2).
+    const float scale = size / std::sqrt(phi + 2.0f);
+
+    const float rawVertices[12][3] = {
+        {  0.0f,  1.0f,  phi }, {  0.0f, -1.0f,  phi }, {  0.0f,  1.0f, -phi }, {  0.0f, -1.0f, -phi },
+        {  1.0f,  phi,  0.0f }, { -1.0f,  phi,  0.0f }, {  1.0f, -phi,  0.0f }, { -1.0f, -phi,  0.0f },
+        {  phi,  0.0f,  1.0f }, { -phi,  0.0f,  1.0f }, {  phi,  0.0f, -1.0f }, { -phi,  0.0f, -1.0f }
+    };
+
+    const uint32_t faces[20][3] = {
+        { 0,  8,  4 }, { 0,  4,  5 }, { 0,  5,  9 }, { 0,  9,  1 }, { 0,  1,  8 },
+        { 3, 10,  2 }, { 3,  2, 11 }, { 3, 11,  7 }, { 3,  7,  6 }, { 3,  6, 10 },
+        { 4,  8, 10 }, { 4, 10,  2 }, { 4,  2,  5 }, { 5,  2, 11 }, { 5, 11,  9 },
+        { 9, 11,  7 }, { 9,  7,  1 }, { 1,  7,  6 }, { 1,  6,  8 }, { 8,  6, 10 }
+    };
+
+    constexpr int kFaceCount = 20;
+    constexpr int kFaceVerts = 3;
+    constexpr int kFloatsPerVertex = 8;
+    constexpr float kTwoPi = 2.0f * PI_F;
+
+    std::vector<float> vertices;
+    vertices.reserve(kFaceCount * kFaceVerts * kFloatsPerVertex);
+    std::vector<uint32_t> indices;
+    indices.reserve(kFaceCount * kFaceVerts);
+
+    for (int f = 0; f < kFaceCount; ++f) {
+        // Flat-shaded: one outward normal per triangular face.
+        const uint32_t i0 = faces[f][0], i1 = faces[f][1], i2 = faces[f][2];
+        const float e1x = rawVertices[i1][0] - rawVertices[i0][0];
+        const float e1y = rawVertices[i1][1] - rawVertices[i0][1];
+        const float e1z = rawVertices[i1][2] - rawVertices[i0][2];
+        const float e2x = rawVertices[i2][0] - rawVertices[i0][0];
+        const float e2y = rawVertices[i2][1] - rawVertices[i0][1];
+        const float e2z = rawVertices[i2][2] - rawVertices[i0][2];
+        float nx = e1y * e2z - e1z * e2y;
+        float ny = e1z * e2x - e1x * e2z;
+        float nz = e1x * e2y - e1y * e2x;
+        // Flip if it points inward (icosahedron is convex + centered at origin).
+        if (nx * rawVertices[i0][0] + ny * rawVertices[i0][1] + nz * rawVertices[i0][2] < 0.0f) {
+            nx = -nx; ny = -ny; nz = -nz;
+        }
+        const float nlen = std::sqrt(nx * nx + ny * ny + nz * nz);
+        nx /= nlen; ny /= nlen; nz /= nlen;
+
+        const uint32_t baseIndex = static_cast<uint32_t>(vertices.size() / kFloatsPerVertex);
+        for (int k = 0; k < kFaceVerts; ++k) {
+            const uint32_t vi = faces[f][k];
+            vertices.push_back(rawVertices[vi][0] * scale);
+            vertices.push_back(rawVertices[vi][1] * scale);
+            vertices.push_back(rawVertices[vi][2] * scale);
+
+            vertices.push_back(nx);
+            vertices.push_back(ny);
+            vertices.push_back(nz);
+
+            const float angle = PI_F * 0.5f + kTwoPi * k / kFaceVerts;
+            vertices.push_back(0.5f + 0.5f * std::cos(angle));
+            vertices.push_back(0.5f + 0.5f * std::sin(angle));
+        }
+
+        indices.push_back(baseIndex + 0);
+        indices.push_back(baseIndex + 1);
+        indices.push_back(baseIndex + 2);
+    }
+
+    CORE_LOG_INFO("Icosahedron with {0} faces", indices.size() / 3);
+    return CreateMeshFromData(vertices.data(),
+        static_cast<uint32_t>(vertices.size() * sizeof(float)),
+        indices.data(),
+        static_cast<uint32_t>(indices.size()));
+}
