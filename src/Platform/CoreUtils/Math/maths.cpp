@@ -22,6 +22,8 @@ Matx4f QuatRotation(const Quaternion& q) {
 	float y = q.y;
 	float z = q.z;
 
+    // Pre-compute products to avoid 16 redundant multiplications in the matrix fill below.
+    // The resulting matrix is the standard unit-quaternion-to-rotation-matrix formula.
 	float xx = x * x;
 	float yy = y * y;
 	float zz = z * z;

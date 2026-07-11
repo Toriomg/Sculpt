@@ -91,18 +91,18 @@ void Camera::RecalculateViewMatrix() {
 	float yawInRadians = radians(m_Yaw);
 	float pitchInRadians = radians(m_Pitch);
 
-	// Apply yaw
+	// Yaw is applied around the world Y axis first so horizontal panning is always level.
+	// Pitch is then applied around the local right axis derived from the yawed direction.
+	// Swapping this order (pitch then yaw) causes the camera to roll when looking up/down.
 	Vec3 yawedForward = rotateVec3(baseForward, worldUp, yawInRadians);
 
-	// Calculate right vector and apply pitch
 	Vec3 rightVector = yawedForward.crossProduct(worldUp).normalize();
 	m_Front = rotateVec3(yawedForward, rightVector, pitchInRadians);
 
-	// Finalize vectors
+	// Normalize to remove floating-point drift introduced by repeated quaternion rotations.
 	m_Front.normalize();
 	m_Right = m_Front.crossProduct(worldUp).normalize();
-	//this is for inverted
-	//m_Up = m_Front.crossProduct(m_Right).normalize(); 
+	// Right × Front gives upward in a right-handed system; Front × Right would point downward.
 	m_Up = m_Right.crossProduct(m_Front).normalize();
 
 	m_ViewMatrix = Matx4f::lookAt(m_Position, m_Position + m_Front, m_Up);

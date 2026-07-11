@@ -3,6 +3,8 @@
 
 void LayerStack::PushLayer(std::unique_ptr<Layer> layer) {
     layer->OnAttach();
+    // Regular layers are inserted at [0..insertIndex); overlay layers go after insertIndex.
+    // This keeps overlays on top of regular layers regardless of push order.
     m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, std::move(layer));
     m_LayerInsertIndex++;
 }

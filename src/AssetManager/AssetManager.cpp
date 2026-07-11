@@ -11,6 +11,7 @@ struct AssetManagerData {
     std::unordered_map<std::string, AssetHandle> pathToHandleMap;
 };
 
+// Optional gives us a clear Init/Shutdown lifecycle without a heap allocation or a separate "initialized" flag.
 static std::optional<AssetManagerData> s_Data;
 
 void AssetManager::Init() {
@@ -25,6 +26,7 @@ void AssetManager::Shutdown() {
 }
 
 AssetHandle AssetManager::Load(const std::string& filepath) {
+    // Return the cached handle if this path was already loaded, preventing duplicate GPU uploads.
     auto it = s_Data->pathToHandleMap.find(filepath);
     if (it != s_Data->pathToHandleMap.end())
         return it->second;

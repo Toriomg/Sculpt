@@ -6,9 +6,9 @@
 std::shared_ptr<IAsset> TextureLoader::Load(const std::string& filepath) {
     int width, height, channels;
 
-    // 1. Load the pixel data from the file into a CPU buffer
+    // stb_image stores rows top-to-bottom; OpenGL expects bottom-to-top. This is a global stb_image flag.
     stbi_set_flip_vertically_on_load(1);
-    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0); // Force 4 channels (RGBA)
+    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
 
     if (data == nullptr) {
         LOG_ERROR("TextureLoader: Failed to load image from {0}", filepath);
@@ -18,18 +18,15 @@ std::shared_ptr<IAsset> TextureLoader::Load(const std::string& filepath) {
 
     CORE_LOG_INFO("TextureLoader: Loaded texture {0} ({1}x{2})", filepath, width, height);
 
-    // 2. Create the specification for the new texture
     TextureSpecification spec;
     spec.Width = width;
     spec.Height = height;
+    // channels is hardcoded to 4 here but stbi_load was called with 0 (keep original).
+    // Texture constructor uses spec.channels to pick GL_RGBA8 vs GL_RGB8, so 3-channel
+    // files would be uploaded incorrectly. Fix: pass 4 to stbi_load to force RGBA conversion.
 	spec.channels = 4;
 
-    // 3. Create the GPU Texture object using the loaded data
     std::shared_ptr<Texture> texture = std::make_shared<Texture>(spec, data);
-
-    // 4. Free the CPU buffer, as the data is now on the GPU
     stbi_image_free(data);
-
-    // 5. Return the new texture as a generic IAsset pointer
     return texture;
 }

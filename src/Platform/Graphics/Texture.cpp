@@ -26,13 +26,14 @@ Texture::Texture(const TextureSpecification& specification, const void* data)
 	}
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 
-	// Set texture filtering and wrapping parameters
+	// GL_LINEAR_MIPMAP_LINEAR (trilinear) requires mipmaps; glGenerateMipmap is called below.
+    // Without the glGenerateMipmap call the texture would appear solid black when minified.
 	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	// CLAMP_TO_EDGE prevents the border texel from bleeding across UV=0/1 seams.
 	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
-	// Upload the texture data to the GPU
 	if (internalFormat != 0 && dataFormat != 0)
 	{
 		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Specification.Width, m_Specification.Height, 0, dataFormat, GL_UNSIGNED_BYTE, data));
@@ -43,14 +44,14 @@ Texture::Texture(const TextureSpecification& specification, const void* data)
 }
 
 Texture::~Texture() {
-	GLCall(glDeleteTextures(1, &m_RendererID)); // Delete the texture from OpenGL
+	GLCall(glDeleteTextures(1, &m_RendererID));
 }
 
 void Texture::Bind(unsigned int slot) const {
-	GLCall(glActiveTexture(GL_TEXTURE0 + slot)); // Activate the texture unit
-	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID)); // Bind the texture to the specified slot
+	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
+	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 }
 
 void Texture::Unbind() const {
-	GLCall(glBindTexture(GL_TEXTURE_2D, 0)); // Unbind the texture
+	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }

@@ -8,6 +8,8 @@
 
 std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
 	Assimp::Importer importer;
+    // aiProcess_FlipUVs: OpenGL places V=0 at the bottom, but most DCC tools export V=0 at the top.
+    // aiProcess_CalcTangentSpace: pre-computed for future normal mapping; not consumed by the current Vertex struct.
     const aiScene* scene = importer.ReadFile(filepath,
 		aiProcess_Triangulate |
         aiProcess_GenSmoothNormals |
@@ -24,6 +26,7 @@ std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
 		return nullptr;
 	}
 
+	// Only the first mesh in the file is imported; multi-mesh files are not supported yet.
 	aiMesh* mesh = scene->mMeshes[0];
 
 	std::vector<Vertex> vertices;

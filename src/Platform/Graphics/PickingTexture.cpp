@@ -42,6 +42,8 @@ void PickingTexture::Invalidate() {
     glGenFramebuffers(1, &m_FramebufferID);
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
 
+    // Attachment 0: entity ID (red channel = entityID+1, green channel = primitiveID).
+    // GL_NEAREST is mandatory — linear filtering would blend adjacent entity IDs producing garbage.
     glGenTextures(1, &m_IDTextureID);
     glBindTexture(GL_TEXTURE_2D, m_IDTextureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32UI, m_Width, m_Height, 0, GL_RG_INTEGER, GL_UNSIGNED_INT, nullptr);
@@ -49,6 +51,8 @@ void PickingTexture::Invalidate() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_IDTextureID, 0);
 
+    // Attachment 1: world-space position as RGBA32F (xyz = position, w unused).
+    // 32-bit float precision is required for accurate world coordinates at large scene scales.
     glGenTextures(1, &m_WorldPosTextureID);
     glBindTexture(GL_TEXTURE_2D, m_WorldPosTextureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_Width, m_Height, 0, GL_RGBA, GL_FLOAT, nullptr);
@@ -91,6 +95,7 @@ void PickingTexture::Resize(uint32_t width, uint32_t height) {
 PickingResult PickingTexture::ReadPixel(uint32_t x, uint32_t y) const {
     PickingResult result;
 
+    // OpenGL framebuffer origin is bottom-left; screen cursor origin is top-left.
     y = m_Height - y;
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FramebufferID);
@@ -103,6 +108,7 @@ PickingResult PickingTexture::ReadPixel(uint32_t x, uint32_t y) const {
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
+    // id 0 means the pixel was cleared (no entity). Valid IDs were stored as entityID+1 by PickingSystem.
     if (idData[0] == 0u) {
         result.SelectedEntity = entt::null;
         result.Valid = false;

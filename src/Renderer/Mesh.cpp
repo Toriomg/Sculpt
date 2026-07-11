@@ -76,8 +76,8 @@ std::shared_ptr<Mesh> Mesh::CreateCube(float size) {
          -s,  s,  s,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f
     };
 
-    // This cube is defined without an index buffer. We will draw 36 vertices directly.
-    // If your Mesh class REQUIRES an index buffer, you can generate a simple one:
+    // The cube uses 36 unique vertices (no shared corners across faces, for correct flat normals),
+    // so a sequential IBO adds no benefit — it exists only because Mesh always requires an IBO.
     std::vector<uint32_t> indices(36);
     for (uint32_t i = 0; i < 36; i+=3) {
         indices[i] = i;
@@ -178,23 +178,19 @@ std::shared_ptr<Mesh> Mesh::CreateSphere(float radius, int sectors, int stacks) 
         int k2 = k1 + sectors + 1;      // beginning of next stack
 
         for (int j = 0; j < sectors; ++j, ++k1, ++k2) {
-            // 2 triangles per sector excluding the first and last stacks
-            // k1 => current stack
-            // k2 => next stack
-            //
+            // Standard UV-sphere quad triangulation:
             //        k1---k1+1
             //        |  /  |
-            //        | /   |
             //        k2---k2+1
-
-            // Triangle 1
-            if (i != 0) {  
+            //
+            // The top cap (i==0) skips Triangle 1 and the bottom cap (i==stacks-1) skips
+            // Triangle 2 because those quads degenerate to triangles at the poles.
+            if (i != 0) {
                 indices.push_back(k1);
                 indices.push_back(k1 + 1);
                 indices.push_back(k2);
             }
 
-            // Triangle 2
             if (i != (stacks - 1)) {
                 indices.push_back(k1 + 1);
                 indices.push_back(k2 + 1);

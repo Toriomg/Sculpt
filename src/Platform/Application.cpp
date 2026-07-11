@@ -18,7 +18,8 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 
     m_LayerStack.PushLayer(std::make_unique<EditorLayer>());
 
-    // Initialize viewport and camera projection with the actual framebuffer size
+    // Push a synthetic resize so camera projection and picking texture are sized to the
+    // actual framebuffer before the first frame — otherwise they use their default dimensions.
     WindowResizeEvent initResize(m_Window->GetWidth(), m_Window->GetHeight());
     OnEvent(initResize);
 
@@ -50,8 +51,9 @@ void Application::OnEvent(Event& e) {
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) { return OnWindowClose(e); });
 
+    // Reverse iteration gives the topmost (most recently pushed) layer first,
+    // so overlay layers can consume events before layers beneath them.
     for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
-        // If a layer has handled the event, stop processing.
         if (e.Handled) {
             break;
         }

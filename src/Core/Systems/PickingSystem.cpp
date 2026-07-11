@@ -78,6 +78,8 @@ void PickingSystem::RenderPickingPass(const Camera& camera) {
             continue;
         }
 
+        // +1 offset: pixel value 0 means "no entity" (the clear color), so all valid IDs start at 1.
+        // PickingTexture::ReadPixel reverses this by subtracting 1 before returning the entity.
         uint32_t entityID = static_cast<uint32_t>(entity) + 1u;
         m_PickingShader->SetUniform1ui("u_ObjectID", entityID);
         m_PickingShader->SetUniformMat4f("u_Model", transform.Transform);
@@ -91,6 +93,8 @@ void PickingSystem::RenderPickingPass(const Camera& camera) {
     }
 
     m_PickingTexture->Unbind();
+    // Restore the viewport: PickingTexture::Bind() sets it to the picking FBO's dimensions,
+    // which may differ from the main viewport after a resize event arrives before render.
     glViewport(0, 0, m_ViewportWidth, m_ViewportHeight);
 }
 

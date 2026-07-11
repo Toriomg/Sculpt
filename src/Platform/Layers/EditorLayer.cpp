@@ -64,6 +64,8 @@ void EditorLayer::OnAttach() {
     m_ActiveScene->SetComponent<TransformComponent>(m_TorusEntity, Matx4f::translation(TorusPosition));
     m_ActiveScene->AddComponent<SelectionComponent>(m_TorusEntity);
 
+    // Stores a raw pointer into the ECS component. If m_CameraEntity is ever destroyed
+    // or the registry reallocates, this pointer would dangle — safe only while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
 }
 
@@ -72,11 +74,12 @@ void EditorLayer::OnUpdate(float deltaTime) {
     
     auto& camComp = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
     auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
+    // Camera position is driven by EditorCameraController (not the ECS transform), so we
+    // manually sync the TransformComponent each frame to keep both representations consistent.
     camTransform.Transform = Matx4f::translation(camComp.SceneCamera.GetPosition());
 
-    // 2. Prepare for rendering
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.85f, 1.0f });
-    m_ActiveScene->OnUpdate(deltaTime); 
+    m_ActiveScene->OnUpdate(deltaTime);
 }
 
 void EditorLayer::OnEvent(Event& e) {
@@ -92,6 +95,7 @@ void EditorLayer::OnEvent(Event& e) {
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
+    // Button 0 is left mouse button in GLFW; GetMouseButton() returns a raw GLFW int, not MouseCode.
     if (e.GetMouseButton() != 0) {
         return false;
     }

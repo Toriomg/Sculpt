@@ -70,6 +70,8 @@ void SelectionSystem::OnMouseClick(uint32_t screenX, uint32_t screenY, bool addi
         return;
     }
 
+    // Force the picking pass to execute immediately (synchronously) instead of waiting for the
+    // next Scene::OnUpdate, so the result is available in this same call stack.
     m_PickingSystem->RequestPickingPass(screenX, screenY);
     m_PickingSystem->OnUpdate(0.0f);
 

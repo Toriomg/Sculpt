@@ -65,13 +65,10 @@ void Renderer::Submit(
         auto texture = std::static_pointer_cast<Texture>(AssetManager::Get(textureHandle));
         if (texture)
         {
-            //CORE_LOG_INFO("Binding Texture ID {0} to slot 0...", texture->GetRendererID());
             int textureSlot = 0;
-            // Tell OpenGL to place our texture object into the chosen slot.
             texture->Bind(textureSlot);
-            // and tell it to get its data from slot 0.
-            shader->SetUniform1i("u_Texture", textureSlot); // The value is the SLOT, not the texture ID!
-
+            // The sampler uniform receives the texture UNIT index (0), not the GL texture object ID.
+            shader->SetUniform1i("u_Texture", textureSlot);
         }
         else
             CORE_LOG_WARN("Texture handle is invalid or texture not found in AssetManager.");

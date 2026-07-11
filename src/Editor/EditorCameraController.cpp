@@ -43,9 +43,11 @@ void EditorCameraController::OnUpdate(float deltaTime)
         float currentYaw = m_CameraToControl->GetYaw();
         
         currentYaw += delta.x;
-        currentPitch -= delta.y; // Invert Y-axis
+        // Screen Y increases downward, but pitch should increase as we look up.
+        currentPitch -= delta.y;
 
-        // Clamp pitch
+        // Clamped to ±89° rather than ±90° to avoid the lookAt singularity when
+        // front and worldUp become parallel (cross-product yields a zero right vector).
         if (currentPitch > 89.0f) currentPitch = 89.0f;
         if (currentPitch < -89.0f) currentPitch = -89.0f;
 
@@ -53,6 +55,8 @@ void EditorCameraController::OnUpdate(float deltaTime)
     }
     else
     {
+        // Sync last position while RMB is not held so that re-pressing it doesn't
+        // produce a large delta from wherever the cursor was when it was released.
         m_LastMousePosition = Input::GetMousePosition();
     }
 }

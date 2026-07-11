@@ -169,30 +169,22 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 }
 
 void Shader::Bind() const {
-	// Bind the shader program for use
 	GLCall(glUseProgram(m_RendererID));
 }
 
 void Shader::Unbind() const {
-	// Unbind the shader program
 	GLCall(glUseProgram(0));
 }
 
-// Uniform setters for various types
-
 void Shader::SetUniform1i(const std::string& name, int value) {
-	// Set an integer uniform variable in the shader
 	GLCall(glUniform1i(GetUniformLocation(name), value));
 }
 
 void Shader::SetUniform1ui(const std::string& name, unsigned int value) {
-	// Set an integer uniform variable in the shader
 	GLCall(glUniform1ui(GetUniformLocation(name), value));
 }
 
-
 void Shader::SetUniform1iv(const std::string& name, const int* array, int size) {
-	// Set an array of integer uniform variables in the shader
 	GLCall(glUniform1iv(GetUniformLocation(name), size, array));
 }
 
@@ -201,17 +193,15 @@ void Shader::SetUniform1f(const std::string& name, float v) {
 }
 
 void Shader::SetUniform3f(const std::string& name, float v0, float v1, float v2) {
-	// Set a 3D float uniform variable in the shader
 	GLCall(glUniform3f(GetUniformLocation(name), v0, v1, v2));
 }
 
 void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3) {
-	// Set a 4D float uniform variable in the shader
 	GLCall(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
 }
 
 void Shader::SetUniformMat4f(const std::string& name, const Matx4f& matrix) {
-	// Set a 4x4 matrix uniform variable in the shader
+    // GL_TRUE: GLSL expects column-major order, but Matx4f is row-major, so we transpose on upload.
 	GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_TRUE, &matrix.m[0][0]));
 }
 

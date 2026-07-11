@@ -54,6 +54,8 @@ void RenderingSystem::OnUpdate(float deltaTime)
                 continue;
             }
 
+            // These uniforms are selection-state dependent, so they must be set here before
+            // Renderer::Submit, which re-binds the same shader and sets the remaining uniforms.
             meshComp.MaterialAsset->GetShader()->Bind();
             meshComp.MaterialAsset->GetShader()->SetUniform3f("u_cameraPos",
                 mainCamera->GetPosition().x,

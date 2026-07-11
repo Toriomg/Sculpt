@@ -89,7 +89,8 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
         data.EventCallback(event);
     });
 
-    // Fire an initial resize so the camera and viewport are set correctly at startup
+    // On HiDPI displays the framebuffer can be larger than the window in screen coordinates;
+    // reading it back ensures m_Data reflects the actual pixel dimensions from the start.
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(m_Window, &fbWidth, &fbHeight);
     m_Data.Width  = static_cast<uint32_t>(fbWidth);
@@ -97,6 +98,8 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
 
     // GLEW init — on some Linux configurations (XWayland, Mesa) this returns an error
     // but OpenGL functions are still available. Treat as non-fatal.
+    // glewExperimental must be set before glewInit to expose core-profile functions
+    // that GLEW would otherwise skip because they lack wgl/glX extension strings.
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
         CORE_LOG_WARN("glewInit() returned an error — OpenGL may still be available.");
@@ -119,6 +122,8 @@ void GlfwWindow::OnUpdate() {
     glfwPollEvents();
     glfwSwapBuffers(m_Window);
 
+    // Wayland compositors do not always fire the GLFW framebuffer-size callback reliably,
+    // so we poll the actual size each frame and synthesize the event when it changes.
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(m_Window, &fbWidth, &fbHeight);
     if (static_cast<uint32_t>(fbWidth) != m_Data.Width ||
