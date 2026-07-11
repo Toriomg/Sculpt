@@ -1,3 +1,4 @@
+// Base Event class, EventType enum, and EventDispatcher template; all concrete event types derive from Event.
 #pragma once
 #include <string_view>
 

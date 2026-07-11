@@ -1,3 +1,4 @@
+// Compiles GLSL programs from #type-delimited .shader files; caches uniform locations; used by Material.
 #pragma once
 
 #include <string>

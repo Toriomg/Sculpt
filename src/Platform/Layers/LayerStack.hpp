@@ -1,3 +1,4 @@
+// Ordered container of Layer instances; events propagate top-to-bottom, updates fire in insertion order.
 #pragma once
 #include "Layer.hpp"
 #include <vector>

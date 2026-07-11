@@ -1,3 +1,4 @@
+// Input-driven controller that translates and orbits the editor Camera each frame; does not own the camera.
 #pragma once
 #include "Renderer/Camera.hpp" // It needs to know what a Camera is
 

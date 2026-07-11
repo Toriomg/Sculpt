@@ -1,3 +1,4 @@
+// Top-level application: owns the Window and LayerStack, runs the main loop, and routes events down the stack.
 #pragma once
 
 #include "Core/glhead.hpp"

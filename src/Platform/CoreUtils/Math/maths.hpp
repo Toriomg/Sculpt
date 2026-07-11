@@ -1,3 +1,4 @@
+// Math utility aggregate: re-exports Matx4f, Vec types, and Quaternion; provides radians() and QuatRotation().
 #pragma once
 #include "matx.hpp"
 #include "vec4.hpp"

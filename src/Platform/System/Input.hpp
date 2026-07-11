@@ -1,3 +1,4 @@
+// Legacy GLFW input singleton (InputManager); superseded by Platform/System/Input/Input.hpp.
 #pragma once
 #include "GLFW/glfw3.h"
 

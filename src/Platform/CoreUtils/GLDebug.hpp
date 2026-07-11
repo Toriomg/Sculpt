@@ -1,3 +1,4 @@
+// OpenGL error utilities: GLCall macro clears GL errors before a call and logs any that result, with file/line info.
 #pragma once
 #include <GL/glew.h>
 #include "Log.hpp"

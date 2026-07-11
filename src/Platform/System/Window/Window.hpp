@@ -1,3 +1,4 @@
+// Abstract window interface: defines event-callback contract and size queries; GlfwWindow is the only implementation.
 #pragma once
 #include "Core/glhead.hpp"
 #include <memory>

@@ -1,3 +1,4 @@
+// Abstract base for all application layers; LayerStack drives OnAttach, OnDetach, OnUpdate, and OnEvent each frame.
 #pragma once
 
 #include "Platform/System/Events/Event.hpp"

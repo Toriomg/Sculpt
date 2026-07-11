@@ -1,3 +1,4 @@
+// Static high-level rendering API: BeginScene sets the view-projection, Submit draws a Mesh+Material pair.
 #pragma once
 
 #include "Core/glhead.hpp"

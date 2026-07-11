@@ -1,3 +1,4 @@
+// IAssetLoader that produces Mesh assets via Assimp; registered in LoaderSystem for 3D model file extensions.
 #pragma once
 #include "IAssetLoader.hpp"
 

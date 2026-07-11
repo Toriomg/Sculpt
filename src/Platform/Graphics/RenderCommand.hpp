@@ -1,3 +1,4 @@
+// Thin static wrapper over raw OpenGL calls: clear, viewport, and the indexed VAO+IBO draw call.
 #pragma once
 
 #include "Platform/Graphics/Buffers/VertexArray.hpp"

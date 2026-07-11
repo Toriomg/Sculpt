@@ -1,3 +1,4 @@
+// OpenGL VAO: bundles one or more VertexBuffers with their attribute layouts; owned by Mesh.
 #pragma once
 
 #include <vector>

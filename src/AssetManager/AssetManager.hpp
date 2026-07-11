@@ -1,3 +1,4 @@
+// Static asset management facade: routes file loads through LoaderSystem and caches results in AssetRegistry.
 #pragma once
 #include "Loader/LoaderSystem.hpp"
 #include "AssetRegistry.hpp"

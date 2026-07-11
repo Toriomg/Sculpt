@@ -1,3 +1,4 @@
+// Off-screen render target: owns color and depth texture attachments; used by EditorLayer to render the 3D viewport.
 #pragma once
 #include <cstdint>
 

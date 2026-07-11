@@ -1,3 +1,4 @@
+// Manages selection state via SelectionContext; delegates pixel hit-testing to PickingSystem on mouse click.
 #pragma once
 #include "System.hpp"
 #include "Core/Entity.hpp"

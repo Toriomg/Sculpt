@@ -1,3 +1,4 @@
+// Maps file extensions to IAssetLoader implementations; owned by AssetManager, which calls GetLoaderFor on each Load().
 #pragma once
 #include <string>
 #include <map>

@@ -1,3 +1,4 @@
+// Abstract loader interface; LoaderSystem owns concrete implementations and dispatches to them by file extension.
 #pragma once
 #include <string>
 #include <memory>

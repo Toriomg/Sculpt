@@ -1,3 +1,4 @@
+// Owns the EnTT registry and all Systems; primary entry point for entity management and per-frame ECS updates.
 #pragma once
 #include "entt/entt.hpp"
 #include "Entity.hpp"

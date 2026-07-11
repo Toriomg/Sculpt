@@ -1,3 +1,4 @@
+// Owns a VertexArray + IndexBuffer; provides static factory methods for built-in primitives (cube, sphere, torus, etc.).
 #pragma once
 
 #include "Platform/Graphics/Buffers/VertexArray.hpp"

@@ -1,3 +1,4 @@
+// Pairs a Shader with a texture AssetHandle; submitted alongside a Mesh to Renderer::Submit.
 #pragma once
 
 #include "Platform/Graphics/Texture.hpp"

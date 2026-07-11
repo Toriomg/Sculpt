@@ -1,3 +1,4 @@
+// Static input polling API with a swappable platform-specific InputImpl; initialized by Application with a GlfwInput.
 #pragma once
 #include <memory>
 #include "KeyCodes.hpp"

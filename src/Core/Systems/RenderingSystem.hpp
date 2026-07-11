@@ -1,3 +1,4 @@
+// ECS system: iterates all entities with a MeshComponent and submits them to Renderer each frame.
 #pragma once
 #include "System.hpp"
 

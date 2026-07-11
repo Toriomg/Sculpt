@@ -1,3 +1,4 @@
+// Abstract base for all scene systems; Scene calls OnAttach once and OnUpdate every frame, and holds a Scene* back-pointer.
 #pragma once
 
 // Forward-declare Scene to avoid circular dependencies

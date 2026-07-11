@@ -1,3 +1,4 @@
+// Interleaved vertex struct (position, normal, UV) matching the standard shader input layout; used by Mesh factories.
 #pragma once
 #include "Platform/CoreUtils/Math/maths.hpp"
 

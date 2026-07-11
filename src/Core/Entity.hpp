@@ -1,4 +1,4 @@
-
+// Aliases entt::entity as Entity and defines NULL_ENTITY; included by Scene and any code that names entities.
 #pragma once
 #include <cstdint>
 #include "entt/entt.hpp" // The core ECS library

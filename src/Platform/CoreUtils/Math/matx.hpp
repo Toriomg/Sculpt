@@ -1,3 +1,4 @@
+// Row-major 4×4 float matrix with transform, projection, and view factory methods; used throughout the renderer and camera.
 #pragma once
 #include <GL/glew.h>
 #include "vec4.hpp"

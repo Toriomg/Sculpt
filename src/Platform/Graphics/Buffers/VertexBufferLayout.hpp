@@ -1,3 +1,4 @@
+// Describes per-vertex attribute layout (element type, count, stride); used by VertexArray::AddBuffer to configure attrib pointers.
 #pragma once
 
 #include <vector>

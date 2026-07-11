@@ -1,3 +1,4 @@
+// Logging facade over spdlog; exports CORE_LOG_* macros for engine use and LOG_* for client code.
 #pragma once
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"

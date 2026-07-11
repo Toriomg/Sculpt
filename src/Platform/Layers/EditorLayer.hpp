@@ -1,3 +1,4 @@
+// Primary editor layer: owns Scene, Camera, and EditorCameraController; handles all editor input events and rendering.
 #pragma once
 #include "Platform/Layers/Layer.hpp"
 #include "Platform/System/Input/Input.hpp"

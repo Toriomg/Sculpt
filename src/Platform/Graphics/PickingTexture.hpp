@@ -1,3 +1,4 @@
+// Framebuffer storing entity IDs and world positions per pixel; read back by PickingSystem for mouse click detection.
 #pragma once
 #include <cstdint>
 #include "Platform/CoreUtils/Math/vec3.hpp"

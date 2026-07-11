@@ -1,3 +1,4 @@
+// OpenGL 2D texture implementing IAsset; wraps a GL texture ID and exposes Bind/Unbind by slot.
 #pragma once
 #include "Platform/CoreUtils/glewDbg.hpp"
 #include "Core/glhead.hpp"

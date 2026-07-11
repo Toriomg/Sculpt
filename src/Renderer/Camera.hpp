@@ -1,3 +1,4 @@
+// Scene camera: tracks position and orientation; computes view and projection matrices for Renderer::BeginScene.
 #pragma once
 
 #include "Platform/CoreUtils/Math/maths.hpp"

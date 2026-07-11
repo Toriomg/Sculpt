@@ -1,3 +1,4 @@
+// All ECS component structs (Name, Transform, Mesh, Camera, Selection); included wherever entities are queried or created.
 #pragma once
 #include <memory>
 #include "Renderer/Mesh.hpp"

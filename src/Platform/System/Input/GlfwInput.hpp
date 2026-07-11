@@ -1,3 +1,4 @@
+// GLFW-backed InputImpl: polls the native GLFWwindow for key/mouse state; injected into Input by Application on startup.
 #pragma once
 #include "Platform/System/Input/Input.hpp"
 #include "Platform/System/Window/Window.hpp"

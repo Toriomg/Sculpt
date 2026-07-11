@@ -1,3 +1,4 @@
+// GLFW concrete Window: owns GLFWwindow*, installs GLFW callbacks, and initializes the OpenGL context.
 #pragma once
 #include "Platform/System/Window/Window.hpp"
 #include <GL/glew.h>
