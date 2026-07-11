@@ -9,9 +9,8 @@
 std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
 	Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(filepath,
-        aiProcess_FlipWindingOrder |
 		aiProcess_Triangulate |
-        aiProcess_ForceGenNormals |
+        aiProcess_GenSmoothNormals |
 		aiProcess_FlipUVs |
 		aiProcess_CalcTangentSpace);
 
