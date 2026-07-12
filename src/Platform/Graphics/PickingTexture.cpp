@@ -110,10 +110,10 @@ PickingResult PickingTexture::ReadPixel(uint32_t x, uint32_t y) const {
 
     // id 0 means the pixel was cleared (no entity). Valid IDs were stored as entityID+1 by PickingSystem.
     if (idData[0] == 0u) {
-        result.SelectedEntity = entt::null;
+        result.ObjectID = 0;
         result.Valid = false;
     } else {
-        result.SelectedEntity = static_cast<entt::entity>(idData[0] - 1u);
+        result.ObjectID = idData[0];
         result.Valid = true;
     }
     result.PrimitiveID = idData[1];

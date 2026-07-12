@@ -2,10 +2,9 @@
 #pragma once
 #include <cstdint>
 #include "Platform/CoreUtils/Math/vec3.hpp"
-#include "Core/Entity.hpp"
 
 struct PickingResult {
-    Entity SelectedEntity = entt::null;
+    uint32_t ObjectID = 0;
     uint32_t PrimitiveID = 0xFFFFFFFF;
     Vec3 WorldPosition = Vec3(0.0f, 0.0f, 0.0f);
     bool Valid = false;

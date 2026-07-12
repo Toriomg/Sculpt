@@ -1,6 +1,7 @@
 // Typed 64-bit asset handle with a static ID factory; used as a key into AssetRegistry by AssetManager.
 #pragma once
-#include "Core/glhead.hpp"
+#include <cstdint>
+#include <functional>
 #include "Platform/CoreUtils/Log.hpp"
 
 // A lightweight, non-owning handle to an asset.

@@ -1,7 +1,6 @@
 #include "SelectionSystem.hpp"
 #include "PickingSystem.hpp"
 #include "Core/Scene.hpp"
-#include "Core/Components/Component.hpp"
 
 void SelectionContext::Select(Entity entity, bool additive) {
     if (!additive) {
@@ -78,7 +77,8 @@ void SelectionSystem::OnMouseClick(uint32_t screenX, uint32_t screenY, bool addi
     const auto& result = m_PickingSystem->GetLastResult();
 
     if (result.Valid) {
-        m_SelectionContext.Select(result.SelectedEntity, additive);
+        Entity entity = static_cast<Entity>(result.ObjectID - 1u);
+        m_SelectionContext.Select(entity, additive);
     } else {
         if (!additive) {
             m_SelectionContext.ClearSelection();

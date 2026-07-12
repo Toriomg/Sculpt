@@ -3,6 +3,8 @@
 #include <assimp/postprocess.h>
 
 #include "MeshLoader.hpp"
+#include "Platform/Graphics/Vertex.hpp"
+#include "Renderer/Mesh.hpp"
 #include "Renderer/Mesh.hpp"
 
 

@@ -1,12 +1,9 @@
 // Pairs a Shader with a texture AssetHandle; submitted alongside a Mesh to Renderer::Submit.
 #pragma once
 
-#include "Platform/Graphics/Texture.hpp"
+#include <memory>
 #include "Platform/Graphics/Shader.hpp"
-
-#include "AssetManager/AssetHandle.hpp"    
-
-#include "Core/glhead.hpp"
+#include "Platform/CoreUtils/AssetHandle.hpp"
 class Material {
 public:
     Material(std::shared_ptr<Shader> shader) : m_Shader(shader) {}

@@ -1,7 +1,12 @@
 #include "Application.hpp"
+#include "Platform/CoreUtils/Log.hpp"
+#include "Platform/System/Time.hpp"
+#include "AssetManager/AssetManager.hpp"
+#include "Renderer/Renderer.hpp"
+#include "Editor/EditorLayer.hpp"
 
 Application::Application(const std::string& name, unsigned int width, unsigned int height)
-    : m_Window(nullptr), m_AppName(name), m_Width(width), m_Height(height)
+    : m_Window(nullptr), m_AppName(name)
 {
 	Log::Init(); // Initialize the logging system
 	AssetManager::Init(); // Initialize the Asset Manager

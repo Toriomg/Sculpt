@@ -1,20 +1,13 @@
 // Primary editor layer: owns Scene, Camera, and EditorCameraController; handles all editor input events and rendering.
 #pragma once
 #include "Platform/Layers/Layer.hpp"
-#include "Platform/System/Input/Input.hpp"
 #include "Core/Scene.hpp"
-//#include "UI/EditorUI.h"
 #include "Platform/System/Events/KeyboardEvent.hpp"
 #include "Platform/System/Events/MouseEvent.hpp"
 #include "Platform/System/Events/WindowEvent.hpp"
-
 #include "Editor/EditorCameraController.hpp"
-#include "Editor/InfGrid.hpp"
-// Temp
+#include "Renderer/InfGrid.hpp"
 #include "Renderer/Camera.hpp"
-#include "Renderer/Material.hpp"
-#include "Renderer/Mesh.hpp"
-#include "Renderer/Renderer.hpp"
 
 class EditorLayer : public Layer {
 public:
@@ -41,7 +34,7 @@ private:
     std::unique_ptr<InfGrid> m_Grid;
 
     Camera m_EditorCamera;
-	
+
     Entity m_CameraEntity;
 
     Entity m_MonkeyEntity;

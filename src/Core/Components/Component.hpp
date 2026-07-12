@@ -1,9 +1,12 @@
 // All ECS component structs (Name, Transform, Mesh, Camera, Selection); included wherever entities are queried or created.
 #pragma once
 #include <memory>
-#include "Renderer/Mesh.hpp"
-#include "Renderer/Material.hpp"
+#include <string>
 #include "Renderer/Camera.hpp"
+#include "Platform/CoreUtils/Math/maths.hpp"
+
+class Mesh;
+class Material;
 
 // Base component struct. All components will "inherit" from this conceptually.
 // In practice, they just need to be simple data structs.

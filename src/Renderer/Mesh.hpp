@@ -1,12 +1,11 @@
 // Owns a VertexArray + IndexBuffer; provides static factory methods for built-in primitives (cube, sphere, torus, etc.).
 #pragma once
 
+#include <memory>
+#include <cstdint>
 #include "Platform/Graphics/Buffers/VertexArray.hpp"
 #include "Platform/Graphics/Buffers/IndexBuffer.hpp"
-#include "Platform/Graphics/Vertex.hpp"
-#include "Platform/CoreUtils/Math/maths.hpp"
-#include "AssetManager/IAsset.hpp"
-#include "Core/glhead.hpp"
+#include "Platform/CoreUtils/IAsset.hpp"
 
 class Mesh : public IAsset {
 public:

@@ -1,9 +1,13 @@
-#include "EditorLayer.hpp"
+#include "Editor/EditorLayer.hpp"
 #include "Core/Components/Component.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Core/Systems/PickingSystem.hpp"
-#include "Editor/EditorCameraController.hpp"
 #include "AssetManager/AssetManager.hpp"
+#include "Renderer/Mesh.hpp"
+#include "Renderer/Material.hpp"
+#include "Renderer/Renderer.hpp"
+#include "Platform/Graphics/RenderCommand.hpp"
+#include "Platform/Graphics/Shader.hpp"
 #include "Platform/System/Input/Input.hpp"
 #include "Platform/System/Input/KeyCodes.hpp"
 
@@ -72,7 +76,7 @@ void EditorLayer::OnAttach() {
 
 void EditorLayer::OnUpdate(float deltaTime) {
 	m_CameraController->OnUpdate(deltaTime);
-    
+
     auto& camComp = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
     auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
     // Camera position is driven by EditorCameraController (not the ECS transform), so we

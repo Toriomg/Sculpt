@@ -1,8 +1,9 @@
 // Internal asset store: maps AssetHandle to shared_ptr<IAsset>; owned and queried exclusively by AssetManager.
 #pragma once
-#include "Core/glhead.hpp"
-#include "AssetHandle.hpp"
-#include "IAsset.hpp"
+#include <map>
+#include <memory>
+#include "Platform/CoreUtils/AssetHandle.hpp"
+#include "Platform/CoreUtils/IAsset.hpp"
 
 class AssetRegistry {
 public:

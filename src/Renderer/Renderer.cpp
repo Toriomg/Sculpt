@@ -1,6 +1,7 @@
 #include "Renderer.hpp"
 #include "Material.hpp"
 #include "Mesh.hpp"
+#include "Platform/Graphics/Texture.hpp"
 #include "AssetManager/AssetManager.hpp"
 
 // This struct is a private implementation detail of the Renderer.

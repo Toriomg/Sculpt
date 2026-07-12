@@ -2,9 +2,9 @@
 #include "SelectionSystem.hpp"
 #include "Core/Scene.hpp"
 #include "Core/Components/Component.hpp"
+#include "Renderer/Material.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Camera.hpp"
-#include "Platform/Graphics/Shader.hpp"
 
 
 void RenderingSystem::OnUpdate(float deltaTime)

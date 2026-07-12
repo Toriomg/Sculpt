@@ -1,4 +1,4 @@
-#include "InfGrid.hpp"
+#include "Renderer/InfGrid.hpp"
 #include <GL/glew.h>
 
 InfGrid::InfGrid() {

@@ -2,8 +2,7 @@
 #pragma once
 #include <string>
 #include <memory>
-#include "AssetManager/IAsset.hpp"
-#include "Platform/CoreUtils/Log.hpp"
+#include "Platform/CoreUtils/IAsset.hpp"
 
 class IAssetLoader {
 public:
