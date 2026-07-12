@@ -1,8 +1,8 @@
 #include "Editor/ImGuiLayer.hpp"
+#include "Platform/Graphics/RenderCommand.hpp"
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
-#include <GL/glew.h>
 
 ImGuiLayer::ImGuiLayer(GLFWwindow* window)
     : Layer("ImGuiLayer"), m_Window(window) {}
@@ -29,8 +29,8 @@ void ImGuiLayer::Begin() {
     ImGui::NewFrame();
     // Clear the screen so stale content from the previous frame doesn't bleed through
     // the semi-transparent areas of ImGui windows.
-    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    RenderCommand::SetClearColor({0.15f, 0.15f, 0.15f, 1.0f});
+    RenderCommand::Clear();
 }
 
 void ImGuiLayer::End() {
