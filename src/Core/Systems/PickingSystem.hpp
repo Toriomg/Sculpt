@@ -3,8 +3,9 @@
 #include "System.hpp"
 #include "Platform/Graphics/PickingTexture.hpp"
 #include "Platform/Graphics/Shader.hpp"
-#include "Renderer/Camera.hpp"
 #include <memory>
+
+class Camera;
 
 class PickingSystem : public System {
 public:
