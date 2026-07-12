@@ -4,6 +4,7 @@
 #include "AssetManager/AssetManager.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Editor/EditorLayer.hpp"
+#include "Editor/ImGuiLayer.hpp"
 
 Application::Application(const std::string& name, unsigned int width, unsigned int height)
     : m_Window(nullptr), m_AppName(name)
@@ -21,7 +22,13 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
     // Setup Time
 	Time::Init();
 
-    m_LayerStack.PushLayer(std::make_unique<EditorLayer>());
+    m_LayerStack.PushLayer(std::make_unique<EditorLayer>([this]() { m_Running = false; }));
+
+    auto imguiLayer = std::make_unique<ImGuiLayer>(
+        static_cast<GLFWwindow*>(m_Window->GetNativeWindow())
+    );
+    m_ImGuiLayer = imguiLayer.get();
+    m_LayerStack.PushLayer(std::move(imguiLayer));
 
     // Push a synthetic resize so camera projection and picking texture are sized to the
     // actual framebuffer before the first frame — otherwise they use their default dimensions.
@@ -47,6 +54,11 @@ void Application::Run()
         for (auto& layer : m_LayerStack) {
             layer->OnUpdate(Time::GetDeltaTime());
         }
+        m_ImGuiLayer->Begin();
+        for (auto& layer : m_LayerStack) {
+            layer->OnImGuiRender();
+        }
+        m_ImGuiLayer->End();
         m_Window->OnUpdate();
     }
 }

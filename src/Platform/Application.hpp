@@ -7,6 +7,8 @@
 #include "Platform/System/Window/Window.hpp"
 #include "Platform/Layers/LayerStack.hpp"
 
+class ImGuiLayer;
+
 class Application
 {
 public:
@@ -23,6 +25,7 @@ private:
     bool m_Running = true;
 
 	LayerStack m_LayerStack;
+    ImGuiLayer* m_ImGuiLayer = nullptr;  // non-owning; LayerStack is the owner
 
     bool OnWindowClose(WindowCloseEvent& e);
 };

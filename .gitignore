@@ -63,3 +63,5 @@ Thumbs.db
 
 CLAUDE.md
 .claude/
+claude_reports/
+memory/

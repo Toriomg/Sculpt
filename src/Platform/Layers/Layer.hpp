@@ -19,6 +19,8 @@ public:
     virtual void OnUpdate(float deltaTime) {}
     // Called when an event is sent to the layer
     virtual void OnEvent(Event& event) {}
+    // Called each frame to render ImGui widgets; invoked between ImGuiLayer::Begin() and End()
+    virtual void OnImGuiRender() {}
 
 protected:
     std::string m_DebugName;

@@ -1,4 +1,8 @@
 #include "Editor/EditorLayer.hpp"
+#include "Editor/Panels/ViewportPanel.hpp"
+#include "Editor/Panels/OutlinerPanel.hpp"
+#include "Editor/Panels/InspectorPanel.hpp"
+#include "Editor/Panels/MainMenuBar.hpp"
 #include "Core/Components/Component.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Core/Systems/PickingSystem.hpp"
@@ -6,20 +10,22 @@
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Material.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Platform/Graphics/Framebuffer.hpp"
 #include "Platform/Graphics/RenderCommand.hpp"
 #include "Platform/Graphics/Shader.hpp"
 #include "Platform/System/Input/Input.hpp"
 #include "Platform/System/Input/KeyCodes.hpp"
 
-EditorLayer::EditorLayer()
-    : Layer("EditorLayer"){
-}
+EditorLayer::EditorLayer(std::function<void()> onQuit)
+    : Layer("EditorLayer"), m_OnQuit(std::move(onQuit)) {}
+
+// Destructor defined here so forward-declared types (Framebuffer, panels) are fully visible.
+EditorLayer::~EditorLayer() = default;
 
 void EditorLayer::OnAttach() {
-    // This is where you can initialize resources, set up the scene, etc.
     CORE_LOG_INFO("EditorLayer attached!");
 
-	m_ActiveScene = std::make_unique<Scene>();
+    m_ActiveScene = std::make_unique<Scene>();
 
     m_CameraEntity = m_ActiveScene->CreateGameObject("Main Camera");
     auto& camComp = m_ActiveScene->AddComponent<CameraComponent>(m_CameraEntity);
@@ -27,30 +33,24 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-    auto monkeyMesh = std::static_pointer_cast<Mesh>(AssetManager::Get(AssetManager::Load("res/models/monkey.obj")));
-    std::shared_ptr<Mesh> SphereMesh = Mesh::CreateSphere(1.0f, 32, 32);
-	std::shared_ptr<Mesh> PyramidMesh = Mesh::CreateIcosahedron(2.0f);
-    std::shared_ptr<Mesh> TorusMesh = Mesh::CreateTorus(1.0f, 0.5f, 32, 32);
+    auto monkeyMesh   = std::static_pointer_cast<Mesh>(AssetManager::Get(AssetManager::Load("res/models/monkey.obj")));
+    auto SphereMesh   = Mesh::CreateSphere(1.0f, 32, 32);
+    auto PyramidMesh  = Mesh::CreateIcosahedron(2.0f);
+    auto TorusMesh    = Mesh::CreateTorus(1.0f, 0.5f, 32, 32);
 
-    // --- Create a Material ---
-    auto simpleShader = std::make_shared<Shader>(
-        //"res/shaders/test/testTexture.shader"
-        "res/shaders/modelmesh.shader"
-    );
-    std::shared_ptr<Material> myMaterial = std::make_shared<Material>(simpleShader);
-	myMaterial->SetTexture(AssetManager::Load("res/textures/texture1.png"));
+    auto simpleShader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
+    auto myMaterial   = std::make_shared<Material>(simpleShader);
+    myMaterial->SetTexture(AssetManager::Load("res/textures/texture1.png"));
 
+    Vec3 MonkeyPosition  = {  0.0f, 0.0f, 0.0f };
+    Vec3 SpherePosition  = {  5.0f, 0.0f, 0.0f };
+    Vec3 PyramidPosition = { -5.0f, 0.0f, 0.0f };
+    Vec3 TorusPosition   = { 10.0f, 0.0f, 0.0f };
 
-    // Set the initial positions
-    Vec3 MonkeyPosition  = { 0.0f, 0.0f, 0.0f };
-    Vec3 SpherePosition  = { 5.0f, 0.0f, 0.0f };
-    Vec3 PyramidPosition = {-5.0f, 0.0f, 0.0f };
-    Vec3 TorusPosition   = {10.0f, 0.0f, 0.0f };
-
-    m_MonkeyEntity = m_ActiveScene->CreateGameObject("Monkey");
-    m_SphereEntity = m_ActiveScene->CreateGameObject("Sphere");
+    m_MonkeyEntity  = m_ActiveScene->CreateGameObject("Monkey");
+    m_SphereEntity  = m_ActiveScene->CreateGameObject("Sphere");
     m_PyramidEntity = m_ActiveScene->CreateGameObject("Pyramid");
-    m_TorusEntity = m_ActiveScene->CreateGameObject("Torus");
+    m_TorusEntity   = m_ActiveScene->CreateGameObject("Torus");
 
     m_ActiveScene->AddComponent<MeshComponent>(m_MonkeyEntity, monkeyMesh, myMaterial);
     m_ActiveScene->SetComponent<TransformComponent>(m_MonkeyEntity, Matx4f::translation(MonkeyPosition));
@@ -68,34 +68,65 @@ void EditorLayer::OnAttach() {
     m_ActiveScene->SetComponent<TransformComponent>(m_TorusEntity, Matx4f::translation(TorusPosition));
     m_ActiveScene->AddComponent<SelectionComponent>(m_TorusEntity);
 
-    // Stores a raw pointer into the ECS component. If m_CameraEntity is ever destroyed
-    // or the registry reallocates, this pointer would dangle — safe only while the entity lives.
+    // Stores a raw pointer into the ECS component — safe while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
     m_Grid = std::make_unique<InfGrid>();
+    m_ViewportFBO = std::make_unique<Framebuffer>(1470, 810);
+
+    auto* selSys = m_ActiveScene->GetSystem<SelectionSystem>();
+
+    m_ViewportPanel  = std::make_unique<ViewportPanel>(
+        m_ViewportFBO.get(),
+        [this](uint32_t w, uint32_t h) { OnViewportResize(w, h); }
+    );
+    m_OutlinerPanel  = std::make_unique<OutlinerPanel>(m_ActiveScene.get(), selSys);
+    m_InspectorPanel = std::make_unique<InspectorPanel>(
+        m_ActiveScene.get(),
+        &selSys->GetSelectionContext()
+    );
+    m_MainMenuBar = std::make_unique<MainMenuBar>(m_OnQuit);
+}
+
+void EditorLayer::OnViewportResize(uint32_t width, uint32_t height) {
+    m_ViewportFBO->Resize(width, height);
+    auto& camComp = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
+    camComp.SceneCamera.SetViewportSize(width, height);
+    RenderCommand::SetViewport(0, 0, width, height);
+    auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
+    if (pickSys)
+        pickSys->OnWindowResize(width, height);
 }
 
 void EditorLayer::OnUpdate(float deltaTime) {
-	m_CameraController->OnUpdate(deltaTime);
-
-    auto& camComp = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
+    auto& camComp     = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
     auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
-    // Camera position is driven by EditorCameraController (not the ECS transform), so we
-    // manually sync the TransformComponent each frame to keep both representations consistent.
+
+    // Camera movement is gated on viewport focus so ImGui text fields can receive keyboard input.
+    if (!m_ViewportPanel || m_ViewportPanel->IsFocused())
+        m_CameraController->OnUpdate(deltaTime);
+
+    // Sync TransformComponent to camera position driven by the controller.
     camTransform.Transform = Matx4f::translation(camComp.SceneCamera.GetPosition());
 
-    RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.85f, 1.0f });
+    // Render the scene into the viewport FBO.
+    m_ViewportFBO->Bind();
     m_ActiveScene->OnUpdate(deltaTime);
-
-    // Grid is drawn after scene geometry so it only covers pixels at maximum depth (no geometry).
     m_Grid->Draw(
         camComp.SceneCamera.GetViewMatrix(),
         camComp.SceneCamera.GetProjectionMatrix(),
         camComp.SceneCamera.GetPosition()
     );
+    m_ViewportFBO->Unbind();
+}
+
+void EditorLayer::OnImGuiRender() {
+    m_MainMenuBar->OnImGuiRender();
+    m_ViewportPanel->OnImGuiRender();
+    m_OutlinerPanel->OnImGuiRender();
+    m_InspectorPanel->OnImGuiRender();
 }
 
 void EditorLayer::OnEvent(Event& e) {
-    // This layer uses its own dispatcher to handle only the events it cares about.
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& e)  { return OnMouseButtonPressed(e); });
     dispatcher.Dispatch<MouseButtonReleasedEvent>([this](MouseButtonReleasedEvent& e) { return OnMouseButtonReleased(e); });
@@ -107,25 +138,32 @@ void EditorLayer::OnEvent(Event& e) {
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
-    // Button 0 is left mouse button in GLFW; GetMouseButton() returns a raw GLFW int, not MouseCode.
-    if (e.GetMouseButton() != 0) {
+    if (e.GetMouseButton() != 0)
         return false;
-    }
+    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered())
+        return false;
 
-    Vec2 mousePos = Input::GetMousePosition();
+    Vec2 mousePos    = Input::GetMousePosition();
+    Vec2 viewportMin = m_ViewportPanel->GetViewportMin();
+    Vec2 relPos      = mousePos - viewportMin;
+
+    if (relPos.x < 0.0f || relPos.y < 0.0f)
+        return false;
+
     bool isShiftHeld = Input::IsKeyPressed(KeyCode::LeftShift);
-
-    auto selSystem = m_ActiveScene->GetSystem<SelectionSystem>();
-    if (!selSystem) {
+    auto* selSystem  = m_ActiveScene->GetSystem<SelectionSystem>();
+    if (!selSystem)
         return false;
-    }
-    selSystem->OnMouseClick(static_cast<uint32_t>(mousePos.x), static_cast<uint32_t>(mousePos.y), isShiftHeld);
 
+    selSystem->OnMouseClick(
+        static_cast<uint32_t>(relPos.x),
+        static_cast<uint32_t>(relPos.y),
+        isShiftHeld
+    );
     return true;
 }
 
 bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
-    LOG_INFO("Mouse button {0} was released!", e.GetMouseButton());
     return false;
 }
 
@@ -134,48 +172,33 @@ bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
 }
 
 bool EditorLayer::OnMouseScrolled(MouseScrolledEvent& e) {
+    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered())
+        return false;
     m_CameraController->OnScrolled(e.GetYOffset());
     return false;
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
-    int keyName = e.GetKeyCode();
-    LOG_INFO("Key '{0}' was pressed! (Repeat: {1})", Input::GetKeyName(keyName), e.IsRepeat());
     return false;
 }
 
 bool EditorLayer::OnKeyReleased(KeyReleasedEvent& e) {
-    LOG_INFO("Key {0} was released!", Input::GetKeyName(e.GetKeyCode()));
     return false;
 }
 
-bool EditorLayer::OnWindowResize(WindowResizeEvent& e)
-{
-    // Get the new width and height from the event object.
-    uint32_t width = e.GetWidth();
+bool EditorLayer::OnWindowResize(WindowResizeEvent& e) {
+    uint32_t width  = e.GetWidth();
     uint32_t height = e.GetHeight();
-
-    // Don't do anything if the window is minimized.
-    // A zero height will cause a division-by-zero in the aspect ratio calculation.
-    if (width == 0 || height == 0) {
+    if (width == 0 || height == 0)
         return false;
-    }
 
-    // Get the camera component from our active scene.
+    // Set an initial camera aspect ratio before the viewport panel fires its first resize.
     auto& camComp = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
-
-    // Tell the camera its new viewport size.
     camComp.SceneCamera.SetViewportSize(width, height);
 
-    // We can also tell our low-level renderer about the viewport change.
-    RenderCommand::SetViewport(0, 0, width, height);
+    auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
+    if (pickSys)
+        pickSys->OnWindowResize(width, height);
 
-    auto pickSystem = m_ActiveScene->GetSystem<PickingSystem>();
-    if (pickSystem) {
-        pickSystem->OnWindowResize(width, height);
-    }
-
-	CORE_LOG_INFO("Camera resized to {0}x{1}", camComp.SceneCamera.GetViewportWidth(), camComp.SceneCamera.GetViewportHeight());
-    // Return false to indicate that other layers might also want to process this event.
     return false;
 }

@@ -1,4 +1,4 @@
-// Primary editor layer: owns Scene, Camera, and EditorCameraController; handles all editor input events and rendering.
+// Primary editor layer: owns Scene, Camera, EditorCameraController, viewport FBO, and all UI panels.
 #pragma once
 #include "Platform/Layers/Layer.hpp"
 #include "Core/Scene.hpp"
@@ -8,40 +8,58 @@
 #include "Editor/EditorCameraController.hpp"
 #include "Renderer/InfGrid.hpp"
 #include "Renderer/Camera.hpp"
+#include <functional>
+#include <memory>
+
+class Framebuffer;
+class ViewportPanel;
+class OutlinerPanel;
+class InspectorPanel;
+class MainMenuBar;
 
 class EditorLayer : public Layer {
 public:
-    EditorLayer();
-    virtual ~EditorLayer() = default;
+    explicit EditorLayer(std::function<void()> onQuit);
+    ~EditorLayer() override;
+    EditorLayer(const EditorLayer&)            = delete;
+    EditorLayer& operator=(const EditorLayer&) = delete;
+    EditorLayer(EditorLayer&&)                 = default;
+    EditorLayer& operator=(EditorLayer&&)      = default;
 
-    virtual void OnAttach() override;
-    virtual void OnUpdate(float deltaTime) override;
-    virtual void OnEvent(Event& event) override;
+    void OnAttach() override;
+    void OnUpdate(float deltaTime) override;
+    void OnImGuiRender() override;
+    void OnEvent(Event& event) override;
 
 private:
     bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
     bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
-	bool OnMouseMoved(MouseMovedEvent& e);
+    bool OnMouseMoved(MouseMovedEvent& e);
     bool OnMouseScrolled(MouseScrolledEvent& e);
     bool OnKeyPressed(KeyPressedEvent& e);
     bool OnKeyReleased(KeyReleasedEvent& e);
     bool OnWindowResize(WindowResizeEvent& e);
 
-    // This layer now owns the core application state and UI
-    std::unique_ptr<Scene> m_ActiveScene;
-    //std::unique_ptr<EditorUI> m_EditorUI;
+    void OnViewportResize(uint32_t width, uint32_t height);
+
+    std::unique_ptr<Scene>                  m_ActiveScene;
     std::unique_ptr<EditorCameraController> m_CameraController;
-    std::unique_ptr<InfGrid> m_Grid;
+    std::unique_ptr<InfGrid>               m_Grid;
+    std::unique_ptr<Framebuffer>           m_ViewportFBO;
 
     Camera m_EditorCamera;
-
     Entity m_CameraEntity;
-
     Entity m_MonkeyEntity;
     Entity m_SphereEntity;
     Entity m_PyramidEntity;
     Entity m_TorusEntity;
 
-    // Mouse state for camera rotation
-    Vec2 m_LastMousePosition = Vec2( 0.0f, 0.0f );
+    Vec2 m_LastMousePosition{0.0f, 0.0f};
+
+    std::unique_ptr<ViewportPanel>  m_ViewportPanel;
+    std::unique_ptr<OutlinerPanel>  m_OutlinerPanel;
+    std::unique_ptr<InspectorPanel> m_InspectorPanel;
+    std::unique_ptr<MainMenuBar>    m_MainMenuBar;
+
+    std::function<void()> m_OnQuit;
 };
