@@ -51,14 +51,19 @@ void Application::Run()
     {
 		Time::Update();
 		Input::OnUpdate(); // Update the input system
-        for (auto& layer : m_LayerStack) {
-            layer->OnUpdate(Time::GetDeltaTime());
-        }
+
+        // ImGui panels run BEFORE the scene update so ViewportPanel can resize the FBO
+        // before the scene renders into it. The viewport displays the previous frame's
+        // render — a 1-frame lag that is imperceptible at interactive frame rates.
         m_ImGuiLayer->Begin();
         for (auto& layer : m_LayerStack) {
             layer->OnImGuiRender();
         }
         m_ImGuiLayer->End();
+
+        for (auto& layer : m_LayerStack) {
+            layer->OnUpdate(Time::GetDeltaTime());
+        }
         m_Window->OnUpdate();
     }
 }

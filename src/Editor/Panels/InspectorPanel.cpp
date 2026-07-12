@@ -10,6 +10,8 @@ InspectorPanel::InspectorPanel(Scene* scene, SelectionContext* selectionContext)
     : m_Scene(scene), m_SelectionContext(selectionContext) {}
 
 void InspectorPanel::OnImGuiRender() {
+    ImGui::SetNextWindowPos(ImVec2{1210.f, 20.f}, ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2{260.f, 500.f}, ImGuiCond_FirstUseEver);
     ImGui::Begin("Inspector");
 
     if (m_SelectionContext->GetSelectionCount() == 0) {

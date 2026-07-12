@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+#include <GL/glew.h>
 
 ImGuiLayer::ImGuiLayer(GLFWwindow* window)
     : Layer("ImGuiLayer"), m_Window(window) {}
@@ -26,6 +27,10 @@ void ImGuiLayer::Begin() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    // Clear the screen so stale content from the previous frame doesn't bleed through
+    // the semi-transparent areas of ImGui windows.
+    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void ImGuiLayer::End() {

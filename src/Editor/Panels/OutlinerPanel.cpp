@@ -8,6 +8,8 @@ OutlinerPanel::OutlinerPanel(Scene* scene, SelectionSystem* selectionSystem)
     : m_Scene(scene), m_SelectionSystem(selectionSystem) {}
 
 void OutlinerPanel::OnImGuiRender() {
+    ImGui::SetNextWindowPos(ImVec2{5.f, 20.f}, ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2{290.f, 400.f}, ImGuiCond_FirstUseEver);
     ImGui::Begin("Outliner");
 
     auto& selCtx = m_SelectionSystem->GetSelectionContext();
