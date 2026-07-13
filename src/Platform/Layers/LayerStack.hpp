@@ -7,7 +7,10 @@
 class LayerStack {
 public:
     LayerStack() = default;
-    ~LayerStack() = default;
+    ~LayerStack() {
+        for (auto& layer : m_Layers)
+            layer->OnDetach();
+    }
 
     void PushLayer(std::unique_ptr<Layer> layer);
     void PopLayer(Layer* layer);

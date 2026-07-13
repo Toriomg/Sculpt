@@ -1,5 +1,13 @@
 #include "Platform/Application.hpp"
-#include <iostream>
+
+// Automatically load LSAN suppressions in Debug builds so system-library leaks
+// (libdecor-gtk, libpango, libfontconfig via GLFW Wayland decorations) don't
+// drown out real leaks. No LSAN_OPTIONS environment variable needed.
+#ifdef LSAN_SUPPRESSIONS_PATH
+extern "C" const char* __lsan_default_options() {
+    return "suppressions=" LSAN_SUPPRESSIONS_PATH;
+}
+#endif
 
 int main(void)
 {

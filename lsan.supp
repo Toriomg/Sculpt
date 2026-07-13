@@ -1,0 +1,12 @@
+# LeakSanitizer suppressions for known third-party library leaks.
+# These allocations are made by the Wayland window decoration system
+# (libdecor-gtk → libgtk-3 → libpango → libfontconfig) during GLFW
+# window creation and are never freed by those libraries. They are not
+# leaks in application code.
+leak:libdecor-gtk.so
+leak:libdecor-0.so
+leak:libglfw.so
+leak:libgtk-3.so
+leak:libpango
+leak:libfontconfig.so
+leak:libpangoft2

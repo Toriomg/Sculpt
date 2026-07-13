@@ -55,6 +55,10 @@ target_compile_options(MyOpenGLApp PRIVATE
     $<$<CONFIG:Release>:-O2 -DNDEBUG>
 )
 
+target_compile_definitions(MyOpenGLApp PRIVATE
+    $<$<CONFIG:Debug>:LSAN_SUPPRESSIONS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/lsan.supp">
+)
+
 target_link_options(MyOpenGLApp PRIVATE
     $<$<CONFIG:Debug>:-fsanitize=address,undefined>
 )
