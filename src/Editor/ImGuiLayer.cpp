@@ -1,4 +1,5 @@
 #include "Editor/ImGuiLayer.hpp"
+#include "Editor/UIStyle.hpp"
 #include "Platform/Graphics/RenderCommand.hpp"
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
@@ -12,7 +13,7 @@ void ImGuiLayer::OnAttach() {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    ImGui::StyleColorsDark();
+    UIStyle::ApplyTheme(UIStyle::Theme::ModelingDark);
     ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
 }
