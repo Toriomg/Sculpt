@@ -10,7 +10,6 @@
 #include "Renderer/Camera.hpp"
 #include <functional>
 #include <memory>
-#include <unordered_map>
 
 class Framebuffer;
 class ViewportPanel;
@@ -58,7 +57,7 @@ private:
 
     Vec2 m_LastMousePosition{0.0f, 0.0f};
 
-    std::unordered_map<uint32_t, Matx4f> m_BaseTransforms;
+    Matx4f m_PrevGlobalInv = Matx4f::identity();
 
     std::unique_ptr<ViewportPanel>  m_ViewportPanel;
     std::unique_ptr<OutlinerPanel>  m_OutlinerPanel;

@@ -69,11 +69,6 @@ void EditorLayer::OnAttach() {
     m_ActiveScene->SetComponent<TransformComponent>(m_TorusEntity, Matx4f::translation(TorusPosition));
     m_ActiveScene->AddComponent<SelectionComponent>(m_TorusEntity);
 
-    // Snapshot each renderable entity's initial transform; the global-transform panel applies on top.
-    for (Entity e : {m_MonkeyEntity, m_SphereEntity, m_PyramidEntity, m_TorusEntity})
-        m_BaseTransforms[static_cast<uint32_t>(e)] =
-            m_ActiveScene->GetComponent<TransformComponent>(e).Transform;
-
     // Stores a raw pointer into the ECS component — safe while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
     m_Grid = std::make_unique<InfGrid>();
@@ -115,19 +110,17 @@ void EditorLayer::OnUpdate(float deltaTime) {
     // Sync TransformComponent to camera position driven by the controller.
     camTransform.Transform = Matx4f::translation(camComp.SceneCamera.GetPosition());
 
-    // Apply the scene panel's global transform on top of each entity's base transform.
-    // The base is recovered each frame by undoing last frame's global — this preserves
-    // any Inspector edits that arrived between the previous OnUpdate and this one.
+    // Apply the scene panel's global transform on top of each entity's local transform.
+    // m_PrevGlobalInv undoes last frame's global, recovering any Inspector edits made
+    // between frames. The new global is then applied and its inverse saved for next frame.
     if (m_ScenePanel) {
-        Matx4f invGlobal = m_ScenePanel->GetInverseGlobalTransform();
-        Matx4f global    = m_ScenePanel->GetGlobalTransform();
+        Matx4f curGlobal = m_ScenePanel->GetGlobalTransform();
         auto view = m_ActiveScene->GetAllEntitiesWith<MeshComponent, TransformComponent>();
         for (auto entity : view) {
-            auto id = static_cast<uint32_t>(entity);
             auto& tc = m_ActiveScene->GetComponent<TransformComponent>(entity);
-            m_BaseTransforms[id] = invGlobal * tc.Transform;
-            tc.Transform         = global * m_BaseTransforms[id];
+            tc.Transform = curGlobal * (m_PrevGlobalInv * tc.Transform);
         }
+        m_PrevGlobalInv = m_ScenePanel->GetInverseGlobalTransform();
     }
 
     // Render the scene into the viewport FBO.
