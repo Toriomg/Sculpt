@@ -3,6 +3,7 @@
 #include "Editor/Panels/OutlinerPanel.hpp"
 #include "Editor/Panels/InspectorPanel.hpp"
 #include "Editor/Panels/MainMenuBar.hpp"
+#include "Editor/Panels/ScenePanel.hpp"
 #include "Core/Components/Component.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Core/Systems/PickingSystem.hpp"
@@ -68,6 +69,11 @@ void EditorLayer::OnAttach() {
     m_ActiveScene->SetComponent<TransformComponent>(m_TorusEntity, Matx4f::translation(TorusPosition));
     m_ActiveScene->AddComponent<SelectionComponent>(m_TorusEntity);
 
+    // Snapshot each renderable entity's initial transform; the global-transform panel applies on top.
+    for (Entity e : {m_MonkeyEntity, m_SphereEntity, m_PyramidEntity, m_TorusEntity})
+        m_BaseTransforms[static_cast<uint32_t>(e)] =
+            m_ActiveScene->GetComponent<TransformComponent>(e).Transform;
+
     // Stores a raw pointer into the ECS component — safe while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
     m_Grid = std::make_unique<InfGrid>();
@@ -85,6 +91,7 @@ void EditorLayer::OnAttach() {
         &selSys->GetSelectionContext()
     );
     m_MainMenuBar = std::make_unique<MainMenuBar>(m_OnQuit);
+    m_ScenePanel  = std::make_unique<ScenePanel>(&camComp.SceneCamera);
 }
 
 void EditorLayer::OnViewportResize(uint32_t width, uint32_t height) {
@@ -108,6 +115,21 @@ void EditorLayer::OnUpdate(float deltaTime) {
     // Sync TransformComponent to camera position driven by the controller.
     camTransform.Transform = Matx4f::translation(camComp.SceneCamera.GetPosition());
 
+    // Apply the scene panel's global transform on top of each entity's base transform.
+    // The base is recovered each frame by undoing last frame's global — this preserves
+    // any Inspector edits that arrived between the previous OnUpdate and this one.
+    if (m_ScenePanel) {
+        Matx4f invGlobal = m_ScenePanel->GetInverseGlobalTransform();
+        Matx4f global    = m_ScenePanel->GetGlobalTransform();
+        auto view = m_ActiveScene->GetAllEntitiesWith<MeshComponent, TransformComponent>();
+        for (auto entity : view) {
+            auto id = static_cast<uint32_t>(entity);
+            auto& tc = m_ActiveScene->GetComponent<TransformComponent>(entity);
+            m_BaseTransforms[id] = invGlobal * tc.Transform;
+            tc.Transform         = global * m_BaseTransforms[id];
+        }
+    }
+
     // Render the scene into the viewport FBO.
     m_ViewportFBO->Bind();
     m_ActiveScene->OnUpdate(deltaTime);
@@ -124,6 +146,7 @@ void EditorLayer::OnImGuiRender() {
     m_ViewportPanel->OnImGuiRender();
     m_OutlinerPanel->OnImGuiRender();
     m_InspectorPanel->OnImGuiRender();
+    m_ScenePanel->OnImGuiRender();
 }
 
 void EditorLayer::OnEvent(Event& e) {

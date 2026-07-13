@@ -10,12 +10,14 @@
 #include "Renderer/Camera.hpp"
 #include <functional>
 #include <memory>
+#include <unordered_map>
 
 class Framebuffer;
 class ViewportPanel;
 class OutlinerPanel;
 class InspectorPanel;
 class MainMenuBar;
+class ScenePanel;
 
 class EditorLayer : public Layer {
 public:
@@ -56,10 +58,13 @@ private:
 
     Vec2 m_LastMousePosition{0.0f, 0.0f};
 
+    std::unordered_map<uint32_t, Matx4f> m_BaseTransforms;
+
     std::unique_ptr<ViewportPanel>  m_ViewportPanel;
     std::unique_ptr<OutlinerPanel>  m_OutlinerPanel;
     std::unique_ptr<InspectorPanel> m_InspectorPanel;
     std::unique_ptr<MainMenuBar>    m_MainMenuBar;
+    std::unique_ptr<ScenePanel>     m_ScenePanel;
 
     std::function<void()> m_OnQuit;
 };
