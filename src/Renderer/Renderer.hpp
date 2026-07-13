@@ -25,6 +25,11 @@ public:
         const Matx4f& transform
     );
 
-    // A function to handle window resizing
+    // Three-pass wireframe: black fill → white edges → white vertex dots
+    static void SubmitWireframe(
+        const std::shared_ptr<Mesh>& mesh,
+        const Matx4f& transform
+    );
+
     static void OnWindowResize(uint32_t width, uint32_t height);
 };

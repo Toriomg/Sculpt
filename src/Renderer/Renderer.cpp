@@ -2,12 +2,12 @@
 #include "Material.hpp"
 #include "Mesh.hpp"
 #include "Platform/Graphics/Texture.hpp"
+#include "Platform/Graphics/Shader.hpp"
 #include "AssetManager/AssetManager.hpp"
 
-// This struct is a private implementation detail of the Renderer.
-// It holds data that is constant for an entire scene render pass.
 struct SceneData {
     Matx4f View;
+    std::shared_ptr<Shader> WireframeShader;
 };
 
 // We create a static instance of this data for the Renderer to use.
@@ -21,6 +21,7 @@ Public API implementation
 void Renderer::Init() {
 	CORE_LOG_INFO("Initializing Renderer");
 	RenderCommand::Init();
+    s_SceneData.WireframeShader = std::make_shared<Shader>("res/shaders/wireframe.shader");
 }
 
 void Renderer::Shutdown() {
@@ -77,4 +78,34 @@ void Renderer::Submit(
 
 	RenderCommand::Draw(vertexArray, indexBuffer);
 	shader->Unbind();
+}
+
+void Renderer::SubmitWireframe(const std::shared_ptr<Mesh>& mesh, const Matx4f& transform)
+{
+    const auto& shader = s_SceneData.WireframeShader;
+    const auto& vertexArray = mesh->GetVertexArray();
+    const auto& indexBuffer = mesh->GetIndexBuffer();
+
+    shader->Bind();
+    shader->SetUniformMat4f("u_ViewProjection", s_SceneData.View);
+    shader->SetUniformMat4f("u_Model", transform);
+
+    // Pass 1: solid black fill so the interior reads as black
+    shader->SetUniform4f("u_Color", 0.0f, 0.0f, 0.0f, 1.0f);
+    RenderCommand::Draw(vertexArray, indexBuffer);
+
+    // Pass 2: white edges — polygon offset pulls lines in front of the fill to avoid z-fighting
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glPolygonOffset(-1.0f, -1.0f);
+    shader->SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
+    RenderCommand::Draw(vertexArray, indexBuffer);
+    glDisable(GL_POLYGON_OFFSET_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // Pass 3: white vertex dots
+    shader->SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
+    RenderCommand::DrawPoints(vertexArray, mesh->GetVertexCount());
+
+    shader->Unbind();
 }

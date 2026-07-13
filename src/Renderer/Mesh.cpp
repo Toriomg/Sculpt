@@ -19,7 +19,8 @@ std::shared_ptr<Mesh> Mesh::CreateMeshFromData(const void* vertices, uint32_t ve
     vao->AddBufferPtr(vbo, layout);
 
     // 4. Create and return the final high-level Mesh object
-    return std::make_shared<Mesh>(vao, ibo);
+    const uint32_t vertexCount = vertexSize / static_cast<uint32_t>(sizeof(Vertex));
+    return std::make_shared<Mesh>(vao, ibo, vertexCount);
 }
 
 

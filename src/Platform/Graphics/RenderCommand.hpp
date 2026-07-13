@@ -13,12 +13,14 @@ public:
     static void SetClearColor(const Vec4& color);
     static void Clear();
 
-    // The main draw call
+    // Indexed triangle draw
     static void Draw(
         const std::shared_ptr<VertexArray>& vertexArray,
         const std::shared_ptr<IndexBuffer>& indexBuffer
     );
 
-    // Other useful commands
+    // Non-indexed point draw (used by wireframe vertex pass)
+    static void DrawPoints(const std::shared_ptr<VertexArray>& vertexArray, uint32_t vertexCount);
+
     static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 };

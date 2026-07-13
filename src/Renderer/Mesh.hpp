@@ -9,13 +9,13 @@
 
 class Mesh : public IAsset {
 public:
-    Mesh(std::shared_ptr<VertexArray> va, std::shared_ptr<IndexBuffer> ib)
-        : m_VertexArray(va), m_IndexBuffer(ib) {
+    Mesh(std::shared_ptr<VertexArray> va, std::shared_ptr<IndexBuffer> ib, uint32_t vertexCount)
+        : m_VertexArray(va), m_IndexBuffer(ib), m_VertexCount(vertexCount) {
     }
-
 
     const std::shared_ptr<VertexArray>& GetVertexArray() const { return m_VertexArray; }
     const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
+    uint32_t GetVertexCount() const { return m_VertexCount; }
 
 	static std::shared_ptr<Mesh> CreateCube(float size);
     static std::shared_ptr<Mesh> CreatePyramid(float size);
@@ -30,7 +30,7 @@ public:
         uint32_t indexCount
     );
 private:
-
     std::shared_ptr<VertexArray> m_VertexArray;
     std::shared_ptr<IndexBuffer> m_IndexBuffer;
+    uint32_t m_VertexCount = 0;
 };

@@ -68,7 +68,10 @@ void RenderingSystem::OnUpdate(float deltaTime)
                 meshComp.MaterialAsset->GetShader()->SetUniform4f("u_HighlightColor", 1.0f, 1.0f, 0.0f, 1.0f);
             }
 
-            Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, transform);
+            if (meshComp.MaterialAsset->IsWireframe())
+                Renderer::SubmitWireframe(meshComp.MeshAsset, transform);
+            else
+                Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, transform);
         }
         // Tell the Renderer we are done with this frame.
         Renderer::EndScene();
