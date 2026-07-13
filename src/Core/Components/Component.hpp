@@ -42,6 +42,7 @@ struct MeshComponent : public Component
 {
     std::shared_ptr<Mesh> MeshAsset;
     std::shared_ptr<Material> MaterialAsset;
+    bool Wireframe = false;
 
     MeshComponent() = default;
     MeshComponent(const MeshComponent&) = default;

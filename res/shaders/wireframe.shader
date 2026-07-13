@@ -1,4 +1,4 @@
-#type vertex
+#shader vertex
 #version 330 core
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
@@ -13,7 +13,7 @@ void main()
     gl_PointSize = 5.0;
 }
 
-#type fragment
+#shader fragment
 #version 330 core
 out vec4 FragColor;
 

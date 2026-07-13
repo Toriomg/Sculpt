@@ -2,7 +2,6 @@
 #include "Core/Scene.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Core/Components/Component.hpp"
-#include "Renderer/Material.hpp"
 #include "imgui.h"
 #include <array>
 #include <algorithm>
@@ -62,11 +61,7 @@ void InspectorPanel::OnImGuiRender() {
         ImGui::Separator();
         if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
             auto& meshComp = m_Scene->GetComponent<MeshComponent>(entity);
-            if (meshComp.MaterialAsset) {
-                bool wireframe = meshComp.MaterialAsset->IsWireframe();
-                if (ImGui::Checkbox("Wireframe", &wireframe))
-                    meshComp.MaterialAsset->SetWireframe(wireframe);
-            }
+            ImGui::Checkbox("Wireframe", &meshComp.Wireframe);
         }
     }
 
