@@ -14,6 +14,7 @@ InspectorPanel::InspectorPanel(Scene* scene, SelectionContext* selectionContext)
 }
 
 void InspectorPanel::OnImGuiRender() {
+    if (!IsVisible) return;
     ImGui::SetNextWindowPos(ImVec2{1210.f, 20.f}, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2{260.f, 500.f}, ImGuiCond_FirstUseEver);
     ImGui::Begin("Inspector");

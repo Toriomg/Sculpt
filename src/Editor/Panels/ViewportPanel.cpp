@@ -6,6 +6,7 @@ ViewportPanel::ViewportPanel(Framebuffer* framebuffer, ResizeCallback onResize)
     : m_Framebuffer(framebuffer), m_OnResize(std::move(onResize)) {}
 
 void ViewportPanel::OnImGuiRender() {
+    if (!IsVisible) return;
     ImGui::SetNextWindowPos(ImVec2{300.f, 20.f}, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2{900.f, 700.f}, ImGuiCond_FirstUseEver);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.0f, 0.0f});

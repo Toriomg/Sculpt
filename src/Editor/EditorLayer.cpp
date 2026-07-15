@@ -94,7 +94,14 @@ void EditorLayer::OnAttach() {
         m_ActiveScene.get(),
         &selSys->GetSelectionContext()
     );
-    m_MainMenuBar = std::make_unique<MainMenuBar>(m_OnQuit);
+    m_MainMenuBar = std::make_unique<MainMenuBar>(
+        m_OnQuit,
+        m_ActiveScene->GetSystem<HistorySystem>(),
+        m_OutlinerPanel.get(),
+        m_InspectorPanel.get(),
+        m_ScenePanel.get(),
+        m_ViewportPanel.get()
+    );
     m_ScenePanel  = std::make_unique<ScenePanel>(&camComp.SceneCamera);
 }
 
