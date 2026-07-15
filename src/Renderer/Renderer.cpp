@@ -109,3 +109,17 @@ void Renderer::SubmitWireframe(const std::shared_ptr<Mesh>& mesh, const Matx4f& 
 
     shader->Unbind();
 }
+
+void Renderer::SubmitFlat(
+    const std::shared_ptr<Mesh>& mesh,
+    const Vec4& color,
+    const Matx4f& transform)
+{
+    const auto& shader = s_SceneData.WireframeShader;
+    shader->Bind();
+    shader->SetUniformMat4f("u_ViewProjection", s_SceneData.View);
+    shader->SetUniformMat4f("u_Model", transform);
+    shader->SetUniform4f("u_Color", color.x, color.y, color.z, color.w);
+    RenderCommand::Draw(mesh->GetVertexArray(), mesh->GetIndexBuffer());
+    shader->Unbind();
+}

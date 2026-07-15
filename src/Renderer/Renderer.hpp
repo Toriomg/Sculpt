@@ -31,5 +31,12 @@ public:
         const Matx4f& transform
     );
 
+    // Single-pass flat-color draw reusing WireframeShader. For editor overlays (gizmos, debug).
+    static void SubmitFlat(
+        const std::shared_ptr<Mesh>& mesh,
+        const Vec4& color,
+        const Matx4f& transform
+    );
+
     static void OnWindowResize(uint32_t width, uint32_t height);
 };

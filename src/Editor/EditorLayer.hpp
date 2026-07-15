@@ -12,6 +12,7 @@
 #include <memory>
 
 class Framebuffer;
+class GizmoRenderer;
 class ViewportPanel;
 class OutlinerPanel;
 class InspectorPanel;
@@ -59,11 +60,12 @@ private:
 
     Matx4f m_PrevGlobalInv = Matx4f::identity();
 
-    std::unique_ptr<ViewportPanel>  m_ViewportPanel;
-    std::unique_ptr<OutlinerPanel>  m_OutlinerPanel;
-    std::unique_ptr<InspectorPanel> m_InspectorPanel;
-    std::unique_ptr<MainMenuBar>    m_MainMenuBar;
-    std::unique_ptr<ScenePanel>     m_ScenePanel;
+    std::unique_ptr<GizmoRenderer>   m_GizmoRenderer;
+    std::unique_ptr<ViewportPanel>   m_ViewportPanel;
+    std::unique_ptr<OutlinerPanel>   m_OutlinerPanel;
+    std::unique_ptr<InspectorPanel>  m_InspectorPanel;
+    std::unique_ptr<MainMenuBar>     m_MainMenuBar;
+    std::unique_ptr<ScenePanel>      m_ScenePanel;
 
     std::function<void()> m_OnQuit;
 };
