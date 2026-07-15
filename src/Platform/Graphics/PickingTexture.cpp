@@ -1,4 +1,5 @@
 #include "PickingTexture.hpp"
+#include "Platform/CoreUtils/Log.hpp"
 #include <GL/glew.h>
 
 PickingTexture::PickingTexture(uint32_t width, uint32_t height)
@@ -96,17 +97,26 @@ PickingResult PickingTexture::ReadPixel(uint32_t x, uint32_t y) const {
     PickingResult result;
 
     // OpenGL framebuffer origin is bottom-left; screen cursor origin is top-left.
-    y = m_Height - y;
+    // -1 because y=0 must map to m_Height-1 (not m_Height which is out of bounds).
+    uint32_t yGL = (y < m_Height) ? (m_Height - 1u - y) : 0u;
+
+    CORE_LOG_TRACE("ReadPixel: viewport({},{}) -> gl({},{}) | FBO={}x{}",
+        x, y, x, yGL, m_Width, m_Height);
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FramebufferID);
 
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
     uint32_t idData[2] = { 0, 0 };
-    glReadPixels(x, y, 1, 1, GL_RG_INTEGER, GL_UNSIGNED_INT, idData);
+    glReadPixels(x, yGL, 1, 1, GL_RG_INTEGER, GL_UNSIGNED_INT, idData);
 
+    glReadBuffer(GL_COLOR_ATTACHMENT1);
     float worldPos[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, worldPos);
+    glReadPixels(x, yGL, 1, 1, GL_RGBA, GL_FLOAT, worldPos);
 
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+    CORE_LOG_TRACE("ReadPixel result: objectID={} primitiveID={}", idData[0], idData[1]);
 
     // id 0 means the pixel was cleared (no entity). Valid IDs were stored as entityID+1 by PickingSystem.
     if (idData[0] == 0u) {

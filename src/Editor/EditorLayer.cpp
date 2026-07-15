@@ -186,6 +186,9 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
     if (!selSystem)
         return false;
 
+    LOG_TRACE("EditorLayer click: mouse=({:.0f},{:.0f}) viewportMin=({:.0f},{:.0f}) rel=({:.0f},{:.0f})",
+        mousePos.x, mousePos.y, viewportMin.x, viewportMin.y, relPos.x, relPos.y);
+
     selSystem->OnMouseClick(
         static_cast<uint32_t>(relPos.x),
         static_cast<uint32_t>(relPos.y),
@@ -225,18 +228,9 @@ bool EditorLayer::OnKeyReleased(KeyReleasedEvent& e) {
 }
 
 bool EditorLayer::OnWindowResize(WindowResizeEvent& e) {
-    uint32_t width  = e.GetWidth();
-    uint32_t height = e.GetHeight();
-    if (width == 0 || height == 0)
-        return false;
-
-    // Set an initial camera aspect ratio before the viewport panel fires its first resize.
-    auto& camComp = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
-    camComp.SceneCamera.SetViewportSize(width, height);
-
-    auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
-    if (pickSys)
-        pickSys->OnWindowResize(width, height);
-
+    // Camera and picking system dimensions are driven exclusively by OnViewportResize, which
+    // receives the actual viewport content area from ViewportPanel each frame. Setting them here
+    // would use the OS window size instead of the smaller content area, causing a coordinate
+    // mismatch between where the user clicks and where the picking FBO stores entity IDs.
     return false;
 }

@@ -55,6 +55,9 @@ void PickingSystem::ExecutePickingPass() {
         OnWindowResize(cameraWidth, cameraHeight);
     }
 
+    CORE_LOG_TRACE("PickingSystem::ExecutePickingPass viewport={}x{} click=({},{})",
+        m_ViewportWidth, m_ViewportHeight, m_PickX, m_PickY);
+
     RenderPickingPass(*camera);
     m_LastResult = m_PickingTexture->ReadPixel(m_PickX, m_PickY);
 }
