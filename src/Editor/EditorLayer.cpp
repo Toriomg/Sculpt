@@ -1,4 +1,5 @@
 #include "Editor/EditorLayer.hpp"
+#include "Editor/EntityFactory.hpp"
 #include "Editor/Gizmos/GizmoRenderer.hpp"
 #include "Editor/Panels/ViewportPanel.hpp"
 #include "Editor/Panels/OutlinerPanel.hpp"
@@ -9,13 +10,9 @@
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Core/Systems/PickingSystem.hpp"
 #include "Core/Systems/HistorySystem.hpp"
-#include "AssetManager/AssetManager.hpp"
-#include "Renderer/Mesh.hpp"
-#include "Renderer/Material.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Platform/Graphics/Framebuffer.hpp"
 #include "Platform/Graphics/RenderCommand.hpp"
-#include "Platform/Graphics/Shader.hpp"
 #include "Platform/System/Input/Input.hpp"
 #include "Platform/System/Input/KeyCodes.hpp"
 
@@ -36,49 +33,7 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-    auto SphereMesh   = Mesh::CreateSphere(1.0f, 32, 32);
-    auto PyramidMesh  = Mesh::CreateIcosahedron(2.0f);
-    auto TorusMesh    = Mesh::CreateTorus(1.0f, 0.5f, 32, 32);
-
-    auto simpleShader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
-    auto myMaterial   = std::make_shared<Material>(simpleShader);
-
-    Vec3 MonkeyPosition  = {  0.0f, 0.0f, 0.0f };
-    Vec3 SpherePosition  = {  5.0f, 0.0f, 0.0f };
-    Vec3 PyramidPosition = { -5.0f, 0.0f, 0.0f };
-    Vec3 TorusPosition   = { 10.0f, 0.0f, 0.0f };
-
-    m_MonkeyEntity  = m_ActiveScene->CreateGameObject("Monkey");
-    m_SphereEntity  = m_ActiveScene->CreateGameObject("Sphere");
-    m_PyramidEntity = m_ActiveScene->CreateGameObject("Pyramid");
-    m_TorusEntity   = m_ActiveScene->CreateGameObject("Torus");
-
-    // Procedural meshes need no file I/O — add components immediately.
-    m_ActiveScene->AddComponent<MeshComponent>(m_SphereEntity, SphereMesh, myMaterial);
-    m_ActiveScene->SetComponent<TransformComponent>(m_SphereEntity, Matx4f::translation(SpherePosition));
-    m_ActiveScene->AddComponent<SelectionComponent>(m_SphereEntity);
-
-    m_ActiveScene->AddComponent<MeshComponent>(m_PyramidEntity, PyramidMesh, myMaterial);
-    m_ActiveScene->SetComponent<TransformComponent>(m_PyramidEntity, Matx4f::translation(PyramidPosition));
-    m_ActiveScene->AddComponent<SelectionComponent>(m_PyramidEntity);
-
-    m_ActiveScene->AddComponent<MeshComponent>(m_TorusEntity, TorusMesh, myMaterial);
-    m_ActiveScene->SetComponent<TransformComponent>(m_TorusEntity, Matx4f::translation(TorusPosition));
-    m_ActiveScene->AddComponent<SelectionComponent>(m_TorusEntity);
-
-    // Transform and selection are set immediately; MeshComponent is added once Assimp finishes.
-    m_ActiveScene->SetComponent<TransformComponent>(m_MonkeyEntity, Matx4f::translation(MonkeyPosition));
-    m_ActiveScene->AddComponent<SelectionComponent>(m_MonkeyEntity);
-    AssetManager::LoadAsync("res/models/dragon.obj", [this, myMaterial](AssetHandle handle) {
-        if (auto mesh = AssetManager::GetAs<Mesh>(handle))
-            m_ActiveScene->AddComponent<MeshComponent>(m_MonkeyEntity, mesh, myMaterial);
-    });
-
-    // Texture handle is set on the shared material once stb_image finishes; all entities using
-    // this material pick it up automatically at the next Renderer::Submit call.
-    AssetManager::LoadAsync("res/textures/texture1.png", [myMaterial](AssetHandle handle) {
-        myMaterial->SetTexture(handle);
-    });
+    m_EntityFactory = std::make_unique<EntityFactory>(m_ActiveScene.get());
 
     // Stores a raw pointer into the ECS component — safe while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
@@ -103,15 +58,16 @@ void EditorLayer::OnAttach() {
         m_ActiveScene.get(),
         &selSys->GetSelectionContext()
     );
+    m_ScenePanel = std::make_unique<ScenePanel>(&camComp.SceneCamera);
     m_MainMenuBar = std::make_unique<MainMenuBar>(
         m_OnQuit,
         m_ActiveScene->GetSystem<HistorySystem>(),
+        m_EntityFactory.get(),
         m_OutlinerPanel.get(),
         m_InspectorPanel.get(),
         m_ScenePanel.get(),
         m_ViewportPanel.get()
     );
-    m_ScenePanel  = std::make_unique<ScenePanel>(&camComp.SceneCamera);
 }
 
 void EditorLayer::OnViewportResize(uint32_t width, uint32_t height) {

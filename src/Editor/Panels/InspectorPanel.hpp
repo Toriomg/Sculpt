@@ -20,4 +20,7 @@ private:
 
     Entity m_SnapshotEntity    = entt::null;
     Matx4f m_TransformSnapshot = Matx4f::identity();
+
+    Entity m_TexturePathEntity             = entt::null;
+    char   m_TexturePathBuf[256]           = {};
 };

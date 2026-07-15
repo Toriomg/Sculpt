@@ -12,6 +12,7 @@
 #include <memory>
 
 class Framebuffer;
+class EntityFactory;
 class GizmoRenderer;
 class ViewportPanel;
 class OutlinerPanel;
@@ -51,15 +52,12 @@ private:
 
     Camera m_EditorCamera;
     Entity m_CameraEntity;
-    Entity m_MonkeyEntity;
-    Entity m_SphereEntity;
-    Entity m_PyramidEntity;
-    Entity m_TorusEntity;
 
     Vec2 m_LastMousePosition{0.0f, 0.0f};
 
     Matx4f m_PrevGlobalInv = Matx4f::identity();
 
+    std::unique_ptr<EntityFactory>   m_EntityFactory;
     std::unique_ptr<GizmoRenderer>   m_GizmoRenderer;
     std::unique_ptr<ViewportPanel>   m_ViewportPanel;
     std::unique_ptr<OutlinerPanel>   m_OutlinerPanel;

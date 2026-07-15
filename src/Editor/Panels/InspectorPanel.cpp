@@ -4,6 +4,8 @@
 #include "Core/Systems/HistorySystem.hpp"
 #include "Core/Systems/TransformCommand.hpp"
 #include "Core/Components/Component.hpp"
+#include "Renderer/Material.hpp"
+#include "AssetManager/AssetManager.hpp"
 #include "imgui.h"
 #include <array>
 #include <algorithm>
@@ -86,6 +88,30 @@ void InspectorPanel::OnImGuiRender() {
         if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
             auto& meshComp = m_Scene->GetComponent<MeshComponent>(entity);
             ImGui::Checkbox("Wireframe", &meshComp.Wireframe);
+
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Text("Texture");
+
+            bool hasTexture = meshComp.MaterialAsset && meshComp.MaterialAsset->GetTextureHandle();
+            ImGui::TextDisabled(hasTexture ? "Loaded" : "None");
+
+            // Reset the path buffer when the selected entity changes.
+            if (entity != m_TexturePathEntity) {
+                m_TexturePathEntity = entity;
+                m_TexturePathBuf[0] = '\0';
+            }
+
+            ImGui::SetNextItemWidth(-60.0f);
+            ImGui::InputText("##texpath", m_TexturePathBuf, sizeof(m_TexturePathBuf));
+            ImGui::SameLine();
+            if (ImGui::Button("Load##tex")) {
+                if (m_TexturePathBuf[0] != '\0' && meshComp.MaterialAsset) {
+                    AssetHandle handle = AssetManager::Load(m_TexturePathBuf);
+                    if (handle)
+                        meshComp.MaterialAsset->SetTexture(handle);
+                }
+            }
         }
     }
 
