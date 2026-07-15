@@ -31,7 +31,7 @@ void EditorLayer::OnAttach() {
     auto& camComp = m_ActiveScene->AddComponent<CameraComponent>(m_CameraEntity);
     auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
-    camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
+    camComp.SceneCamera.SetPosition({ 0.0f, 1.0f, 5.0f });
 
     m_EntityFactory = std::make_unique<EntityFactory>(m_ActiveScene.get());
 
