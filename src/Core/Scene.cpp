@@ -4,10 +4,12 @@
 #include "Systems/PickingSystem.hpp"
 #include "Systems/SelectionSystem.hpp"
 #include "Systems/RenderingSystem.hpp"
+#include "Systems/HistorySystem.hpp"
 
 Scene::Scene()
 {
     // Order matters: SelectionSystem::OnAttach calls GetSystem<PickingSystem>(), so PickingSystem must be first.
+    m_Systems.emplace_back(std::make_unique<HistorySystem>());
     m_Systems.emplace_back(std::make_unique<PickingSystem>());
     m_Systems.emplace_back(std::make_unique<SelectionSystem>());
     m_Systems.emplace_back(std::make_unique<RenderingSystem>());

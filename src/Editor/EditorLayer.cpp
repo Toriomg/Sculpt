@@ -8,6 +8,7 @@
 #include "Core/Components/Component.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Core/Systems/PickingSystem.hpp"
+#include "Core/Systems/HistorySystem.hpp"
 #include "AssetManager/AssetManager.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Material.hpp"
@@ -220,6 +221,15 @@ bool EditorLayer::OnMouseScrolled(MouseScrolledEvent& e) {
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
+    bool ctrl = Input::IsKeyPressed(KeyCode::LeftControl)
+             || Input::IsKeyPressed(KeyCode::RightControl);
+    if (!ctrl) return false;
+
+    auto* hist = m_ActiveScene->GetSystem<HistorySystem>();
+    if (!hist) return false;
+
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::Z)) { hist->Undo(); return true; }
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::Y)) { hist->Redo(); return true; }
     return false;
 }
 
