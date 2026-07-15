@@ -6,7 +6,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Camera.hpp"
 #include "Platform/Graphics/Vertex.hpp"
-#include "Core/glhead.hpp"
+#include "Platform/Graphics/RenderCommand.hpp"
 #include <cmath>
 #include <numbers>
 #include <vector>
@@ -195,8 +195,9 @@ void GizmoRenderer::Draw() {
         return base;
     };
 
-    Renderer::BeginScene(m_Camera.GetViewProjectionMatrix());
-    glDepthFunc(GL_ALWAYS);
+    // VP is already in s_SceneData from RenderingSystem::BeginScene — calling BeginScene again
+    // would clear the framebuffer and erase the scene geometry.
+    RenderCommand::SetDepthFunc(DepthFunc::Always);
 
     Renderer::SubmitFlat(m_ArrowMesh,
         colorFor(GizmoAxis::X, {1.0f, 0.2f, 0.2f, 1.0f}),
@@ -214,8 +215,7 @@ void GizmoRenderer::Draw() {
         {0.9f, 0.9f, 0.9f, 1.0f},
         Matx4f::translation(gizmoPos) * Matx4f::scalingScalar(scale * 0.08f));
 
-    glDepthFunc(GL_LESS);
-    Renderer::EndScene();
+    RenderCommand::SetDepthFunc(DepthFunc::Less);
 }
 
 // ---- interaction ------------------------------------------------------------

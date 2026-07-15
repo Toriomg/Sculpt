@@ -6,12 +6,15 @@
 #include "Platform/CoreUtils/Math/maths.hpp"
 #include "Core/glhead.hpp"
 
+enum class DepthFunc { Less, Always };
+
 // RenderCommand is a singleton class that encapsulates OpenGL rendering commands.
 class RenderCommand {
 public:
     static void Init();
     static void SetClearColor(const Vec4& color);
     static void Clear();
+    static void SetDepthFunc(DepthFunc func);
 
     // Indexed triangle draw
     static void Draw(
