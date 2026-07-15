@@ -31,3 +31,7 @@ void RenderCommand::DrawPoints(const std::shared_ptr<VertexArray>& vertexArray, 
 void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
     GLCall(glViewport(x, y, width, height));
 }
+
+void RenderCommand::SetDepthFunc(DepthFunc func) {
+    GLCall(glDepthFunc(func == DepthFunc::Always ? GL_ALWAYS : GL_LESS));
+}

@@ -69,12 +69,16 @@ void SelectionSystem::OnMouseClick(uint32_t screenX, uint32_t screenY, bool addi
         return;
     }
 
+    LOG_TRACE("SelectionSystem::OnMouseClick screen=({},{})", screenX, screenY);
+
     // Force the picking pass to execute immediately (synchronously) instead of waiting for the
     // next Scene::OnUpdate, so the result is available in this same call stack.
     m_PickingSystem->RequestPickingPass(screenX, screenY);
     m_PickingSystem->OnUpdate(0.0f);
 
     const auto& result = m_PickingSystem->GetLastResult();
+
+    LOG_TRACE("SelectionSystem: result valid={} objectID={}", result.Valid, result.ObjectID);
 
     if (result.Valid) {
         Entity entity = static_cast<Entity>(result.ObjectID - 1u);

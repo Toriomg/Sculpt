@@ -8,6 +8,8 @@
 struct SceneData {
     Matx4f View;
     std::shared_ptr<Shader> WireframeShader;
+    std::shared_ptr<Shader> DebugSelectionShader;
+    bool DebugSelectionEnabled = false;
 };
 
 // We create a static instance of this data for the Renderer to use.
@@ -22,6 +24,19 @@ void Renderer::Init() {
 	CORE_LOG_INFO("Initializing Renderer");
 	RenderCommand::Init();
     s_SceneData.WireframeShader = std::make_shared<Shader>("res/shaders/wireframe.shader");
+    s_SceneData.DebugSelectionShader = std::make_shared<Shader>("res/shaders/debug_selection.shader");
+}
+
+void Renderer::SetDebugSelectionMode(bool enable) {
+    s_SceneData.DebugSelectionEnabled = enable;
+}
+
+bool Renderer::IsDebugSelectionModeEnabled() {
+    return s_SceneData.DebugSelectionEnabled;
+}
+
+const std::shared_ptr<Shader>& Renderer::GetDebugSelectionShader() {
+    return s_SceneData.DebugSelectionShader;
 }
 
 void Renderer::Shutdown() {
@@ -49,7 +64,9 @@ void Renderer::Submit(
     const std::shared_ptr<Material>& material,
     const Matx4f& transform
 ) {
-    const auto& shader = material->GetShader();
+    const auto& shader = s_SceneData.DebugSelectionEnabled
+        ? s_SceneData.DebugSelectionShader
+        : material->GetShader();
     const auto& vertexArray = mesh->GetVertexArray();
     const auto& indexBuffer = mesh->GetIndexBuffer();
 
@@ -107,5 +124,19 @@ void Renderer::SubmitWireframe(const std::shared_ptr<Mesh>& mesh, const Matx4f& 
     shader->SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
     RenderCommand::DrawPoints(vertexArray, mesh->GetVertexCount());
 
+    shader->Unbind();
+}
+
+void Renderer::SubmitFlat(
+    const std::shared_ptr<Mesh>& mesh,
+    const Vec4& color,
+    const Matx4f& transform)
+{
+    const auto& shader = s_SceneData.WireframeShader;
+    shader->Bind();
+    shader->SetUniformMat4f("u_ViewProjection", s_SceneData.View);
+    shader->SetUniformMat4f("u_Model", transform);
+    shader->SetUniform4f("u_Color", color.x, color.y, color.z, color.w);
+    RenderCommand::Draw(mesh->GetVertexArray(), mesh->GetIndexBuffer());
     shader->Unbind();
 }

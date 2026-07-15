@@ -1,4 +1,5 @@
 #include "Editor/EditorLayer.hpp"
+#include "Editor/Gizmos/GizmoRenderer.hpp"
 #include "Editor/Panels/ViewportPanel.hpp"
 #include "Editor/Panels/OutlinerPanel.hpp"
 #include "Editor/Panels/InspectorPanel.hpp"
@@ -76,6 +77,13 @@ void EditorLayer::OnAttach() {
 
     auto* selSys = m_ActiveScene->GetSystem<SelectionSystem>();
 
+    m_GizmoRenderer = std::make_unique<GizmoRenderer>(
+        *m_ActiveScene,
+        selSys->GetSelectionContext(),
+        camComp.SceneCamera
+    );
+    m_GizmoRenderer->OnAttach();
+
     m_ViewportPanel  = std::make_unique<ViewportPanel>(
         m_ViewportFBO.get(),
         [this](uint32_t w, uint32_t h) { OnViewportResize(w, h); }
@@ -97,6 +105,8 @@ void EditorLayer::OnViewportResize(uint32_t width, uint32_t height) {
     auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
     if (pickSys)
         pickSys->OnWindowResize(width, height);
+    if (m_GizmoRenderer)
+        m_GizmoRenderer->SetViewportSize(width, height);
 }
 
 void EditorLayer::OnUpdate(float deltaTime) {
@@ -131,6 +141,7 @@ void EditorLayer::OnUpdate(float deltaTime) {
         camComp.SceneCamera.GetProjectionMatrix(),
         camComp.SceneCamera.GetPosition()
     );
+    m_GizmoRenderer->Draw();
     m_ViewportFBO->Unbind();
 }
 
@@ -166,10 +177,17 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
     if (relPos.x < 0.0f || relPos.y < 0.0f)
         return false;
 
+    // Gizmo gets first right of refusal — prevents mis-selecting while dragging a handle.
+    if (m_GizmoRenderer && m_GizmoRenderer->OnMouseButtonPressed(relPos.x, relPos.y))
+        return true;
+
     bool isShiftHeld = Input::IsKeyPressed(KeyCode::LeftShift);
     auto* selSystem  = m_ActiveScene->GetSystem<SelectionSystem>();
     if (!selSystem)
         return false;
+
+    LOG_TRACE("EditorLayer click: mouse=({:.0f},{:.0f}) viewportMin=({:.0f},{:.0f}) rel=({:.0f},{:.0f})",
+        mousePos.x, mousePos.y, viewportMin.x, viewportMin.y, relPos.x, relPos.y);
 
     selSystem->OnMouseClick(
         static_cast<uint32_t>(relPos.x),
@@ -180,10 +198,17 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
 }
 
 bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
+    if (m_GizmoRenderer) m_GizmoRenderer->OnMouseButtonReleased();
     return false;
 }
 
 bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
+    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) return false;
+    Vec2 mousePos    = Input::GetMousePosition();
+    Vec2 viewportMin = m_ViewportPanel->GetViewportMin();
+    Vec2 relPos      = mousePos - viewportMin;
+    if (relPos.x >= 0.0f && relPos.y >= 0.0f && m_GizmoRenderer)
+        m_GizmoRenderer->OnMouseMoved(relPos.x, relPos.y);
     return false;
 }
 
@@ -203,18 +228,9 @@ bool EditorLayer::OnKeyReleased(KeyReleasedEvent& e) {
 }
 
 bool EditorLayer::OnWindowResize(WindowResizeEvent& e) {
-    uint32_t width  = e.GetWidth();
-    uint32_t height = e.GetHeight();
-    if (width == 0 || height == 0)
-        return false;
-
-    // Set an initial camera aspect ratio before the viewport panel fires its first resize.
-    auto& camComp = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
-    camComp.SceneCamera.SetViewportSize(width, height);
-
-    auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
-    if (pickSys)
-        pickSys->OnWindowResize(width, height);
-
+    // Camera and picking system dimensions are driven exclusively by OnViewportResize, which
+    // receives the actual viewport content area from ViewportPanel each frame. Setting them here
+    // would use the OS window size instead of the smaller content area, causing a coordinate
+    // mismatch between where the user clicks and where the picking FBO stores entity IDs.
     return false;
 }

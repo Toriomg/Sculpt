@@ -1,4 +1,5 @@
 #include "Editor/Panels/MainMenuBar.hpp"
+#include "Renderer/Renderer.hpp"
 #include "imgui.h"
 
 MainMenuBar::MainMenuBar(std::function<void()> onQuit)
@@ -13,6 +14,8 @@ void MainMenuBar::OnImGuiRender() {
         }
         if (ImGui::BeginMenu("Debug")) {
             ImGui::MenuItem("ImGui Demo", nullptr, &ShowDemo);
+            if (ImGui::MenuItem("Selection Debug", nullptr, &ShowSelectionDebug))
+                Renderer::SetDebugSelectionMode(ShowSelectionDebug);
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();

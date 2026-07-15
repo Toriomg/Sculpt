@@ -13,6 +13,7 @@ void ImGuiLayer::OnAttach() {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigWindowsMoveFromTitleBarOnly = true;
     UIStyle::ApplyTheme(UIStyle::Theme::ModelingDark);
     ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");

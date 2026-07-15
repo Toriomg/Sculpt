@@ -54,24 +54,32 @@ void RenderingSystem::OnUpdate(float deltaTime)
                 continue;
             }
 
-            // These uniforms are selection-state dependent, so they must be set here before
-            // Renderer::Submit, which re-binds the same shader and sets the remaining uniforms.
-            meshComp.MaterialAsset->GetShader()->Bind();
-            meshComp.MaterialAsset->GetShader()->SetUniform3f("u_cameraPos",
-                mainCamera->GetPosition().x,
-                mainCamera->GetPosition().y,
-                mainCamera->GetPosition().z);
-
-            bool isSelected = selectionContext && selectionContext->IsEntitySelected(entity);
-            meshComp.MaterialAsset->GetShader()->SetUniform1i("u_IsSelected", isSelected ? 1 : 0);
-            if (isSelected) {
-                meshComp.MaterialAsset->GetShader()->SetUniform4f("u_HighlightColor", 1.0f, 1.0f, 0.0f, 1.0f);
-            }
-
-            if (meshComp.Wireframe)
-                Renderer::SubmitWireframe(meshComp.MeshAsset, transform);
-            else
+            if (Renderer::IsDebugSelectionModeEnabled()) {
+                const auto& dbgShader = Renderer::GetDebugSelectionShader();
+                dbgShader->Bind();
+                bool pickable = m_Scene->HasComponent<SelectionComponent>(entity);
+                dbgShader->SetUniform1i("u_IsPickable", pickable ? 1 : 0);
                 Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, transform);
+            } else {
+                // These uniforms are selection-state dependent, so they must be set here before
+                // Renderer::Submit, which re-binds the same shader and sets the remaining uniforms.
+                meshComp.MaterialAsset->GetShader()->Bind();
+                meshComp.MaterialAsset->GetShader()->SetUniform3f("u_cameraPos",
+                    mainCamera->GetPosition().x,
+                    mainCamera->GetPosition().y,
+                    mainCamera->GetPosition().z);
+
+                bool isSelected = selectionContext && selectionContext->IsEntitySelected(entity);
+                meshComp.MaterialAsset->GetShader()->SetUniform1i("u_IsSelected", isSelected ? 1 : 0);
+                if (isSelected) {
+                    meshComp.MaterialAsset->GetShader()->SetUniform4f("u_HighlightColor", 1.0f, 1.0f, 0.0f, 1.0f);
+                }
+
+                if (meshComp.Wireframe)
+                    Renderer::SubmitWireframe(meshComp.MeshAsset, transform);
+                else
+                    Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, transform);
+            }
         }
         // Tell the Renderer we are done with this frame.
         Renderer::EndScene();
