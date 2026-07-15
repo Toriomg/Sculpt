@@ -1,5 +1,6 @@
 // Spawns scene entities from built-in primitives or imported asset files.
 #pragma once
+#include <expected>
 #include <memory>
 #include <string>
 
@@ -13,7 +14,9 @@ public:
     explicit EntityFactory(Scene* scene);
 
     void SpawnPrimitive(PrimitiveType type);
-    void SpawnFromFile(const std::string& path);
+
+    // Returns an error string if the file does not exist; async load failures are logged.
+    std::expected<void, std::string> SpawnFromFile(const std::string& path);
 
 private:
     Scene* m_Scene;

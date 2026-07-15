@@ -91,6 +91,19 @@ void MainMenuBar::OnImGuiRender() {
     if (m_ShowDemo)
         ImGui::ShowDemoWindow(&m_ShowDemo);
 
+    // Error modal — opened when SpawnFromFile returns an error.
+    if (m_ShowErrorModal) {
+        ImGui::OpenPopup("Import Error");
+        m_ShowErrorModal = false;
+    }
+    if (ImGui::BeginPopupModal("Import Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::TextUnformatted(m_ErrorMessage.c_str());
+        ImGui::Spacing();
+        if (ImGui::Button("OK", ImVec2(120, 0)))
+            ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
+
     // Import modal — opened by "Add > Import from file..."
     if (m_ShowImportModal) {
         ImGui::OpenPopup("Import Model");
@@ -102,8 +115,13 @@ void MainMenuBar::OnImGuiRender() {
         ImGui::InputText("##importpath", m_ImportPathBuf, sizeof(m_ImportPathBuf));
         ImGui::Spacing();
         if (ImGui::Button("Load", ImVec2(120, 0))) {
-            if (m_ImportPathBuf[0] != '\0')
-                m_Factory->SpawnFromFile(m_ImportPathBuf);
+            if (m_ImportPathBuf[0] != '\0') {
+                auto result = m_Factory->SpawnFromFile(m_ImportPathBuf);
+                if (!result) {
+                    m_ErrorMessage   = result.error();
+                    m_ShowErrorModal = true;
+                }
+            }
             m_ImportPathBuf[0] = '\0';
             ImGui::CloseCurrentPopup();
         }

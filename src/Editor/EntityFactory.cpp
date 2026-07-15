@@ -1,10 +1,14 @@
 #include "Editor/EntityFactory.hpp"
 #include "Core/Scene.hpp"
 #include "Core/Components/Component.hpp"
+#include "Core/Systems/SelectionSystem.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Material.hpp"
 #include "Platform/Graphics/Shader.hpp"
+#include "Platform/CoreUtils/Log.hpp"
 #include "AssetManager/AssetManager.hpp"
+#include <filesystem>
+#include <format>
 
 EntityFactory::EntityFactory(Scene* scene)
     : m_Scene(scene)
@@ -44,18 +48,27 @@ void EntityFactory::SpawnPrimitive(PrimitiveType type) {
     m_Scene->AddComponent<SelectionComponent>(entity);
 }
 
-void EntityFactory::SpawnFromFile(const std::string& path) {
+std::expected<void, std::string> EntityFactory::SpawnFromFile(const std::string& path) {
+    if (!std::filesystem::exists(path))
+        return std::unexpected(std::format("File not found: {}", path));
+
     std::string name = path.substr(path.find_last_of("/\\") + 1);
     Entity entity = m_Scene->CreateGameObject(name);
     m_Scene->AddComponent<SelectionComponent>(entity);
 
-    // Capture raw pointers matching the existing pattern — both live for the application lifetime.
-    Scene* scene  = m_Scene;
-    auto shader   = m_DefaultShader;
-    AssetManager::LoadAsync(path, [scene, entity, shader](AssetHandle handle) {
-        if (auto mesh = AssetManager::GetAs<Mesh>(handle)) {
-            auto material = std::make_shared<Material>(shader);
-            scene->AddComponent<MeshComponent>(entity, mesh, material);
+    Scene* scene   = m_Scene;
+    auto* selSys   = m_Scene->GetSystem<SelectionSystem>();
+    auto shader    = m_DefaultShader;
+    AssetManager::LoadAsync(path, [scene, entity, shader, selSys](AssetHandle handle) {
+        auto mesh = AssetManager::GetAs<Mesh>(handle);
+        if (!mesh) {
+            CORE_LOG_ERROR("Mesh load failed for async asset; removing placeholder entity.");
+            if (selSys) selSys->GetSelectionContext().Deselect(entity);
+            scene->DestroyEntity(entity);
+            return;
         }
+        auto material = std::make_shared<Material>(shader);
+        scene->AddComponent<MeshComponent>(entity, mesh, material);
     });
+    return {};
 }

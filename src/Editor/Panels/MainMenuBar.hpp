@@ -2,6 +2,7 @@
 #pragma once
 #include "Editor/Panels/Panel.hpp"
 #include <functional>
+#include <string>
 
 class HistorySystem;
 class EntityFactory;
@@ -26,8 +27,10 @@ private:
     Panel* m_Inspector;
     Panel* m_ScenePanel;
     Panel* m_Viewport;
-    bool m_ShowDemo           = false;
-    bool m_ShowSelectionDebug = false;
-    bool m_ShowImportModal    = false;
-    char m_ImportPathBuf[256] = {};
+    bool        m_ShowDemo           = false;
+    bool        m_ShowSelectionDebug = false;
+    bool        m_ShowImportModal    = false;
+    bool        m_ShowErrorModal     = false;
+    char        m_ImportPathBuf[256] = {};
+    std::string m_ErrorMessage;
 };

@@ -17,8 +17,8 @@ public:
 
     // --- Entity & Component Management ---
 
-    // Create a new entity (in your diagram, this is a GameObject)
     Entity CreateGameObject(const std::string& name = "GameObject");
+    void DestroyEntity(Entity entity);
 
     // Add a component to an entity
     template<typename T, typename... Args>

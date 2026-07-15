@@ -15,6 +15,7 @@
 #include "Platform/Graphics/RenderCommand.hpp"
 #include "Platform/System/Input/Input.hpp"
 #include "Platform/System/Input/KeyCodes.hpp"
+#include "imgui.h"
 
 EditorLayer::EditorLayer(std::function<void()> onQuit)
     : Layer("EditorLayer"), m_OnQuit(std::move(onQuit)) {}
@@ -193,6 +194,14 @@ bool EditorLayer::OnMouseScrolled(MouseScrolledEvent& e) {
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
+    // Let ImGui consume keyboard input when a text field is focused.
+    if (ImGui::GetIO().WantCaptureKeyboard) return false;
+
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::Delete)) {
+        if (m_OutlinerPanel) m_OutlinerPanel->TriggerDeleteConfirmation();
+        return true;
+    }
+
     bool ctrl = Input::IsKeyPressed(KeyCode::LeftControl)
              || Input::IsKeyPressed(KeyCode::RightControl);
     if (!ctrl) return false;
