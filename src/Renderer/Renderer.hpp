@@ -8,6 +8,7 @@
 class Mesh;
 class Material;
 class Camera;
+class Shader;
 
 // Static class, acts as a global service
 class Renderer {
@@ -39,4 +40,8 @@ public:
     );
 
     static void OnWindowResize(uint32_t width, uint32_t height);
+
+    static void SetDebugSelectionMode(bool enable);
+    static bool IsDebugSelectionModeEnabled();
+    static const std::shared_ptr<Shader>& GetDebugSelectionShader();
 };

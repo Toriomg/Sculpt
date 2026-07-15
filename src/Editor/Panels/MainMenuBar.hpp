@@ -9,6 +9,7 @@ public:
     void OnImGuiRender() override;
 
     bool ShowDemo = false;
+    bool ShowSelectionDebug = false;
 
 private:
     std::function<void()> m_OnQuit;
