@@ -26,6 +26,7 @@ Matx4f ScenePanel::GetInverseGlobalTransform() const {
 }
 
 void ScenePanel::OnImGuiRender() {
+    if (!IsVisible) return;
     ImGui::SetNextWindowPos(ImVec2{10.f, 20.f}, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2{280.f, 450.f}, ImGuiCond_FirstUseEver);
     ImGui::Begin("Scene");

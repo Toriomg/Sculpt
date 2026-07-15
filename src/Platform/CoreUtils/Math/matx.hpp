@@ -184,6 +184,15 @@ public:
         );
     }
 
+    bool operator==(const Matx4f& other) const {
+        for (int i = 0; i < 4; ++i)
+            for (int j = 0; j < 4; ++j)
+                if (m[i][j] != other.m[i][j]) return false;
+        return true;
+    }
+
+    bool operator!=(const Matx4f& other) const { return !(*this == other); }
+
     const float* data() const{
         return &m[0][0];
 	}

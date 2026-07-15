@@ -1,6 +1,8 @@
 #include "Editor/Gizmos/GizmoRenderer.hpp"
 #include "Core/Scene.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
+#include "Core/Systems/HistorySystem.hpp"
+#include "Core/Systems/TransformCommand.hpp"
 #include "Core/Components/Component.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Renderer.hpp"
@@ -164,6 +166,7 @@ GizmoRenderer::~GizmoRenderer() = default;
 void GizmoRenderer::OnAttach() {
     m_ArrowMesh  = BuildArrowMesh();
     m_CenterMesh = BuildCenterMesh();
+    m_HistSys    = m_Scene.GetSystem<HistorySystem>();
 }
 
 void GizmoRenderer::SetViewportSize(uint32_t w, uint32_t h) {
@@ -294,11 +297,13 @@ bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
     const auto& selected = m_SelCtx.GetSelectedEntities();
     if (selected.empty()) return false;
 
-    auto& tc = m_Scene.GetComponent<TransformComponent>(*selected.begin());
+    m_DragEntity = *selected.begin();
+    auto& tc     = m_Scene.GetComponent<TransformComponent>(m_DragEntity);
     Vec3 gizmoPos = {tc.Transform.m[0][3], tc.Transform.m[1][3], tc.Transform.m[2][3]};
 
-    m_DragAxis      = hit;
-    m_IsDragging    = true;
+    m_TransformAtDragStart = tc.Transform;
+    m_DragAxis             = hit;
+    m_IsDragging           = true;
     m_DragStartHitPt = RayAxisClosestPoint(
         m_Camera.GetPosition(), ScreenToRayDirection(vx, vy),
         gizmoPos, axisToVec3(hit));
@@ -307,8 +312,19 @@ bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
 
 bool GizmoRenderer::OnMouseButtonReleased() {
     if (!m_IsDragging) return false;
+
+    if (m_HistSys && m_DragEntity != entt::null
+            && m_Scene.HasComponent<TransformComponent>(m_DragEntity)) {
+        const Matx4f& after = m_Scene.GetComponent<TransformComponent>(m_DragEntity).Transform;
+        if (after != m_TransformAtDragStart) {
+            m_HistSys->Push(std::make_unique<TransformCommand>(
+                &m_Scene, m_DragEntity, m_TransformAtDragStart, after));
+        }
+    }
+
     m_IsDragging = false;
     m_DragAxis   = GizmoAxis::None;
+    m_DragEntity = entt::null;
     return true;
 }
 

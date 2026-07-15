@@ -1,7 +1,8 @@
 // Translation gizmo: renders 3-axis arrows for the selected entity; owns drag state and hover detection.
 #pragma once
 #include "Editor/Gizmos/Gizmo.hpp"
-#include "Platform/CoreUtils/Math/maths.hpp"
+#include "Core/Entity.hpp"
+#include "Platform/CoreUtils/Math/matx.hpp"
 #include <memory>
 #include <cstdint>
 
@@ -9,6 +10,7 @@ class Scene;
 class SelectionContext;
 class Camera;
 class Mesh;
+class HistorySystem;
 
 class GizmoRenderer {
 public:
@@ -52,7 +54,11 @@ private:
     GizmoAxis m_DragAxis        = GizmoAxis::None;
     Vec3      m_DragStartHitPt  {0.0f, 0.0f, 0.0f};
 
-    GizmoAxis m_HoveredAxis     = GizmoAxis::None;
+    GizmoAxis    m_HoveredAxis          = GizmoAxis::None;
+    entt::entity m_DragEntity          = entt::null;
+    Matx4f       m_TransformAtDragStart = Matx4f::identity();
+
+    HistorySystem* m_HistSys = nullptr;
 
     uint32_t  m_ViewportW = 1470;
     uint32_t  m_ViewportH =  810;
