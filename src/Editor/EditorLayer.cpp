@@ -36,14 +36,12 @@ void EditorLayer::OnAttach() {
     camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
     camComp.SceneCamera.SetPosition({ 0.0f, 0.0f, 5.0f });
 
-    auto monkeyMesh   = std::static_pointer_cast<Mesh>(AssetManager::Get(AssetManager::Load("res/models/monkey.obj")));
     auto SphereMesh   = Mesh::CreateSphere(1.0f, 32, 32);
     auto PyramidMesh  = Mesh::CreateIcosahedron(2.0f);
     auto TorusMesh    = Mesh::CreateTorus(1.0f, 0.5f, 32, 32);
 
     auto simpleShader = std::make_shared<Shader>("res/shaders/modelmesh.shader");
     auto myMaterial   = std::make_shared<Material>(simpleShader);
-    myMaterial->SetTexture(AssetManager::Load("res/textures/texture1.png"));
 
     Vec3 MonkeyPosition  = {  0.0f, 0.0f, 0.0f };
     Vec3 SpherePosition  = {  5.0f, 0.0f, 0.0f };
@@ -55,10 +53,7 @@ void EditorLayer::OnAttach() {
     m_PyramidEntity = m_ActiveScene->CreateGameObject("Pyramid");
     m_TorusEntity   = m_ActiveScene->CreateGameObject("Torus");
 
-    m_ActiveScene->AddComponent<MeshComponent>(m_MonkeyEntity, monkeyMesh, myMaterial);
-    m_ActiveScene->SetComponent<TransformComponent>(m_MonkeyEntity, Matx4f::translation(MonkeyPosition));
-    m_ActiveScene->AddComponent<SelectionComponent>(m_MonkeyEntity);
-
+    // Procedural meshes need no file I/O — add components immediately.
     m_ActiveScene->AddComponent<MeshComponent>(m_SphereEntity, SphereMesh, myMaterial);
     m_ActiveScene->SetComponent<TransformComponent>(m_SphereEntity, Matx4f::translation(SpherePosition));
     m_ActiveScene->AddComponent<SelectionComponent>(m_SphereEntity);
@@ -70,6 +65,20 @@ void EditorLayer::OnAttach() {
     m_ActiveScene->AddComponent<MeshComponent>(m_TorusEntity, TorusMesh, myMaterial);
     m_ActiveScene->SetComponent<TransformComponent>(m_TorusEntity, Matx4f::translation(TorusPosition));
     m_ActiveScene->AddComponent<SelectionComponent>(m_TorusEntity);
+
+    // Transform and selection are set immediately; MeshComponent is added once Assimp finishes.
+    m_ActiveScene->SetComponent<TransformComponent>(m_MonkeyEntity, Matx4f::translation(MonkeyPosition));
+    m_ActiveScene->AddComponent<SelectionComponent>(m_MonkeyEntity);
+    AssetManager::LoadAsync("res/models/dragon.obj", [this, myMaterial](AssetHandle handle) {
+        if (auto mesh = AssetManager::GetAs<Mesh>(handle))
+            m_ActiveScene->AddComponent<MeshComponent>(m_MonkeyEntity, mesh, myMaterial);
+    });
+
+    // Texture handle is set on the shared material once stb_image finishes; all entities using
+    // this material pick it up automatically at the next Renderer::Submit call.
+    AssetManager::LoadAsync("res/textures/texture1.png", [myMaterial](AssetHandle handle) {
+        myMaterial->SetTexture(handle);
+    });
 
     // Stores a raw pointer into the ECS component — safe while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);

@@ -3,6 +3,8 @@
 #include "AssetRegistry.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Loader/MeshLoader.hpp"
+#include "Platform/Jobs/TaskQueue.hpp"
+#include <functional>
 #include <optional>
 
 struct AssetManagerData {
@@ -53,4 +55,31 @@ AssetHandle AssetManager::Load(const std::string& filepath) {
 
 std::shared_ptr<IAsset> AssetManager::Get(AssetHandle handle) {
     return s_Data->registry.Get(handle);
+}
+
+// Defers the full load to the main thread via Finalize(); Execute() is reserved for future
+// CPU-only work (file read, decode) once loaders are split into CPU and GPU phases.
+class AssetLoadTask final : public ITask {
+public:
+    AssetLoadTask(std::string path, std::function<void(AssetHandle)> onComplete)
+        : m_Path(std::move(path)), m_OnComplete(std::move(onComplete)) {}
+
+    std::string_view GetName() const override { return "AssetLoad"; }
+    void Execute() override {}
+
+    void Finalize() override {
+        AssetHandle handle = AssetManager::Load(m_Path);
+        if (m_OnComplete)
+            m_OnComplete(handle);
+    }
+
+private:
+    std::string                      m_Path;
+    std::function<void(AssetHandle)> m_OnComplete;
+};
+
+void AssetManager::LoadAsync(const std::string& filepath, std::function<void(AssetHandle)> onComplete) {
+    auto result = TaskQueue::Submit<AssetLoadTask>(filepath, std::move(onComplete));
+    if (!result)
+        LOG_ERROR("AssetManager: LoadAsync failed for '{}': {}", filepath, result.error());
 }

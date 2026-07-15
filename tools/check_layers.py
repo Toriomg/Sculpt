@@ -23,6 +23,7 @@ LAYER_TABLE: list[tuple[str, int]] = [
     ("Platform/Graphics/",    2),
     ("Platform/System/",      2),
     ("Platform/Layers/",      2),
+    ("Platform/Jobs/",        2),
     ("Core/",                 3),
     ("Renderer/",             3),
     ("AssetManager/",         3),
@@ -65,6 +66,14 @@ FORBIDDEN: list[tuple[str, str, str]] = [
     ("Core/",              "AssetManager/",    "L3 Core header → L3 AssetManager (use forward declaration)"),
     # L4 Editor must not include L2 Graphics directly (only through L3 wrappers)
     ("Editor/",            "Platform/Graphics/", "L4 Editor → L2 Graphics (must go through an L3 wrapper)"),
+    # L2 Jobs must not reach into L3+
+    ("Platform/Jobs/",     "Core/Systems/",    "L2 Jobs → L3 Core"),
+    ("Platform/Jobs/",     "Core/Components/", "L2 Jobs → L3 Core"),
+    ("Platform/Jobs/",     "Core/Scene.",      "L2 Jobs → L3 Core"),
+    ("Platform/Jobs/",     "Core/Entity.",     "L2 Jobs → L3 Core"),
+    ("Platform/Jobs/",     "Renderer/",        "L2 Jobs → L3 Renderer"),
+    ("Platform/Jobs/",     "AssetManager/",    "L2 Jobs → L3 AssetManager"),
+    ("Platform/Jobs/",     "Editor/",          "L2 Jobs → L4 Editor"),
 ]
 
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.MULTILINE)

@@ -1,5 +1,6 @@
 #include "Application.hpp"
 #include "Platform/CoreUtils/Log.hpp"
+#include "Platform/Jobs/TaskQueue.hpp"
 #include "Platform/System/Time.hpp"
 #include "AssetManager/AssetManager.hpp"
 #include "Renderer/Renderer.hpp"
@@ -9,8 +10,9 @@
 Application::Application(const std::string& name, unsigned int width, unsigned int height)
     : m_Window(nullptr), m_AppName(name)
 {
-	Log::Init(); // Initialize the logging system
-	AssetManager::Init(); // Initialize the Asset Manager
+	Log::Init();
+	AssetManager::Init();
+	TaskQueue::Init();
 
     m_Window = Window::Create();
     Input::Init(m_Window.get());
@@ -41,7 +43,9 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
 
 Application::~Application()
 {
-	Input::Shutdown(); // Shutdown the input system
+	TaskQueue::Shutdown();    // joins workers, drains final completions
+	AssetManager::Shutdown();
+	Input::Shutdown();
     CORE_LOG_INFO("Program CORRECTLY ended");
 }
 
@@ -50,7 +54,8 @@ void Application::Run()
     while (m_Running)
     {
 		Time::Update();
-		Input::OnUpdate(); // Update the input system
+		Input::OnUpdate();
+		TaskQueue::ProcessCompletions();
 
         // ImGui panels run BEFORE the scene update so ViewportPanel can resize the FBO
         // before the scene renders into it. The viewport displays the previous frame's

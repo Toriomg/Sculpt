@@ -1,6 +1,7 @@
 #include "Editor/Panels/ViewportPanel.hpp"
 #include "Platform/Graphics/Framebuffer.hpp"
 #include "imgui.h"
+#include <cstdio>
 
 ViewportPanel::ViewportPanel(Framebuffer* framebuffer, ResizeCallback onResize)
     : m_Framebuffer(framebuffer), m_OnResize(std::move(onResize)) {}
@@ -38,6 +39,14 @@ void ViewportPanel::OnImGuiRender() {
             ImVec2{0.0f, 1.0f},
             ImVec2{1.0f, 0.0f}
         );
+
+        // FPS overlay — drawn over the viewport image via the window draw list.
+        float fps = ImGui::GetIO().Framerate;
+        char buf[32];
+        std::snprintf(buf, sizeof(buf), "%.0f FPS", fps);
+        ImVec2 textPos{contentPos.x + 8.0f, contentPos.y + 8.0f};
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        dl->AddText(textPos, IM_COL32(255, 255, 255, 220), buf);
     }
 
     ImGui::End();
