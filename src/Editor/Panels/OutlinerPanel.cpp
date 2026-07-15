@@ -57,6 +57,9 @@ void OutlinerPanel::OnImGuiRender() {
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
+        if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            ImGui::CloseCurrentPopup();
+        ImGui::SameLine();
         if (ImGui::Button("Delete", ImVec2(120, 0))) {
             // Snapshot before clearing selection since ClearSelection modifies the set.
             std::vector<Entity> toDelete(selCtx.GetSelectedEntities().begin(),
@@ -66,9 +69,6 @@ void OutlinerPanel::OnImGuiRender() {
                 m_Scene->DestroyEntity(e);
             ImGui::CloseCurrentPopup();
         }
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(120, 0)))
-            ImGui::CloseCurrentPopup();
         ImGui::EndPopup();
     }
 
