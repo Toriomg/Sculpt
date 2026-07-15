@@ -230,7 +230,7 @@ Vec3 GizmoRenderer::ScreenToRayDirection(float x, float y) const {
     Vec3 up      = m_Camera.GetUpDirection();
     Vec3 front   = m_Camera.GetFrontDirection();
 
-    Vec3 dir = right * (ndcX * aspect * tanHalf)
+    Vec3 dir = right * (-ndcX * aspect * tanHalf)
              + up    * (ndcY * tanHalf)
              + front;
     return dir.normalize();
@@ -245,7 +245,7 @@ Vec3 GizmoRenderer::RayAxisClosestPoint(Vec3 P, Vec3 D,
     float e     = D.dotProduct(w);
     float denom = 1.0f - b * b;
     if (std::abs(denom) < 1e-6f) return Q;   // ray parallel to axis
-    float s = (b * e - d) / denom;
+    float s = (d - b * e) / denom;
     return Q + A * s;
 }
 
