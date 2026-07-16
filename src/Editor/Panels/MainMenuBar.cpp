@@ -39,6 +39,8 @@ void MainMenuBar::OnImGuiRender() {
             if (ImGui::MenuItem("Torus"))         m_Factory->SpawnPrimitive(PrimitiveType::Torus);
             if (ImGui::MenuItem("Dodecahedron"))  m_Factory->SpawnPrimitive(PrimitiveType::Dodecahedron);
             if (ImGui::MenuItem("Icosahedron"))   m_Factory->SpawnPrimitive(PrimitiveType::Icosahedron);
+            if (ImGui::MenuItem("Arrow"))         m_Factory->SpawnPrimitive(PrimitiveType::Arrow);
+            if (ImGui::MenuItem("Cone"))          m_Factory->SpawnPrimitive(PrimitiveType::Cone);
             ImGui::EndMenu();
         }
         ImGui::Separator();

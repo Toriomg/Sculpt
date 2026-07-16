@@ -7,7 +7,7 @@
 class Scene;
 class Shader;
 
-enum class PrimitiveType { Cube, Sphere, Pyramid, Torus, Dodecahedron, Icosahedron };
+enum class PrimitiveType { Cube, Sphere, Pyramid, Torus, Dodecahedron, Icosahedron, Arrow, Cone };
 
 class EntityFactory {
 public:

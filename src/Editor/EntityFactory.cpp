@@ -23,6 +23,8 @@ namespace {
             case PrimitiveType::Torus:        return "Torus";
             case PrimitiveType::Dodecahedron: return "Dodecahedron";
             case PrimitiveType::Icosahedron:  return "Icosahedron";
+            case PrimitiveType::Arrow:        return "Arrow";
+            case PrimitiveType::Cone:         return "Cone";
         }
         return "Object";
     }
@@ -35,6 +37,8 @@ namespace {
             case PrimitiveType::Torus:        return Mesh::CreateTorus(1.0f, 0.5f, 32, 32);
             case PrimitiveType::Dodecahedron: return Mesh::CreateDodecahedron(1.0f);
             case PrimitiveType::Icosahedron:  return Mesh::CreateIcosahedron(1.0f);
+            case PrimitiveType::Arrow:        return Mesh::CreateArrow();
+            case PrimitiveType::Cone:         return Mesh::CreateCone();
         }
         return nullptr;
     }
