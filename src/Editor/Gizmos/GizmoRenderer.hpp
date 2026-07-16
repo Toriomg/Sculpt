@@ -5,6 +5,7 @@
 #include "Core/Components/Component.hpp"
 #include <memory>
 #include <cstdint>
+#include <optional>
 
 class Scene;
 class SelectionContext;
@@ -37,11 +38,6 @@ public:
     GizmoMode GetMode() const { return m_Mode; }
 
 private:
-    std::shared_ptr<Mesh> BuildArrowMesh();
-    std::shared_ptr<Mesh> BuildCenterMesh();
-    std::shared_ptr<Mesh> BuildRingMesh();
-    std::shared_ptr<Mesh> BuildConeMesh();
-
     GizmoAxis HitTestAxes(float mouseX, float mouseY);
     GizmoAxis HitTestRings(float mouseX, float mouseY);
     Vec3      ScreenToRayDirection(float x, float y) const;
@@ -51,7 +47,10 @@ private:
     bool      RayPlaneIntersect(Vec3 rayOrigin, Vec3 rayDir,
                                 Vec3 planePoint, Vec3 planeNormal,
                                 float& outT) const;
-    static void RingRefVectors(GizmoAxis axis, Vec3& outU, Vec3& outV);
+
+    // Resolves selection → world position + view-distance scale. Returns nullopt when nothing is selected.
+    struct GizmoCtx { entt::entity entity; Vec3 pos; float scale; };
+    std::optional<GizmoCtx> ActiveGizmoCtx();
 
     Scene&            m_Scene;
     SelectionContext& m_SelCtx;
@@ -68,7 +67,6 @@ private:
     GizmoAxis m_DragAxis       = GizmoAxis::None;
     Vec3      m_DragStartHitPt {0.0f, 0.0f, 0.0f};
 
-    // Rotation drag state
     Vec3 m_RotDragRefPoint {0.0f, 0.0f, 0.0f};
     Vec3 m_RotDragRefU     {1.0f, 0.0f, 0.0f};
     Vec3 m_RotDragRefV     {0.0f, 0.0f, 1.0f};
@@ -80,6 +78,6 @@ private:
 
     HistorySystem* m_HistSys = nullptr;
 
-    uint32_t  m_ViewportW = 1470;
-    uint32_t  m_ViewportH =  810;
+    uint32_t m_ViewportW = 1470;
+    uint32_t m_ViewportH =  810;
 };
