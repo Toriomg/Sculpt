@@ -207,11 +207,11 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
         return true;
     }
 
-    if (e.GetKeyCode() == static_cast<int>(KeyCode::W)) {
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::T)) {
         if (m_GizmoRenderer) m_GizmoRenderer->SetMode(GizmoMode::Translation);
         return true;
     }
-    if (e.GetKeyCode() == static_cast<int>(KeyCode::E)) {
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::R)) {
         if (m_GizmoRenderer) m_GizmoRenderer->SetMode(GizmoMode::Rotation);
         return true;
     }

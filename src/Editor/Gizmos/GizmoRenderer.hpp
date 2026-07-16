@@ -40,6 +40,7 @@ private:
     std::shared_ptr<Mesh> BuildArrowMesh();
     std::shared_ptr<Mesh> BuildCenterMesh();
     std::shared_ptr<Mesh> BuildRingMesh();
+    std::shared_ptr<Mesh> BuildConeMesh();
 
     GizmoAxis HitTestAxes(float mouseX, float mouseY);
     GizmoAxis HitTestRings(float mouseX, float mouseY);
@@ -61,6 +62,7 @@ private:
     std::shared_ptr<Mesh> m_ArrowMesh;
     std::shared_ptr<Mesh> m_CenterMesh;
     std::shared_ptr<Mesh> m_RingMesh;
+    std::shared_ptr<Mesh> m_ConeMesh;
 
     bool      m_IsDragging     = false;
     GizmoAxis m_DragAxis       = GizmoAxis::None;

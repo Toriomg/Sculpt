@@ -55,8 +55,8 @@ static Vec2 worldToScreen(const Vec3& w, const Matx4f& VP, float W, float H) {
 std::shared_ptr<Mesh> GizmoRenderer::BuildArrowMesh() {
     constexpr int   N        = 12;
     constexpr float r        = 0.03f;
-    constexpr float shaftLen = 0.75f;
-    constexpr float R        = 0.08f;
+    constexpr float shaftLen = 0.65f;
+    constexpr float R        = 0.14f;
     constexpr float totalLen = 1.0f;
     constexpr float TWO_PI   = 2.0f * std::numbers::pi_v<float>;
 
@@ -151,6 +151,50 @@ std::shared_ptr<Mesh> GizmoRenderer::BuildRingMesh() {
     return Mesh::CreateTorus(1.0f, 0.035f, 64, 10);
 }
 
+std::shared_ptr<Mesh> GizmoRenderer::BuildConeMesh() {
+    // Unit cone: base circle (radius 1) at z=0 in the XY plane, tip at z=1.
+    // Scaled and positioned per arrowhead at draw time.
+    constexpr int   N      = 12;
+    constexpr float TWO_PI = 2.0f * std::numbers::pi_v<float>;
+
+    std::vector<Vertex>   verts;
+    std::vector<uint32_t> idx;
+
+    auto addVert = [&](Vec3 pos, Vec3 normal) {
+        verts.push_back({pos, normal, {0.0f, 0.0f}});
+    };
+
+    // Lateral surface — flat-shaded triangles
+    for (int i = 0; i < N; ++i) {
+        float t0 = TWO_PI * i / N, t1 = TWO_PI * (i + 1) / N;
+        Vec3 v0 = {std::cos(t0), std::sin(t0), 0.0f};
+        Vec3 v1 = {std::cos(t1), std::sin(t1), 0.0f};
+        Vec3 v2 = {0.0f, 0.0f, 1.0f};
+        Vec3 n  = (v1 - v0).crossProduct(v2 - v0).normalize();
+        uint32_t base = static_cast<uint32_t>(verts.size());
+        addVert(v0, n); addVert(v1, n); addVert(v2, n);
+        idx.insert(idx.end(), {base, base + 1, base + 2});
+    }
+
+    // Base cap
+    uint32_t center = static_cast<uint32_t>(verts.size());
+    addVert({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f});
+    uint32_t rimBase = static_cast<uint32_t>(verts.size());
+    for (int i = 0; i < N; ++i) {
+        float theta = TWO_PI * i / N;
+        addVert({std::cos(theta), std::sin(theta), 0.0f}, {0.0f, 0.0f, -1.0f});
+    }
+    for (int i = 0; i < N; ++i)
+        idx.insert(idx.end(), {center, rimBase + (i + 1) % N, rimBase + i});
+
+    return Mesh::CreateMeshFromData(
+        verts.data(),
+        static_cast<uint32_t>(verts.size() * sizeof(Vertex)),
+        idx.data(),
+        static_cast<uint32_t>(idx.size())
+    );
+}
+
 // ---- GizmoRenderer ----------------------------------------------------------
 
 GizmoRenderer::GizmoRenderer(Scene& scene, SelectionContext& selCtx, const Camera& camera)
@@ -162,6 +206,7 @@ void GizmoRenderer::OnAttach() {
     m_ArrowMesh  = BuildArrowMesh();
     m_CenterMesh = BuildCenterMesh();
     m_RingMesh   = BuildRingMesh();
+    m_ConeMesh   = BuildConeMesh();
     m_HistSys    = m_Scene.GetSystem<HistorySystem>();
 }
 
@@ -209,20 +254,30 @@ void GizmoRenderer::Draw() {
             Matx4f::translation(gizmoPos) * Matx4f::rotationY(-90.0f) * Matx4f::scalingScalar(scale));
     } else {
         // Base torus lies in the XZ plane with the hole through Y.
-        // X ring → YZ plane: rotate torus 90° around Z so the hole faces X.
-        Renderer::SubmitFlat(m_RingMesh,
-            colorFor(GizmoAxis::X, {1.0f, 0.2f, 0.2f, 1.0f}),
-            Matx4f::translation(gizmoPos) * Matx4f::rotationZ(90.0f) * Matx4f::scalingScalar(scale));
+        // Each ring is re-oriented via a rotation applied before the uniform scale.
+        // Two arrowheads per ring mark the tangent direction at ±(1,0,0) in ring local space.
+        // Cone A (at +X local, tip in +Z local): no extra rotation needed.
+        // Cone B (at -X local, tip in -Z local): flip via rotationY(180°).
+        // After the ring's own rotation, the world tangent directions come out correctly.
+        constexpr float coneR = 0.12f;
+        constexpr float coneH = 0.28f;
 
-        // Y ring → XZ plane: torus as-is.
-        Renderer::SubmitFlat(m_RingMesh,
-            colorFor(GizmoAxis::Y, {0.2f, 1.0f, 0.2f, 1.0f}),
-            Matx4f::translation(gizmoPos) * Matx4f::scalingScalar(scale));
-
-        // Z ring → XY plane: rotate torus 90° around X so the hole faces Z.
-        Renderer::SubmitFlat(m_RingMesh,
-            colorFor(GizmoAxis::Z, {0.2f, 0.2f, 1.0f, 1.0f}),
-            Matx4f::translation(gizmoPos) * Matx4f::rotationX(90.0f) * Matx4f::scalingScalar(scale));
+        struct RingDef { GizmoAxis axis; Vec4 color; Matx4f rot; };
+        RingDef rings[3] = {
+            { GizmoAxis::X, {1.0f, 0.2f, 0.2f, 1.0f}, Matx4f::rotationZ(90.0f) },
+            { GizmoAxis::Y, {0.2f, 1.0f, 0.2f, 1.0f}, Matx4f::identity()        },
+            { GizmoAxis::Z, {0.2f, 0.2f, 1.0f, 1.0f}, Matx4f::rotationX(90.0f) },
+        };
+        Matx4f coneScale = Matx4f::scaling(Vec3{coneR, coneR, coneH});
+        for (const auto& ring : rings) {
+            Vec4   col  = colorFor(ring.axis, ring.color);
+            Matx4f base = Matx4f::translation(gizmoPos) * ring.rot * Matx4f::scalingScalar(scale);
+            Renderer::SubmitFlat(m_RingMesh, col, base);
+            Renderer::SubmitFlat(m_ConeMesh, col,
+                base * Matx4f::translation(Vec3{1.0f, 0.0f, 0.0f}) * coneScale);
+            Renderer::SubmitFlat(m_ConeMesh, col,
+                base * Matx4f::translation(Vec3{-1.0f, 0.0f, 0.0f}) * Matx4f::rotationY(180.0f) * coneScale);
+        }
     }
 
     Renderer::SubmitFlat(m_CenterMesh,
