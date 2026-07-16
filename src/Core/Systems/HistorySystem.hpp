@@ -1,7 +1,7 @@
 // Undo/redo stack; Push executes a command and records it, Undo/Redo walk the stacks.
 #pragma once
 #include "Core/Systems/System.hpp"
-#include "Core/Systems/Command.hpp"
+#include "Core/Systems/Commands/Command.hpp"
 #include <memory>
 #include <string>
 #include <vector>

@@ -54,6 +54,12 @@ public:
 		return sqrt(w * w + x * x + y * y + z * z);
 	}
 
+	Quaternion normalize() const {
+		float len = length();
+		if (len < 1e-6f) return Quaternion::identity();
+		return Quaternion(w / len, x / len, y / len, z / len);
+	}
+
 	static Quaternion identity() {
 		return Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
 	}

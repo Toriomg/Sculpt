@@ -1,5 +1,5 @@
 #include "Core/Systems/HistorySystem.hpp"
-#include "Core/Systems/Command.hpp"
+#include "Core/Systems/Commands/Command.hpp"
 
 void HistorySystem::Push(std::unique_ptr<Command> cmd) {
     cmd->Execute();

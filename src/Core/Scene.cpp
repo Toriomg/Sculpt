@@ -30,6 +30,10 @@ Entity Scene::CreateGameObject(const std::string& name)
     return entity;
 }
 
+void Scene::DestroyEntity(Entity entity) {
+    m_Registry.destroy(entity);
+}
+
 void Scene::OnUpdate(float deltaTime)
 {
     for (const auto& system : m_Systems)

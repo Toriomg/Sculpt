@@ -1,4 +1,5 @@
 #include "Editor/Panels/MainMenuBar.hpp"
+#include "Editor/EntityFactory.hpp"
 #include "Core/Systems/HistorySystem.hpp"
 #include "Renderer/Renderer.hpp"
 #include "imgui.h"
@@ -6,12 +7,14 @@
 
 MainMenuBar::MainMenuBar(std::function<void()> onQuit,
                          HistorySystem* histSys,
+                         EntityFactory* factory,
                          Panel* outliner,
                          Panel* inspector,
                          Panel* scenePanel,
                          Panel* viewport)
     : m_OnQuit(std::move(onQuit))
     , m_HistSys(histSys)
+    , m_Factory(factory)
     , m_Outliner(outliner)
     , m_Inspector(inspector)
     , m_ScenePanel(scenePanel)
@@ -24,6 +27,23 @@ void MainMenuBar::OnImGuiRender() {
     if (ImGui::BeginMenu("File")) {
         if (ImGui::MenuItem("Exit", "Alt+F4"))
             m_OnQuit();
+        ImGui::EndMenu();
+    }
+
+    // ---- Add ----------------------------------------------------------------
+    if (ImGui::BeginMenu("Add")) {
+        if (ImGui::BeginMenu("Primitives")) {
+            if (ImGui::MenuItem("Cube"))         m_Factory->SpawnPrimitive(PrimitiveType::Cube);
+            if (ImGui::MenuItem("Sphere"))        m_Factory->SpawnPrimitive(PrimitiveType::Sphere);
+            if (ImGui::MenuItem("Pyramid"))       m_Factory->SpawnPrimitive(PrimitiveType::Pyramid);
+            if (ImGui::MenuItem("Torus"))         m_Factory->SpawnPrimitive(PrimitiveType::Torus);
+            if (ImGui::MenuItem("Dodecahedron"))  m_Factory->SpawnPrimitive(PrimitiveType::Dodecahedron);
+            if (ImGui::MenuItem("Icosahedron"))   m_Factory->SpawnPrimitive(PrimitiveType::Icosahedron);
+            ImGui::EndMenu();
+        }
+        ImGui::Separator();
+        if (ImGui::MenuItem("Import from file..."))
+            m_ShowImportModal = true;
         ImGui::EndMenu();
     }
 
@@ -70,4 +90,46 @@ void MainMenuBar::OnImGuiRender() {
 
     if (m_ShowDemo)
         ImGui::ShowDemoWindow(&m_ShowDemo);
+
+    // Error modal — opened when SpawnFromFile returns an error.
+    if (m_ShowErrorModal) {
+        ImGui::OpenPopup("Import Error");
+        m_ShowErrorModal = false;
+    }
+    if (ImGui::BeginPopupModal("Import Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::TextUnformatted(m_ErrorMessage.c_str());
+        ImGui::Spacing();
+        if (ImGui::Button("OK", ImVec2(120, 0)))
+            ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
+
+    // Import modal — opened by "Add > Import from file..."
+    if (m_ShowImportModal) {
+        ImGui::OpenPopup("Import Model");
+        m_ShowImportModal = false;
+    }
+    if (ImGui::BeginPopupModal("Import Model", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("File path (e.g. res/models/monkey.obj)");
+        ImGui::SetNextItemWidth(360.0f);
+        ImGui::InputText("##importpath", m_ImportPathBuf, sizeof(m_ImportPathBuf));
+        ImGui::Spacing();
+        if (ImGui::Button("Load", ImVec2(120, 0))) {
+            if (m_ImportPathBuf[0] != '\0') {
+                auto result = m_Factory->SpawnFromFile(m_ImportPathBuf);
+                if (!result) {
+                    m_ErrorMessage   = result.error();
+                    m_ShowErrorModal = true;
+                }
+            }
+            m_ImportPathBuf[0] = '\0';
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+            m_ImportPathBuf[0] = '\0';
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
 }

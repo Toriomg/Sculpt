@@ -75,23 +75,20 @@ void Renderer::Submit(
     shader->SetUniformMat4f("u_ViewProjection", s_SceneData.View);
     shader->SetUniformMat4f("u_Model", transform);
     shader->SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
-    shader->SetUniform3f("u_objectColor", 0.0f, 1.0f, 0.0f);
-    
-    AssetHandle textureHandle = material->GetTextureHandle();
-	//LOG_TRACE("Texture Handle ID: {0}", textureHandle.ID);
 
+    bool hasTexture = false;
+    AssetHandle textureHandle = material->GetTextureHandle();
     if (textureHandle) {
         auto texture = std::static_pointer_cast<Texture>(AssetManager::Get(textureHandle));
-        if (texture)
-        {
-            int textureSlot = 0;
-            texture->Bind(textureSlot);
-            // The sampler uniform receives the texture UNIT index (0), not the GL texture object ID.
-            shader->SetUniform1i("u_Texture", textureSlot);
-        }
-        else
+        if (texture) {
+            texture->Bind(0);
+            shader->SetUniform1i("u_Texture", 0);
+            hasTexture = true;
+        } else {
             CORE_LOG_WARN("Texture handle is invalid or texture not found in AssetManager.");
+        }
     }
+    shader->SetUniform1i("u_HasTexture", hasTexture ? 1 : 0);
 
 	RenderCommand::Draw(vertexArray, indexBuffer);
 	shader->Unbind();

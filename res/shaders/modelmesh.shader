@@ -35,8 +35,8 @@ in vec3 v_WorldPos;
 out vec4 FragColor;
 
 uniform sampler2D u_Texture;
+uniform bool u_HasTexture;
 uniform vec3 u_cameraPos;
-uniform vec3 u_objectColor;
 
 
 // Model selection uniforms
@@ -98,7 +98,8 @@ void main()
 	vec4 texColor = texture(u_Texture, v_TexCoord);
 	FragColor = vec4(v_TexCoord.x, v_TexCoord.y, 0.0, 1.0);
 	*/
-	vec3 objectColor = texture(u_Texture, v_TexCoord).rgb;
+	// v_Color carries u_Color set per-draw; used as base when no texture is assigned.
+	vec3 objectColor = u_HasTexture ? texture(u_Texture, v_TexCoord).rgb : v_Color.rgb;
 	
 	vec3 baseColor;
 

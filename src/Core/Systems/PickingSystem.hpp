@@ -3,6 +3,7 @@
 #include "System.hpp"
 #include "Platform/Graphics/PickingTexture.hpp"
 #include "Platform/Graphics/Shader.hpp"
+#include "Platform/CoreUtils/Math/matx.hpp"
 #include <memory>
 
 class Camera;
@@ -19,6 +20,7 @@ public:
     const PickingResult& GetLastResult() const { return m_LastResult; }
 
     void OnWindowResize(uint32_t width, uint32_t height);
+    void SetGlobalTransform(const Matx4f& global) { m_GlobalTransform = global; }
 
 private:
     void ExecutePickingPass();
@@ -28,9 +30,10 @@ private:
     std::unique_ptr<Shader> m_PickingShader;
     PickingResult m_LastResult;
 
-    bool m_PickingRequested = false;
-    uint32_t m_PickX = 0;
-    uint32_t m_PickY = 0;
-    uint32_t m_ViewportWidth = 1280;
-    uint32_t m_ViewportHeight = 720;
+    Matx4f   m_GlobalTransform  = Matx4f::identity();
+    bool     m_PickingRequested = false;
+    uint32_t m_PickX            = 0;
+    uint32_t m_PickY            = 0;
+    uint32_t m_ViewportWidth    = 1280;
+    uint32_t m_ViewportHeight   = 720;
 };

@@ -46,7 +46,7 @@ void RenderingSystem::OnUpdate(float deltaTime)
         auto group = m_Scene->GetAllEntitiesWith<TransformComponent, MeshComponent>();
         for (auto entity : group)
         {
-            auto& transform = group.get<TransformComponent>(entity).Transform;
+            auto& tc      = group.get<TransformComponent>(entity);
             auto& meshComp = group.get<MeshComponent>(entity);
 
             if (!meshComp.MeshAsset || !meshComp.MaterialAsset) {
@@ -54,12 +54,14 @@ void RenderingSystem::OnUpdate(float deltaTime)
                 continue;
             }
 
+            Matx4f worldTransform = m_GlobalTransform * tc.GetMatrix();
+
             if (Renderer::IsDebugSelectionModeEnabled()) {
                 const auto& dbgShader = Renderer::GetDebugSelectionShader();
                 dbgShader->Bind();
                 bool pickable = m_Scene->HasComponent<SelectionComponent>(entity);
                 dbgShader->SetUniform1i("u_IsPickable", pickable ? 1 : 0);
-                Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, transform);
+                Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, worldTransform);
             } else {
                 // These uniforms are selection-state dependent, so they must be set here before
                 // Renderer::Submit, which re-binds the same shader and sets the remaining uniforms.
@@ -76,9 +78,9 @@ void RenderingSystem::OnUpdate(float deltaTime)
                 }
 
                 if (meshComp.Wireframe)
-                    Renderer::SubmitWireframe(meshComp.MeshAsset, transform);
+                    Renderer::SubmitWireframe(meshComp.MeshAsset, worldTransform);
                 else
-                    Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, transform);
+                    Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, worldTransform);
             }
         }
         // Tell the Renderer we are done with this frame.

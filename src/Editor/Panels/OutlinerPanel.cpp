@@ -3,9 +3,15 @@
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Core/Components/Component.hpp"
 #include "imgui.h"
+#include <vector>
 
 OutlinerPanel::OutlinerPanel(Scene* scene, SelectionSystem* selectionSystem)
     : m_Scene(scene), m_SelectionSystem(selectionSystem) {}
+
+void OutlinerPanel::TriggerDeleteConfirmation() {
+    if (m_SelectionSystem->GetSelectionContext().GetSelectionCount() > 0)
+        m_ShowDeleteModal = true;
+}
 
 void OutlinerPanel::OnImGuiRender() {
     if (!IsVisible) return;
@@ -24,6 +30,46 @@ void OutlinerPanel::OnImGuiRender() {
             bool additive = ImGui::GetIO().KeyShift;
             selCtx.Select(entity, additive);
         }
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+
+    bool hasSelection = selCtx.GetSelectionCount() > 0;
+    if (!hasSelection) ImGui::BeginDisabled();
+    if (ImGui::Button("Delete Selected", ImVec2(-1, 0)))
+        m_ShowDeleteModal = true;
+    if (!hasSelection) ImGui::EndDisabled();
+
+    // Confirmation modal — must be triggered via OpenPopup once, then handled every frame.
+    if (m_ShowDeleteModal) {
+        ImGui::OpenPopup("Delete?");
+        m_ShowDeleteModal = false;
+    }
+    if (ImGui::BeginPopupModal("Delete?", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        size_t count = selCtx.GetSelectionCount();
+        ImGui::Text("Permanently delete %zu object(s)?", count);
+        ImGui::Spacing();
+        for (auto entity : selCtx.GetSelectedEntities()) {
+            if (m_Scene->HasComponent<NameComponent>(entity))
+                ImGui::TextDisabled("  %s", m_Scene->GetComponent<NameComponent>(entity).Name.c_str());
+        }
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+        if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            ImGui::CloseCurrentPopup();
+        ImGui::SameLine();
+        if (ImGui::Button("Delete", ImVec2(120, 0))) {
+            // Snapshot before clearing selection since ClearSelection modifies the set.
+            std::vector<Entity> toDelete(selCtx.GetSelectedEntities().begin(),
+                                         selCtx.GetSelectedEntities().end());
+            selCtx.ClearSelection();
+            for (Entity e : toDelete)
+                m_Scene->DestroyEntity(e);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
 
     ImGui::End();

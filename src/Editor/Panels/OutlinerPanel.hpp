@@ -10,7 +10,11 @@ public:
     OutlinerPanel(Scene* scene, SelectionSystem* selectionSystem);
     void OnImGuiRender() override;
 
+    // Called externally (e.g. Del key) to open the delete confirmation popup next frame.
+    void TriggerDeleteConfirmation();
+
 private:
     Scene*           m_Scene;
     SelectionSystem* m_SelectionSystem;
+    bool             m_ShowDeleteModal = false;
 };

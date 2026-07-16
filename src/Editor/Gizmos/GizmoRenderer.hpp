@@ -2,7 +2,7 @@
 #pragma once
 #include "Editor/Gizmos/Gizmo.hpp"
 #include "Core/Entity.hpp"
-#include "Platform/CoreUtils/Math/matx.hpp"
+#include "Core/Components/Component.hpp"
 #include <memory>
 #include <cstdint>
 
@@ -32,6 +32,7 @@ public:
     bool OnMouseMoved(float viewportX, float viewportY);
 
     void SetViewportSize(uint32_t w, uint32_t h);
+    void SetGlobalTransform(const Matx4f& global) { m_GlobalTransform = global; }
 
 private:
     std::shared_ptr<Mesh> BuildArrowMesh();
@@ -50,13 +51,14 @@ private:
     std::shared_ptr<Mesh> m_ArrowMesh;
     std::shared_ptr<Mesh> m_CenterMesh;
 
-    bool      m_IsDragging      = false;
-    GizmoAxis m_DragAxis        = GizmoAxis::None;
-    Vec3      m_DragStartHitPt  {0.0f, 0.0f, 0.0f};
+    bool      m_IsDragging     = false;
+    GizmoAxis m_DragAxis       = GizmoAxis::None;
+    Vec3      m_DragStartHitPt {0.0f, 0.0f, 0.0f};
 
-    GizmoAxis    m_HoveredAxis          = GizmoAxis::None;
-    entt::entity m_DragEntity          = entt::null;
-    Matx4f       m_TransformAtDragStart = Matx4f::identity();
+    GizmoAxis        m_HoveredAxis         = GizmoAxis::None;
+    entt::entity     m_DragEntity          = entt::null;
+    TransformComponent m_TransformAtDragStart;
+    Matx4f           m_GlobalTransform     = Matx4f::identity();
 
     HistorySystem* m_HistSys = nullptr;
 
