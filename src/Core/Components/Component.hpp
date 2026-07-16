@@ -25,9 +25,9 @@ struct NameComponent : public Component {
 
 struct TransformComponent : public Component
 {
-    Vec3       Translation = {0.0f, 0.0f, 0.0f};
-    Quaternion Rotation    = Quaternion::identity();
-    Vec3       Scale       = {1.0f, 1.0f, 1.0f};
+    Vec3 Translation  = {0.0f, 0.0f, 0.0f};
+    Vec3 EulerDegrees = {0.0f, 0.0f, 0.0f};
+    Vec3 Scale        = {1.0f, 1.0f, 1.0f};
 
     TransformComponent() = default;
     TransformComponent(const TransformComponent&) = default;
@@ -35,12 +35,8 @@ struct TransformComponent : public Component
 
     Matx4f GetMatrix() const {
         return Matx4f::translation(Translation)
-             * QuatRotation(Rotation)
+             * Matx4f::rotation(EulerDegrees.x, EulerDegrees.y, EulerDegrees.z)
              * Matx4f::scaling(Scale);
-    }
-
-    Vec3 GetEulerDegrees() const {
-        return QuatToEulerDegrees(Rotation);
     }
 };
 

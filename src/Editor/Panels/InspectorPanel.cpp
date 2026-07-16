@@ -61,14 +61,14 @@ void InspectorPanel::OnImGuiRender() {
                 m_HistSys->Push(std::make_unique<TransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
 
             // --- Rotation (Euler degrees, ZYX extrinsic) ---
-            Vec3 euler = tc.GetEulerDegrees();
+            Vec3 euler = tc.EulerDegrees;
             ImGui::DragFloat3("Rotation", &euler.x, 0.5f);
             if (ImGui::IsItemActivated()) {
                 m_TransformSnapshot = tc;
                 m_SnapshotEntity    = entity;
             }
             if (ImGui::IsItemActive())
-                tc.Rotation = QuatFromEulerDegrees(euler);
+                tc.EulerDegrees = euler;
             if (ImGui::IsItemDeactivatedAfterEdit() && m_HistSys && entity == m_SnapshotEntity)
                 m_HistSys->Push(std::make_unique<TransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
 

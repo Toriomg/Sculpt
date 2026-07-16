@@ -6,6 +6,4 @@
 
 Vec3 rotateVec3(const Vec3& v, const Vec3& axis, float angle);
 
-Matx4f    QuatRotation(const Quaternion& q);
-Quaternion QuatFromEulerDegrees(const Vec3& eulerDegrees);
-Vec3       QuatToEulerDegrees(const Quaternion& q);
+Matx4f QuatRotation(const Quaternion& q);
