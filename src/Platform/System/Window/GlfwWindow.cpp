@@ -1,4 +1,6 @@
 #include "GlfwWindow.hpp"
+
+#include <utility>
 #include "Platform/CoreUtils/Log.hpp"
 
 std::unique_ptr<Window> Window::Create(std::string_view title, uint32_t width, uint32_t height) {
@@ -20,7 +22,7 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
 
     CORE_LOG_INFO("Creating window {0} ({1}, {2})", title, width, height);
 
-    if (!glfwInit()) {
+    if (glfwInit() == 0) {
         CORE_LOG_CRITICAL("ERROR: glfwInit() failed.");
         return;
     }
@@ -32,7 +34,7 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
 
     m_Window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height),
                                 m_Data.Title.c_str(), nullptr, nullptr);
-    if (!m_Window) {
+    if (m_Window == nullptr) {
         glfwTerminate();
         CORE_LOG_CRITICAL("ERROR: glfwCreateWindow() failed.");
         return;
@@ -116,7 +118,7 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
 
     // On HiDPI displays the framebuffer can be larger than the window in screen coordinates;
     // reading it back ensures m_Data reflects the actual pixel dimensions from the start.
-    int fbWidth, fbHeight;
+    int fbWidth = 0, fbHeight = 0;
     glfwGetFramebufferSize(m_Window, &fbWidth, &fbHeight);
     m_Data.Width  = static_cast<uint32_t>(fbWidth);
     m_Data.Height = static_cast<uint32_t>(fbHeight);
@@ -149,10 +151,10 @@ void GlfwWindow::OnUpdate() {
 
     // Wayland compositors do not always fire the GLFW framebuffer-size callback reliably,
     // so we poll the actual size each frame and synthesize the event when it changes.
-    int fbWidth, fbHeight;
+    int fbWidth = 0, fbHeight = 0;
     glfwGetFramebufferSize(m_Window, &fbWidth, &fbHeight);
-    if (static_cast<uint32_t>(fbWidth) != m_Data.Width ||
-        static_cast<uint32_t>(fbHeight) != m_Data.Height)
+    if (std::cmp_not_equal(fbWidth, m_Data.Width) ||
+        std::cmp_not_equal(fbHeight, m_Data.Height))
     {
         m_Data.Width  = static_cast<uint32_t>(fbWidth);
         m_Data.Height = static_cast<uint32_t>(fbHeight);

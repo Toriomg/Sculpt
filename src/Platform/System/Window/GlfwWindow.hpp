@@ -27,7 +27,7 @@ private:
     void Init(std::string_view title, uint32_t width, uint32_t height);
     void Shutdown();
 
-    GLFWwindow* m_Window;
+    GLFWwindow* m_Window{};
 
     struct WindowData {
         std::string Title;

@@ -7,26 +7,26 @@ PickingTexture::PickingTexture(uint32_t width, uint32_t height) : m_Width(width)
 }
 
 PickingTexture::~PickingTexture() {
-    if (m_FramebufferID) { glDeleteFramebuffers(1, &m_FramebufferID); }
-    if (m_IDTextureID) { glDeleteTextures(1, &m_IDTextureID); }
-    if (m_WorldPosTextureID) { glDeleteTextures(1, &m_WorldPosTextureID); }
-    if (m_DepthTextureID) { glDeleteTextures(1, &m_DepthTextureID); }
+    if (m_FramebufferID != 0u) { glDeleteFramebuffers(1, &m_FramebufferID); }
+    if (m_IDTextureID != 0u) { glDeleteTextures(1, &m_IDTextureID); }
+    if (m_WorldPosTextureID != 0u) { glDeleteTextures(1, &m_WorldPosTextureID); }
+    if (m_DepthTextureID != 0u) { glDeleteTextures(1, &m_DepthTextureID); }
 }
 
 void PickingTexture::Invalidate() {
-    if (m_FramebufferID) {
+    if (m_FramebufferID != 0u) {
         glDeleteFramebuffers(1, &m_FramebufferID);
         m_FramebufferID = 0;
     }
-    if (m_IDTextureID) {
+    if (m_IDTextureID != 0u) {
         glDeleteTextures(1, &m_IDTextureID);
         m_IDTextureID = 0;
     }
-    if (m_WorldPosTextureID) {
+    if (m_WorldPosTextureID != 0u) {
         glDeleteTextures(1, &m_WorldPosTextureID);
         m_WorldPosTextureID = 0;
     }
-    if (m_DepthTextureID) {
+    if (m_DepthTextureID != 0u) {
         glDeleteTextures(1, &m_DepthTextureID);
         m_DepthTextureID = 0;
     }
@@ -72,7 +72,7 @@ void PickingTexture::Invalidate() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void PickingTexture::Bind() {
+void PickingTexture::Bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
     glViewport(0, 0, m_Width, m_Height);
 }

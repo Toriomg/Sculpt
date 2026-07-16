@@ -1,4 +1,8 @@
 #include "Application.hpp"
+
+#include <ranges>
+
+#include <utility>
 #include "AssetManager/AssetManager.hpp"
 #include "Editor/EditorLayer.hpp"
 #include "Editor/ImGuiLayer.hpp"
@@ -7,8 +11,8 @@
 #include "Platform/System/Time.hpp"
 #include "Renderer/Renderer.hpp"
 
-Application::Application(std::string const& name, unsigned int width, unsigned int height)
-    : m_Window(nullptr), m_AppName(name) {
+Application::Application(std::string  name, unsigned int  /*width*/, unsigned int  /*height*/)
+    : m_Window(nullptr), m_AppName(std::move(name)) {
     Log::Init();
     AssetManager::Init();
     TaskQueue::Init();
@@ -55,9 +59,9 @@ void Application::Run() {
         // ImGui panels run BEFORE the scene update so ViewportPanel can resize the FBO
         // before the scene renders into it. The viewport displays the previous frame's
         // render — a 1-frame lag that is imperceptible at interactive frame rates.
-        m_ImGuiLayer->Begin();
+        ImGuiLayer::Begin();
         for (auto& layer : m_LayerStack) { layer->OnImGuiRender(); }
-        m_ImGuiLayer->End();
+        ImGuiLayer::End();
 
         for (auto& layer : m_LayerStack) { layer->OnUpdate(Time::GetDeltaTime()); }
         m_Window->OnUpdate();
@@ -71,13 +75,13 @@ void Application::OnEvent(Event& e) {
 
     // Reverse iteration gives the topmost (most recently pushed) layer first,
     // so overlay layers can consume events before layers beneath them.
-    for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+    for (auto & it : std::views::reverse(m_LayerStack)) {
         if (e.Handled) { break; }
-        (*it)->OnEvent(e);
+        it->OnEvent(e);
     }
 }
 
-bool Application::OnWindowClose(WindowCloseEvent& e) {
+bool Application::OnWindowClose(WindowCloseEvent&  /*e*/) {
     m_Running = false;
     CORE_LOG_INFO("Window close event received. Shutting down.");
     return true;  // Return true: we handled it, no other layer needs it.

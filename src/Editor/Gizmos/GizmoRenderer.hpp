@@ -28,9 +28,9 @@ public:
     void Draw();
 
     // Returns true if the event was consumed by the gizmo (suppresses SelectionSystem).
-    bool OnMouseButtonPressed(float viewportX, float viewportY);
+    bool OnMouseButtonPressed(float vx, float vy);
     bool OnMouseButtonReleased();
-    bool OnMouseMoved(float viewportX, float viewportY);
+    bool OnMouseMoved(float vx, float vy);
 
     void SetViewportSize(uint32_t w, uint32_t h);
     void SetGlobalTransform(Matx4f const& global) { m_GlobalTransform = global; }
@@ -41,10 +41,10 @@ private:
     GizmoAxis HitTestAxes(float mouseX, float mouseY);
     GizmoAxis HitTestRings(float mouseX, float mouseY);
     Vec3 ScreenToRayDirection(float x, float y) const;
-    Vec3 RayAxisClosestPoint(Vec3 rayOrigin, Vec3 rayDir, Vec3 axisOrigin, Vec3 axisDir) const;
+    static Vec3 RayAxisClosestPoint(Vec3 P, Vec3 D, Vec3 Q, Vec3 axisDir) ;
     // Returns false if ray is too parallel to the plane (grazing angle).
-    bool RayPlaneIntersect(Vec3 rayOrigin, Vec3 rayDir, Vec3 planePoint, Vec3 planeNormal,
-                           float& outT) const;
+    static bool RayPlaneIntersect(Vec3 rayOrigin, Vec3 rayDir, Vec3 planePoint, Vec3 planeNormal,
+                           float& outT) ;
 
     // Resolves selection → world position + view-distance scale. Returns nullopt when nothing is
     // selected.

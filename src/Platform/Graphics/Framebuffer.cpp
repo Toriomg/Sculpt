@@ -17,7 +17,7 @@ Framebuffer::~Framebuffer() {
 void Framebuffer::Invalidate() {
     // If we already have a framebuffer, delete the old resources first.
     // This is important for the Resize() functionality.
-    if (m_RendererID) {
+    if (m_RendererID != 0u) {
         glDeleteFramebuffers(1, &m_RendererID);
         glDeleteTextures(1, &m_ColorAttachmentID);
         glDeleteTextures(1, &m_DepthAttachmentID);
@@ -74,7 +74,7 @@ void Framebuffer::Resize(uint32_t width, uint32_t height) {
     Invalidate();
 }
 
-void Framebuffer::Bind() {
+void Framebuffer::Bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
     // When we bind our FBO, we should also set the viewport to match its size.
     glViewport(0, 0, m_Width, m_Height);

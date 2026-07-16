@@ -3,20 +3,23 @@
 
 void HistorySystem::Push(std::unique_ptr<Command> cmd) {
     cmd->Execute();
-    if (m_UndoStack.size() >= k_MaxHistory) m_UndoStack.erase(m_UndoStack.begin());
+    if (m_UndoStack.size() >= k_MaxHistory) { m_UndoStack.erase(m_UndoStack.begin());
+}
     m_UndoStack.push_back(std::move(cmd));
     m_RedoStack.clear();
 }
 
 void HistorySystem::Undo() {
-    if (m_UndoStack.empty()) return;
+    if (m_UndoStack.empty()) { return;
+}
     m_UndoStack.back()->Undo();
     m_RedoStack.push_back(std::move(m_UndoStack.back()));
     m_UndoStack.pop_back();
 }
 
 void HistorySystem::Redo() {
-    if (m_RedoStack.empty()) return;
+    if (m_RedoStack.empty()) { return;
+}
     m_RedoStack.back()->Execute();
     m_UndoStack.push_back(std::move(m_RedoStack.back()));
     m_RedoStack.pop_back();

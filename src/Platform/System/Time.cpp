@@ -15,7 +15,7 @@ void Time::Init() {
 
 void Time::Update() {
     // Get the current time from GLFW
-    float currentTime = static_cast<float>(glfwGetTime());
+    auto const currentTime = static_cast<float>(glfwGetTime());
 
     // Calculate the difference in time from the last frame
     s_DeltaTime = currentTime - s_LastFrameTime;

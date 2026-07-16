@@ -41,8 +41,8 @@ private:
     bool OnMouseMoved(MouseMovedEvent& e);
     bool OnMouseScrolled(MouseScrolledEvent& e);
     bool OnKeyPressed(KeyPressedEvent& e);
-    bool OnKeyReleased(KeyReleasedEvent& e);
-    bool OnWindowResize(WindowResizeEvent& e);
+    static bool OnKeyReleased(KeyReleasedEvent& e);
+    static bool OnWindowResize(WindowResizeEvent& e);
 
     void OnViewportResize(uint32_t width, uint32_t height);
 

@@ -16,8 +16,8 @@ public:
     PickingTexture(uint32_t width, uint32_t height);
     ~PickingTexture();
 
-    void Bind();
-    void Unbind();
+    void Bind() const;
+    static void Unbind();
     void Resize(uint32_t width, uint32_t height);
 
     PickingResult ReadPixel(uint32_t x, uint32_t y) const;

@@ -31,15 +31,16 @@ void AssetManager::Shutdown() {
 AssetHandle AssetManager::Load(std::string const& filepath) {
     // Return the cached handle if this path was already loaded, preventing duplicate GPU uploads.
     auto it = s_Data->pathToHandleMap.find(filepath);
-    if (it != s_Data->pathToHandleMap.end()) return it->second;
+    if (it != s_Data->pathToHandleMap.end()) { return it->second;
+}
 
     IAssetLoader* loader = s_Data->loaders.GetLoaderFor(filepath);
-    if (!loader) {
+    if (loader == nullptr) {
         LOG_ERROR("AssetManager: No loader for: {0}", filepath);
         return AssetHandle{};
     }
 
-    std::shared_ptr<IAsset> asset = loader->Load(filepath);
+    std::shared_ptr<IAsset> const asset = loader->Load(filepath);
     if (!asset) {
         LOG_ERROR("AssetManager: Failed to load: {0}", filepath);
         return AssetHandle{};
@@ -64,12 +65,13 @@ public:
     AssetLoadTask(std::string path, std::function<void(AssetHandle)> onComplete)
         : m_Path(std::move(path)), m_OnComplete(std::move(onComplete)) { }
 
-    std::string_view GetName() const override { return "AssetLoad"; }
+    [[nodiscard]] std::string_view GetName() const override { return "AssetLoad"; }
     void Execute() override { }
 
     void Finalize() override {
-        AssetHandle handle = AssetManager::Load(m_Path);
-        if (m_OnComplete) m_OnComplete(handle);
+        AssetHandle const handle = AssetManager::Load(m_Path);
+        if (m_OnComplete) { m_OnComplete(handle);
+}
     }
 
 private:
@@ -80,5 +82,6 @@ private:
 void AssetManager::LoadAsync(std::string const& filepath,
                              std::function<void(AssetHandle)> onComplete) {
     auto result = TaskQueue::Submit<AssetLoadTask>(filepath, std::move(onComplete));
-    if (!result) LOG_ERROR("AssetManager: LoadAsync failed for '{}': {}", filepath, result.error());
+    if (!result) { LOG_ERROR("AssetManager: LoadAsync failed for '{}': {}", filepath, result.error());
+}
 }

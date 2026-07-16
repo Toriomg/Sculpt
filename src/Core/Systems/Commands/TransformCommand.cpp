@@ -7,11 +7,13 @@ TransformCommand::TransformCommand(Scene* scene, Entity entity, TransformCompone
     : m_Scene(scene), m_Entity(entity), m_Before(before), m_After(after) { }
 
 void TransformCommand::Execute() {
-    if (m_Scene->HasComponent<TransformComponent>(m_Entity))
+    if (m_Scene->HasComponent<TransformComponent>(m_Entity)) {
         m_Scene->GetComponent<TransformComponent>(m_Entity) = m_After;
+}
 }
 
 void TransformCommand::Undo() {
-    if (m_Scene->HasComponent<TransformComponent>(m_Entity))
+    if (m_Scene->HasComponent<TransformComponent>(m_Entity)) {
         m_Scene->GetComponent<TransformComponent>(m_Entity) = m_Before;
+}
 }

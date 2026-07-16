@@ -12,7 +12,7 @@ class ImGuiLayer;
 
 class Application {
 public:
-    Application(std::string const& name = "3D MODELER", unsigned int width = 1470,
+    Application(std::string  name = "3D MODELER", unsigned int width = 1470,
                 unsigned int height = 810);
     ~Application();
 

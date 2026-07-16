@@ -7,7 +7,7 @@ void LoaderSystem::RegisterLoader(std::string const& extension,
 }
 
 IAssetLoader* LoaderSystem::GetLoaderFor(std::string const& filepath) {
-    std::string extension = std::filesystem::path(filepath).extension().string();
+    std::string const extension = std::filesystem::path(filepath).extension().string();
 
     auto it = m_Loaders.find(extension);
     if (it != m_Loaders.end()) { return it->second.get(); }

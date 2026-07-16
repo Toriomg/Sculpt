@@ -21,7 +21,7 @@ public:
     virtual ~Texture();
 
     void Bind(unsigned int slot = 0) const;
-    void Unbind() const;
+    static void Unbind() ;
 
     inline int GetWidth() const { return m_Specification.Width; }
     inline int GetHeight() const { return m_Specification.Height; }

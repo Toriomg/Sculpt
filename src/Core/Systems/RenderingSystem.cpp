@@ -7,13 +7,14 @@
 #include "Renderer/Renderer.hpp"
 #include "SelectionSystem.hpp"
 
-void RenderingSystem::OnUpdate(float deltaTime) {
+void RenderingSystem::OnUpdate(float  /*deltaTime*/) {
     // Safety check: ensure we have a scene to work with.
-    if (!m_Scene) return;
+    if (m_Scene == nullptr) { return;
+}
 
     // 1. Find the primary camera in the scene.
-    Camera* mainCamera = nullptr;
-    Matx4f cameraTransform;
+    Camera const* mainCamera = nullptr;
+    Matx4f const cameraTransform;
     {
         // Get all entities that have both a Transform and a Camera component.
         auto view = m_Scene->GetAllEntitiesWith<TransformComponent, CameraComponent>();
@@ -27,12 +28,12 @@ void RenderingSystem::OnUpdate(float deltaTime) {
     }
 
     // 2. If we found a camera, begin the rendering process.
-    if (mainCamera) {
+    if (mainCamera != nullptr) {
         Renderer::BeginScene(mainCamera->GetViewProjectionMatrix());
 
-        auto selectionSystem                     = m_Scene->GetSystem<SelectionSystem>();
+        auto *selectionSystem                     = m_Scene->GetSystem<SelectionSystem>();
         SelectionContext const* selectionContext = nullptr;
-        if (selectionSystem) { selectionContext = &selectionSystem->GetSelectionContext(); }
+        if (selectionSystem != nullptr) { selectionContext = &selectionSystem->GetSelectionContext(); }
 
         // 3. Find all entities that are renderable and submit them.
         auto group = m_Scene->GetAllEntitiesWith<TransformComponent, MeshComponent>();
@@ -45,12 +46,12 @@ void RenderingSystem::OnUpdate(float deltaTime) {
                 continue;
             }
 
-            Matx4f worldTransform = m_GlobalTransform * tc.GetMatrix();
+            Matx4f const worldTransform = m_GlobalTransform * tc.GetMatrix();
 
             if (Renderer::IsDebugSelectionModeEnabled()) {
                 auto const& dbgShader = Renderer::GetDebugSelectionShader();
                 dbgShader->Bind();
-                bool pickable = m_Scene->HasComponent<SelectionComponent>(entity);
+                bool const pickable = m_Scene->HasComponent<SelectionComponent>(entity);
                 dbgShader->SetUniform1i("u_IsPickable", pickable ? 1 : 0);
                 Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, worldTransform);
             } else {
@@ -61,7 +62,7 @@ void RenderingSystem::OnUpdate(float deltaTime) {
                     "u_cameraPos", mainCamera->GetPosition().x, mainCamera->GetPosition().y,
                     mainCamera->GetPosition().z);
 
-                bool isSelected = selectionContext && selectionContext->IsEntitySelected(entity);
+                bool const isSelected = (selectionContext != nullptr) && selectionContext->IsEntitySelected(entity);
 
                 if (isSelected) {
                     // Stencil write pass: mark pixels covered by this entity
@@ -71,9 +72,10 @@ void RenderingSystem::OnUpdate(float deltaTime) {
                     glStencilMask(0xFF);
                 }
 
-                if (meshComp.Wireframe)
+                if (meshComp.Wireframe) {
                     Renderer::SubmitWireframe(meshComp.MeshAsset, worldTransform);
-                else Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, worldTransform);
+                } else { Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, worldTransform);
+}
 
                 if (isSelected) {
                     // Outline pass: draw scaled mesh only where stencil == 0 (outside the entity)

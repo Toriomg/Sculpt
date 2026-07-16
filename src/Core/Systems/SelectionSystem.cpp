@@ -5,17 +5,17 @@
 void SelectionContext::Select(Entity entity, bool additive) {
     if (!additive) { m_SelectedEntities.clear(); }
 
-    bool wasAdded = m_SelectedEntities.insert(entity).second;
+    bool const wasAdded = m_SelectedEntities.insert(entity).second;
     if (wasAdded && OnSelectionChanged) {
-        std::vector<Entity> selected(m_SelectedEntities.begin(), m_SelectedEntities.end());
+        std::vector<Entity> const selected(m_SelectedEntities.begin(), m_SelectedEntities.end());
         OnSelectionChanged(selected);
     }
 }
 
 void SelectionContext::Deselect(Entity entity) {
-    bool wasRemoved = m_SelectedEntities.erase(entity) > 0;
+    bool const wasRemoved = m_SelectedEntities.erase(entity) > 0;
     if (wasRemoved && OnSelectionChanged) {
-        std::vector<Entity> selected(m_SelectedEntities.begin(), m_SelectedEntities.end());
+        std::vector<Entity> const selected(m_SelectedEntities.begin(), m_SelectedEntities.end());
         OnSelectionChanged(selected);
     }
 }
@@ -31,12 +31,12 @@ void SelectionContext::SelectMultiple(std::vector<Entity> const& entities, bool 
     if (!additive) { m_SelectedEntities.clear(); }
 
     bool changed = false;
-    for (Entity entity : entities) {
+    for (Entity const entity : entities) {
         if (m_SelectedEntities.insert(entity).second) { changed = true; }
     }
 
     if (changed && OnSelectionChanged) {
-        std::vector<Entity> selected(m_SelectedEntities.begin(), m_SelectedEntities.end());
+        std::vector<Entity> const selected(m_SelectedEntities.begin(), m_SelectedEntities.end());
         OnSelectionChanged(selected);
     }
 }
@@ -48,12 +48,12 @@ void SelectionSystem::OnAttach(Scene* scene) {
     m_PickingSystem = scene->GetSystem<PickingSystem>();
 }
 
-void SelectionSystem::OnUpdate(float deltaTime) {
-    if (!m_Scene || !m_PickingSystem) { return; }
+void SelectionSystem::OnUpdate(float  /*deltaTime*/) {
+    if ((m_Scene == nullptr) || (m_PickingSystem == nullptr)) { return; }
 }
 
 void SelectionSystem::OnMouseClick(uint32_t screenX, uint32_t screenY, bool additive) {
-    if (!m_PickingSystem) { return; }
+    if (m_PickingSystem == nullptr) { return; }
 
     LOG_TRACE("SelectionSystem::OnMouseClick screen=({},{})", screenX, screenY);
 
@@ -67,7 +67,7 @@ void SelectionSystem::OnMouseClick(uint32_t screenX, uint32_t screenY, bool addi
     LOG_TRACE("SelectionSystem: result valid={} objectID={}", result.Valid, result.ObjectID);
 
     if (result.Valid) {
-        Entity entity = static_cast<Entity>(result.ObjectID - 1u);
+        auto const entity = static_cast<Entity>(result.ObjectID - 1u);
         m_SelectionContext.Select(entity, additive);
     } else {
         if (!additive) { m_SelectionContext.ClearSelection(); }

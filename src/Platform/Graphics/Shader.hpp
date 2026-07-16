@@ -27,7 +27,7 @@ public:
     ~Shader();
 
     void Bind() const;
-    void Unbind() const;
+    static void Unbind() ;
 
     // Set uniform functions
     void SetUniform1i(std::string const& name, int value);
@@ -41,7 +41,7 @@ public:
 private:
     static std::string ReadFile(std::string_view filepath);
     static ShaderProgramSource ParseShader(std::string_view filepath);
-    unsigned int CompileShader(std::string const& source, unsigned int type);
+    static unsigned int CompileShader(std::string const& source, unsigned int type);
     unsigned int CreateShader(std::string const& vertexShader, std::string const& fragmentShader);
     GLint GetUniformLocation(std::string const& name) const;
 };

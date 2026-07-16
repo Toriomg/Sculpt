@@ -9,7 +9,7 @@
 class AssetRegistry {
 public:
     // Add a new asset to the registry
-    void Register(std::shared_ptr<IAsset> asset);
+    void Register(const std::shared_ptr<IAsset>& asset);
 
     // Retrieves an asset from the registry.
     // Returns a shared_ptr, which will be empty if the asset is gone.

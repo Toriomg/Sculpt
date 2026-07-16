@@ -14,7 +14,7 @@ void PickingSystem::OnAttach(Scene* scene) {
     System::OnAttach(scene);
 }
 
-void PickingSystem::OnUpdate(float deltaTime) {
+void PickingSystem::OnUpdate(float  /*deltaTime*/) {
     if (!m_PickingRequested) { return; }
 
     ExecutePickingPass();
@@ -28,9 +28,9 @@ void PickingSystem::RequestPickingPass(uint32_t screenX, uint32_t screenY) {
 }
 
 void PickingSystem::ExecutePickingPass() {
-    if (!m_Scene) { return; }
+    if (m_Scene == nullptr) { return; }
 
-    Camera* camera  = nullptr;
+    Camera const* camera  = nullptr;
     auto cameraView = m_Scene->GetAllEntitiesWith<CameraComponent>();
     for (auto entity : cameraView) {
         auto& cam = cameraView.get<CameraComponent>(entity);
@@ -40,10 +40,10 @@ void PickingSystem::ExecutePickingPass() {
         }
     }
 
-    if (!camera) { return; }
+    if (camera == nullptr) { return; }
 
-    uint32_t cameraWidth  = static_cast<uint32_t>(camera->GetViewportWidth());
-    uint32_t cameraHeight = static_cast<uint32_t>(camera->GetViewportHeight());
+    auto const cameraWidth  = static_cast<uint32_t>(camera->GetViewportWidth());
+    auto const cameraHeight = static_cast<uint32_t>(camera->GetViewportHeight());
     if (cameraWidth != m_ViewportWidth || cameraHeight != m_ViewportHeight) {
         OnWindowResize(cameraWidth, cameraHeight);
     }
@@ -76,7 +76,7 @@ void PickingSystem::RenderPickingPass(Camera const& camera) {
         // +1 offset: pixel value 0 means "no entity" (the clear color), so all valid IDs start
         // at 1. PickingTexture::ReadPixel reverses this by subtracting 1 before returning the
         // entity.
-        uint32_t entityID = static_cast<uint32_t>(entity) + 1u;
+        uint32_t const entityID = static_cast<uint32_t>(entity) + 1u;
         m_PickingShader->SetUniform1ui("u_ObjectID", entityID);
         m_PickingShader->SetUniformMat4f("u_Model", m_GlobalTransform * transform.GetMatrix());
 
@@ -88,7 +88,7 @@ void PickingSystem::RenderPickingPass(Camera const& camera) {
         glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr);
     }
 
-    m_PickingTexture->Unbind();
+    PickingTexture::Unbind();
     // Restore the viewport: PickingTexture::Bind() sets it to the picking FBO's dimensions,
     // which may differ from the main viewport after a resize event arrives before render.
     glViewport(0, 0, m_ViewportWidth, m_ViewportHeight);

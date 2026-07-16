@@ -1,28 +1,37 @@
 #include "EditorCameraController.hpp"
+
+#include <algorithm>
 #include "Platform/System/Input/Input.hpp"
 
 EditorCameraController::EditorCameraController(Camera* camera) : m_CameraToControl(camera) { }
 
 void EditorCameraController::OnUpdate(float deltaTime) {
     // Safety check
-    if (!m_CameraToControl) return;
+    if (m_CameraToControl == nullptr) { return;
+}
 
     // --- Keyboard Movement ---
     float const velocity = m_MovementSpeed * deltaTime;
     Vec3 currentPosition = m_CameraToControl->GetPosition();
 
-    if (Input::IsKeyPressed(KeyCode::W))
+    if (Input::IsKeyPressed(KeyCode::W)) {
         currentPosition += m_CameraToControl->GetFrontDirection() * velocity;
-    if (Input::IsKeyPressed(KeyCode::S))
+}
+    if (Input::IsKeyPressed(KeyCode::S)) {
         currentPosition -= m_CameraToControl->GetFrontDirection() * velocity;
-    if (Input::IsKeyPressed(KeyCode::A))
+}
+    if (Input::IsKeyPressed(KeyCode::A)) {
         currentPosition += m_CameraToControl->GetRightDirection() * velocity;
-    if (Input::IsKeyPressed(KeyCode::D))
+}
+    if (Input::IsKeyPressed(KeyCode::D)) {
         currentPosition -= m_CameraToControl->GetRightDirection() * velocity;
-    if (Input::IsKeyPressed(KeyCode::LeftShift))
+}
+    if (Input::IsKeyPressed(KeyCode::LeftShift)) {
         currentPosition -= m_CameraToControl->GetUpDirection() * velocity;
-    if (Input::IsKeyPressed(KeyCode::Space))
+}
+    if (Input::IsKeyPressed(KeyCode::Space)) {
         currentPosition += m_CameraToControl->GetUpDirection() * velocity;
+}
 
     m_CameraToControl->SetPosition(currentPosition);
 
@@ -43,8 +52,8 @@ void EditorCameraController::OnUpdate(float deltaTime) {
 
         // Clamped to ±89° rather than ±90° to avoid the lookAt singularity when
         // front and worldUp become parallel (cross-product yields a zero right vector).
-        if (currentPitch > 89.0f) currentPitch = 89.0f;
-        if (currentPitch < -89.0f) currentPitch = -89.0f;
+        currentPitch = std::min(currentPitch, 89.0f);
+        currentPitch = std::max(currentPitch, -89.0f);
 
         m_CameraToControl->SetRotation(currentPitch, currentYaw);
     } else {
@@ -55,7 +64,8 @@ void EditorCameraController::OnUpdate(float deltaTime) {
 }
 
 void EditorCameraController::OnScrolled(float yOffset) {
-    if (!m_CameraToControl) return;
+    if (m_CameraToControl == nullptr) { return;
+}
 
     Vec3 position = m_CameraToControl->GetPosition();
     position += m_CameraToControl->GetFrontDirection() * (yOffset * m_ScrollSpeed);

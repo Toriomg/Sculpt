@@ -37,18 +37,20 @@ static std::optional<TaskQueueData> s_Data;
 void TaskQueue::Init(unsigned int threadCount) {
     s_Data.emplace();
 
-    if (threadCount == 0) threadCount = std::max(1u, std::thread::hardware_concurrency());
+    if (threadCount == 0) { threadCount = std::max(1u, std::thread::hardware_concurrency());
+}
 
     s_Data->workers.reserve(threadCount);
     for (unsigned int i = 0; i < threadCount; ++i) {
-        s_Data->workers.emplace_back([](std::stop_token stopToken) {
+        s_Data->workers.emplace_back([](const std::stop_token& stopToken) {
             while (true) {
                 std::shared_ptr<TaskEntry> entry;
                 {
                     std::unique_lock lock(s_Data->pendingMutex);
-                    bool hasWork = s_Data->pendingCV.wait(
+                    bool const hasWork = s_Data->pendingCV.wait(
                         lock, stopToken, [] { return !s_Data->pendingQueue.empty(); });
-                    if (!hasWork) return;  // stop requested with nothing left to process
+                    if (!hasWork) { return;  // stop requested with nothing left to process
+}
                     entry = std::move(s_Data->pendingQueue.front());
                     s_Data->pendingQueue.pop();
                 }
@@ -67,7 +69,7 @@ void TaskQueue::Init(unsigned int threadCount) {
                 }
 
                 {
-                    std::lock_guard lock(s_Data->completionMutex);
+                    std::scoped_lock const lock(s_Data->completionMutex);
                     s_Data->completionQueue.push(std::move(entry));
                 }
             }
@@ -78,9 +80,11 @@ void TaskQueue::Init(unsigned int threadCount) {
 }
 
 void TaskQueue::Shutdown() {
-    if (!s_Data) return;
+    if (!s_Data) { return;
+}
 
-    for (auto& w : s_Data->workers) w.request_stop();
+    for (auto& w : s_Data->workers) { w.request_stop();
+}
     s_Data->pendingCV.notify_all();
     s_Data->workers.clear();  // join all — no threads access s_Data after this
 
@@ -92,7 +96,8 @@ void TaskQueue::Shutdown() {
 }
 
 std::expected<TaskHandle, std::string> TaskQueue::SubmitTask(std::unique_ptr<ITask> task) {
-    if (!s_Data) return std::unexpected(std::string("TaskQueue not initialized"));
+    if (!s_Data) { return std::unexpected(std::string("TaskQueue not initialized"));
+}
 
     TaskHandle handle = s_Data->nextHandle.fetch_add(1, std::memory_order_relaxed);
     auto entry        = std::make_shared<TaskEntry>(handle, std::move(task));
@@ -102,7 +107,7 @@ std::expected<TaskHandle, std::string> TaskQueue::SubmitTask(std::unique_ptr<ITa
     s_Data->registry.emplace(handle, entry);
 
     {
-        std::lock_guard lock(s_Data->pendingMutex);
+        std::scoped_lock const lock(s_Data->pendingMutex);
         s_Data->pendingQueue.push(std::move(entry));
     }
     s_Data->pendingCV.notify_one();
@@ -111,28 +116,32 @@ std::expected<TaskHandle, std::string> TaskQueue::SubmitTask(std::unique_ptr<ITa
 }
 
 void TaskQueue::ProcessCompletions() {
-    if (!s_Data) return;
+    if (!s_Data) { return;
+}
 
     std::queue<std::shared_ptr<TaskEntry>> done;
     {
-        std::lock_guard lock(s_Data->completionMutex);
+        std::scoped_lock const lock(s_Data->completionMutex);
         std::swap(done, s_Data->completionQueue);
     }
 
     while (!done.empty()) {
         auto& entry = done.front();
-        if (entry->status.load(std::memory_order_acquire) == TaskStatus::Completed)
+        if (entry->status.load(std::memory_order_acquire) == TaskStatus::Completed) {
             entry->task->Finalize();
+}
         s_Data->registry.erase(entry->handle);
         done.pop();
     }
 }
 
 TaskStatus TaskQueue::GetStatus(TaskHandle handle) {
-    if (!s_Data || handle == k_InvalidTaskHandle) return TaskStatus::Failed;
+    if (!s_Data || handle == k_InvalidTaskHandle) { return TaskStatus::Failed;
+}
     auto it = s_Data->registry.find(handle);
-    if (it == s_Data->registry.end())
+    if (it == s_Data->registry.end()) {
         return TaskStatus::Completed;  // already finalized and removed from registry
+}
     return it->second->status.load(std::memory_order_acquire);
 }
 

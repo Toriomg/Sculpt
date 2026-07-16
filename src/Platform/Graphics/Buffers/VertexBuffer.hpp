@@ -4,7 +4,7 @@
 
 class VertexBuffer {
 private:
-    unsigned int m_RendererID;
+    unsigned int m_RendererID{};
 
 public:
     VertexBuffer(
@@ -13,6 +13,6 @@ public:
     ~VertexBuffer();        // Destructor to clean up the vertex buffer
 
     void Bind() const;
-    void Unbind() const;
+    static void Unbind() ;
     void SetData(void const* data, unsigned int size, unsigned int offset = 0) const;
 };

@@ -16,7 +16,7 @@ std::shared_ptr<IAsset> MeshLoader::Load(std::string const& filepath) {
                                                            aiProcess_FlipUVs |
                                                            aiProcess_CalcTangentSpace);
 
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+    if ((scene == nullptr) || ((scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || (scene->mRootNode == nullptr)) {
         CORE_LOG_ERROR("[MeshLoader] Assimp error loading {0}: {1}", filepath,
                        importer.GetErrorString());
         return nullptr;
@@ -28,7 +28,7 @@ std::shared_ptr<IAsset> MeshLoader::Load(std::string const& filepath) {
     }
 
     // Only the first mesh in the file is imported; multi-mesh files are not supported yet.
-    aiMesh* mesh = scene->mMeshes[0];
+    aiMesh const* mesh = scene->mMeshes[0];
 
     std::vector<Vertex> vertices;
     vertices.reserve(mesh->mNumVertices);
@@ -48,7 +48,7 @@ std::shared_ptr<IAsset> MeshLoader::Load(std::string const& filepath) {
             vertex.normal = {0.0f, 0.0f, 0.0f};
         }
 
-        if (mesh->mTextureCoords[0]) {
+        if (mesh->mTextureCoords[0] != nullptr) {
             vertex.texCoord.x = mesh->mTextureCoords[0][i].x;
             vertex.texCoord.y = mesh->mTextureCoords[0][i].y;
         } else {
@@ -60,7 +60,7 @@ std::shared_ptr<IAsset> MeshLoader::Load(std::string const& filepath) {
 
     std::vector<unsigned int> indices;
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
-        aiFace face = mesh->mFaces[i];
+        aiFace const face = mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++) { indices.push_back(face.mIndices[j]); }
     }
 

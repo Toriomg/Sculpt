@@ -74,7 +74,7 @@ void Renderer::Submit(std::shared_ptr<Mesh> const& mesh, std::shared_ptr<Materia
     shader->SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
 
     bool hasTexture           = false;
-    AssetHandle textureHandle = material->GetTextureHandle();
+    AssetHandle const textureHandle = material->GetTextureHandle();
     if (textureHandle) {
         auto texture = std::static_pointer_cast<Texture>(AssetManager::Get(textureHandle));
         if (texture) {
@@ -88,7 +88,7 @@ void Renderer::Submit(std::shared_ptr<Mesh> const& mesh, std::shared_ptr<Materia
     shader->SetUniform1i("u_HasTexture", hasTexture ? 1 : 0);
 
     RenderCommand::Draw(vertexArray, indexBuffer);
-    shader->Unbind();
+    Shader::Unbind();
 }
 
 void Renderer::SubmitWireframe(std::shared_ptr<Mesh> const& mesh, Matx4f const& transform) {
@@ -117,7 +117,7 @@ void Renderer::SubmitWireframe(std::shared_ptr<Mesh> const& mesh, Matx4f const& 
     shader->SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
     RenderCommand::DrawPoints(vertexArray, mesh->GetVertexCount());
 
-    shader->Unbind();
+    Shader::Unbind();
 }
 
 void Renderer::SubmitOutline(std::shared_ptr<Mesh> const& mesh, Vec4 const& color, float thickness,
@@ -129,7 +129,7 @@ void Renderer::SubmitOutline(std::shared_ptr<Mesh> const& mesh, Vec4 const& colo
     shader->SetUniform4f("u_OutlineColor", color.x, color.y, color.z, color.w);
     shader->SetUniform1f("u_OutlineThickness", thickness);
     RenderCommand::Draw(mesh->GetVertexArray(), mesh->GetIndexBuffer());
-    shader->Unbind();
+    Shader::Unbind();
 }
 
 void Renderer::SubmitFlat(std::shared_ptr<Mesh> const& mesh, Vec4 const& color,
@@ -140,5 +140,5 @@ void Renderer::SubmitFlat(std::shared_ptr<Mesh> const& mesh, Vec4 const& color,
     shader->SetUniformMat4f("u_Model", transform);
     shader->SetUniform4f("u_Color", color.x, color.y, color.z, color.w);
     RenderCommand::Draw(mesh->GetVertexArray(), mesh->GetIndexBuffer());
-    shader->Unbind();
+    Shader::Unbind();
 }

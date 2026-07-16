@@ -14,8 +14,8 @@ public:
     void OnAttach() override;
     void OnDetach() override;
 
-    void Begin();
-    void End();
+    static void Begin();
+    static void End();
 
 private:
     GLFWwindow* m_Window;

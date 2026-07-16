@@ -1,6 +1,6 @@
 #include "AssetRegistry.hpp"
 
-void AssetRegistry::Register(std::shared_ptr<IAsset> asset) {
+void AssetRegistry::Register(const std::shared_ptr<IAsset>& asset) {
     if (asset && asset->Handle) { m_Assets[asset->Handle] = asset; }
 }
 

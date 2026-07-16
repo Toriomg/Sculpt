@@ -17,7 +17,7 @@ Scene::Scene() {
     for (auto const& system : m_Systems) { system->OnAttach(this); }
 }
 
-Scene::~Scene() { }
+Scene::~Scene() = default;
 
 Entity Scene::CreateGameObject(std::string const& name) {
     Entity entity = m_Registry.create();

@@ -2,7 +2,8 @@
 
 void GLClearError() {
     // Keep getting errors until there are no more
-    while (glGetError() != GL_NO_ERROR);
+    while (glGetError() != GL_NO_ERROR) {;
+}
 }
 
 bool GLLogCall(char const* function, char const* file, int line) {

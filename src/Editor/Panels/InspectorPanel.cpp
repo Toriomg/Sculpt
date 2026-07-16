@@ -11,12 +11,13 @@
 #include <array>
 
 InspectorPanel::InspectorPanel(Scene* scene, SelectionContext* selectionContext)
-    : m_Scene(scene), m_SelectionContext(selectionContext) {
-    m_HistSys = scene->GetSystem<HistorySystem>();
+    : m_Scene(scene), m_SelectionContext(selectionContext), m_HistSys(scene->GetSystem<HistorySystem>()) {
+    
 }
 
 void InspectorPanel::OnImGuiRender() {
-    if (!IsVisible) return;
+    if (!IsVisible) { return;
+}
     ImGui::SetNextWindowPos(ImVec2{1210.f, 20.f}, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2{260.f, 500.f}, ImGuiCond_FirstUseEver);
     ImGui::Begin("Inspector");
@@ -32,13 +33,14 @@ void InspectorPanel::OnImGuiRender() {
         return;
     }
 
-    Entity entity = *m_SelectionContext->GetSelectedEntities().begin();
+    Entity const entity = *m_SelectionContext->GetSelectedEntities().begin();
 
     if (m_Scene->HasComponent<NameComponent>(entity)) {
         auto& nc = m_Scene->GetComponent<NameComponent>(entity);
         std::array<char, 128> buf{};
         std::copy_n(nc.Name.begin(), std::min(nc.Name.size(), buf.size() - 1), buf.begin());
-        if (ImGui::InputText("Name", buf.data(), buf.size())) nc.Name = buf.data();
+        if (ImGui::InputText("Name", buf.data(), buf.size())) { nc.Name = buf.data();
+}
     }
 
     ImGui::Separator();
@@ -54,10 +56,12 @@ void InspectorPanel::OnImGuiRender() {
                 m_TransformSnapshot = tc;
                 m_SnapshotEntity    = entity;
             }
-            if (ImGui::IsItemActive()) tc.Translation = pos;
-            if (ImGui::IsItemDeactivatedAfterEdit() && m_HistSys && entity == m_SnapshotEntity)
+            if (ImGui::IsItemActive()) { tc.Translation = pos;
+}
+            if (ImGui::IsItemDeactivatedAfterEdit() && (m_HistSys != nullptr) && entity == m_SnapshotEntity) {
                 m_HistSys->Push(
                     std::make_unique<TransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
+}
 
             // --- Rotation (Euler degrees, ZYX extrinsic) ---
             Vec3 euler = tc.EulerDegrees;
@@ -66,10 +70,12 @@ void InspectorPanel::OnImGuiRender() {
                 m_TransformSnapshot = tc;
                 m_SnapshotEntity    = entity;
             }
-            if (ImGui::IsItemActive()) tc.EulerDegrees = euler;
-            if (ImGui::IsItemDeactivatedAfterEdit() && m_HistSys && entity == m_SnapshotEntity)
+            if (ImGui::IsItemActive()) { tc.EulerDegrees = euler;
+}
+            if (ImGui::IsItemDeactivatedAfterEdit() && (m_HistSys != nullptr) && entity == m_SnapshotEntity) {
                 m_HistSys->Push(
                     std::make_unique<TransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
+}
 
             // --- Scale ---
             Vec3 scale = tc.Scale;
@@ -78,10 +84,12 @@ void InspectorPanel::OnImGuiRender() {
                 m_TransformSnapshot = tc;
                 m_SnapshotEntity    = entity;
             }
-            if (ImGui::IsItemActive()) tc.Scale = scale;
-            if (ImGui::IsItemDeactivatedAfterEdit() && m_HistSys && entity == m_SnapshotEntity)
+            if (ImGui::IsItemActive()) { tc.Scale = scale;
+}
+            if (ImGui::IsItemDeactivatedAfterEdit() && (m_HistSys != nullptr) && entity == m_SnapshotEntity) {
                 m_HistSys->Push(
                     std::make_unique<TransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
+}
 
             // --- Uniform Scale: drags all axes by the same ratio ---
             float uniformScale = (tc.Scale.x + tc.Scale.y + tc.Scale.z) / 3.0f;
@@ -91,20 +99,21 @@ void InspectorPanel::OnImGuiRender() {
                 m_SnapshotEntity    = entity;
             }
             if (ImGui::IsItemActive() && uniformScale > 0.0f) {
-                float snapshotAvg = (m_TransformSnapshot.Scale.x +
+                float const snapshotAvg = (m_TransformSnapshot.Scale.x +
                                      m_TransformSnapshot.Scale.y +
                                      m_TransformSnapshot.Scale.z) /
                                     3.0f;
                 if (snapshotAvg > 0.0f) {
-                    float ratio = uniformScale / snapshotAvg;
+                    float const ratio = uniformScale / snapshotAvg;
                     tc.Scale.x  = m_TransformSnapshot.Scale.x * ratio;
                     tc.Scale.y  = m_TransformSnapshot.Scale.y * ratio;
                     tc.Scale.z  = m_TransformSnapshot.Scale.z * ratio;
                 }
             }
-            if (ImGui::IsItemDeactivatedAfterEdit() && m_HistSys && entity == m_SnapshotEntity)
+            if (ImGui::IsItemDeactivatedAfterEdit() && (m_HistSys != nullptr) && entity == m_SnapshotEntity) {
                 m_HistSys->Push(
                     std::make_unique<TransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
+}
         }
     }
 
@@ -118,7 +127,7 @@ void InspectorPanel::OnImGuiRender() {
             ImGui::Separator();
             ImGui::Text("Texture");
 
-            bool hasTexture = meshComp.MaterialAsset && meshComp.MaterialAsset->GetTextureHandle();
+            bool const hasTexture = meshComp.MaterialAsset && meshComp.MaterialAsset->GetTextureHandle();
             ImGui::TextDisabled(hasTexture ? "Loaded" : "None");
 
             // Reset the path buffer when the selected entity changes.
@@ -132,8 +141,9 @@ void InspectorPanel::OnImGuiRender() {
             ImGui::SameLine();
             if (ImGui::Button("Load##tex")) {
                 if (m_TexturePathBuf[0] != '\0' && meshComp.MaterialAsset) {
-                    AssetHandle handle = AssetManager::Load(m_TexturePathBuf);
-                    if (handle) meshComp.MaterialAsset->SetTexture(handle);
+                    AssetHandle const handle = AssetManager::Load(m_TexturePathBuf);
+                    if (handle) { meshComp.MaterialAsset->SetTexture(handle);
+}
                 }
             }
         }

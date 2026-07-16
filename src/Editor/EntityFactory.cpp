@@ -48,17 +48,18 @@ namespace {
 void EntityFactory::SpawnPrimitive(PrimitiveType type) {
     auto mesh     = MeshOf(type);
     auto material = std::make_shared<Material>(m_DefaultShader);
-    Entity entity = m_Scene->CreateGameObject(NameOf(type));
+    Entity const entity = m_Scene->CreateGameObject(NameOf(type));
     m_Scene->AddComponent<MeshComponent>(entity, mesh, material);
     m_Scene->AddComponent<SelectionComponent>(entity);
 }
 
 std::expected<void, std::string> EntityFactory::SpawnFromFile(std::string const& path) {
-    if (!std::filesystem::exists(path))
+    if (!std::filesystem::exists(path)) {
         return std::unexpected(std::format("File not found: {}", path));
+}
 
-    std::string name = path.substr(path.find_last_of("/\\") + 1);
-    Entity entity    = m_Scene->CreateGameObject(name);
+    std::string const name = path.substr(path.find_last_of("/\\") + 1);
+    Entity const entity    = m_Scene->CreateGameObject(name);
     m_Scene->AddComponent<SelectionComponent>(entity);
 
     Scene* scene = m_Scene;
@@ -68,7 +69,8 @@ std::expected<void, std::string> EntityFactory::SpawnFromFile(std::string const&
         auto mesh = AssetManager::GetAs<Mesh>(handle);
         if (!mesh) {
             CORE_LOG_ERROR("Mesh load failed for async asset; removing placeholder entity.");
-            if (selSys) selSys->GetSelectionContext().Deselect(entity);
+            if (selSys) { selSys->GetSelectionContext().Deselect(entity);
+}
             scene->DestroyEntity(entity);
             return;
         }

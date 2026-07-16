@@ -13,8 +13,8 @@ Matx4f ScenePanel::GetGlobalTransform() const {
 
 Matx4f ScenePanel::GetInverseGlobalTransform() const {
     // Inverse of (T * Ry * Speraxis * Suniform) is (Suniform_inv * Speraxis_inv * Ry_inv * T_inv).
-    float safeScalar = (m_Scalar != 0.f) ? 1.f / m_Scalar : 1.f;
-    Vec3 safeScale{
+    float const safeScalar = (m_Scalar != 0.f) ? 1.f / m_Scalar : 1.f;
+    Vec3 const safeScale{
       (m_Scaling.x != 0.f) ? 1.f / m_Scaling.x : 1.f,
       (m_Scaling.y != 0.f) ? 1.f / m_Scaling.y : 1.f,
       (m_Scaling.z != 0.f) ? 1.f / m_Scaling.z : 1.f,
@@ -26,7 +26,8 @@ Matx4f ScenePanel::GetInverseGlobalTransform() const {
 }
 
 void ScenePanel::OnImGuiRender() {
-    if (!IsVisible) return;
+    if (!IsVisible) { return;
+}
     ImGui::SetNextWindowPos(ImVec2{10.f, 20.f}, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2{280.f, 450.f}, ImGuiCond_FirstUseEver);
     ImGui::Begin("Scene");
@@ -39,36 +40,43 @@ void ScenePanel::OnImGuiRender() {
 
     ImGui::Separator();
 
-    if (!m_Camera) {
+    if (m_Camera == nullptr) {
         ImGui::End();
         return;
     }
 
     if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
         auto projType = m_Camera->GetProjectionType();
-        if (ImGui::RadioButton("Perspective", projType == Camera::ProjectionType::Perspective))
+        if (ImGui::RadioButton("Perspective", projType == Camera::ProjectionType::Perspective)) {
             m_Camera->SetProjection(Camera::ProjectionType::Perspective);
+}
         ImGui::SameLine();
-        if (ImGui::RadioButton("Orthographic", projType == Camera::ProjectionType::Orthographic))
+        if (ImGui::RadioButton("Orthographic", projType == Camera::ProjectionType::Orthographic)) {
             m_Camera->SetProjection(Camera::ProjectionType::Orthographic);
+}
 
         if (projType == Camera::ProjectionType::Perspective) {
             float fov = m_Camera->GetPerspectiveFOV();
-            if (ImGui::DragFloat("FOV", &fov, 0.5f, 1.0f, 179.0f)) m_Camera->SetPerspectiveFOV(fov);
+            if (ImGui::DragFloat("FOV", &fov, 0.5f, 1.0f, 179.0f)) { m_Camera->SetPerspectiveFOV(fov);
+}
         } else {
             float size = m_Camera->GetOrthographicSize();
-            if (ImGui::DragFloat("Ortho Size", &size, 0.1f, 0.1f, 1000.0f))
+            if (ImGui::DragFloat("Ortho Size", &size, 0.1f, 0.1f, 1000.0f)) {
                 m_Camera->SetOrthographicSize(size);
+}
         }
 
         float yaw = m_Camera->GetYaw();
-        if (ImGui::DragFloat("Yaw", &yaw, 0.5f)) m_Camera->SetYaw(yaw);
+        if (ImGui::DragFloat("Yaw", &yaw, 0.5f)) { m_Camera->SetYaw(yaw);
+}
 
         float pitch = m_Camera->GetPitch();
-        if (ImGui::DragFloat("Pitch", &pitch, 0.5f, -89.0f, 89.0f)) m_Camera->SetPitch(pitch);
+        if (ImGui::DragFloat("Pitch", &pitch, 0.5f, -89.0f, 89.0f)) { m_Camera->SetPitch(pitch);
+}
 
         Vec3 pos = m_Camera->GetPosition();
-        if (ImGui::DragFloat3("Position##cam", &pos.x, 0.1f)) m_Camera->SetPosition(pos);
+        if (ImGui::DragFloat3("Position##cam", &pos.x, 0.1f)) { m_Camera->SetPosition(pos);
+}
     }
 
     ImGui::End();

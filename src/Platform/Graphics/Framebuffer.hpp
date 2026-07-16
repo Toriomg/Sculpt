@@ -14,9 +14,9 @@ public:
     void Resize(uint32_t width, uint32_t height);
 
     // Binds this framebuffer as the current render target
-    void Bind();
+    void Bind() const;
     // Binds the default framebuffer (the screen) as the render target
-    void Unbind();
+    static void Unbind();
 
     // Getter for the color attachment texture ID.
     // This is what you will render to the screen or a UI panel.
