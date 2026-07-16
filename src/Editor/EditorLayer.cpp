@@ -122,12 +122,11 @@ void EditorLayer::OnEvent(Event& e) {
     dispatcher.Dispatch<MouseButtonReleasedEvent>(
         [this](MouseButtonReleasedEvent& e) { return OnMouseButtonReleased(e); });
     dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) { return OnKeyPressed(e); });
-    dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& e) { return OnKeyReleased(e); });
+    dispatcher.Dispatch<KeyReleasedEvent>([](KeyReleasedEvent& e) { return OnKeyReleased(e); });
     dispatcher.Dispatch<MouseMovedEvent>([this](MouseMovedEvent& e) { return OnMouseMoved(e); });
     dispatcher.Dispatch<MouseScrolledEvent>(
         [this](MouseScrolledEvent& e) { return OnMouseScrolled(e); });
-    dispatcher.Dispatch<WindowResizeEvent>(
-        [this](WindowResizeEvent& e) { return OnWindowResize(e); });
+    dispatcher.Dispatch<WindowResizeEvent>([](WindowResizeEvent& e) { return OnWindowResize(e); });
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
@@ -197,6 +196,10 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
     }
     if (e.GetKeyCode() == static_cast<int>(KeyCode::R)) {
         if (m_GizmoRenderer) { m_GizmoRenderer->SetMode(GizmoMode::Rotation); }
+        return true;
+    }
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::S)) {
+        if (m_GizmoRenderer) { m_GizmoRenderer->SetMode(GizmoMode::Scale); }
         return true;
     }
 

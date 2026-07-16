@@ -1,5 +1,5 @@
 #pragma once
 
-enum class GizmoMode { Translation, Rotation };
+enum class GizmoMode { Translation, Rotation, Scale };
 
 enum class GizmoAxis { None, X, Y, Z };

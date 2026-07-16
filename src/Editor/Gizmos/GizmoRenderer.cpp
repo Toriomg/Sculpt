@@ -75,10 +75,11 @@ void GizmoRenderer::OnAttach() {
     m_ArrowMesh = Mesh::CreateArrow();
     // Thin torus in XZ plane (Y = hole axis), unit major radius; re-oriented per ring at draw
     // time.
-    m_RingMesh   = Mesh::CreateTorus(1.0f, 0.035f, 64, 10);
-    m_CenterMesh = Mesh::CreateSphere(1.0f, 8, 8);
-    m_ConeMesh   = Mesh::CreateCone();
-    m_HistSys    = m_Scene.GetSystem<HistorySystem>();
+    m_RingMesh      = Mesh::CreateTorus(1.0f, 0.035f, 64, 10);
+    m_CenterMesh    = Mesh::CreateSphere(1.0f, 8, 8);
+    m_ConeMesh      = Mesh::CreateCone();
+    m_ScaleCubeMesh = Mesh::CreateCube(1.0f);
+    m_HistSys       = m_Scene.GetSystem<HistorySystem>();
 }
 
 void GizmoRenderer::SetViewportSize(uint32_t w, uint32_t h) {
@@ -124,6 +125,28 @@ void GizmoRenderer::Draw() {
                              Matx4f::translation(ctx->pos) *
                                  Matx4f::rotationY(-90.f) *
                                  Matx4f::scalingScalar(ctx->scale));
+    } else if (m_Mode == GizmoMode::Scale) {
+        struct AxisDef {
+            GizmoAxis axis = GizmoAxis::None;
+            Vec4 color;
+            Matx4f rot = Matx4f::identity();
+        };
+        std::array<AxisDef, 3> const scaleAxes = {
+          AxisDef{GizmoAxis::X, {1.f, 0.2f, 0.2f, 1.f},       Matx4f::identity()},
+          AxisDef{GizmoAxis::Y, {0.2f, 1.f, 0.2f, 1.f},  Matx4f::rotationZ(90.f)},
+          AxisDef{GizmoAxis::Z, {0.2f, 0.2f, 1.f, 1.f}, Matx4f::rotationY(-90.f)},
+        };
+        constexpr float kCubeSize = 0.12f;
+        for (auto const& def : scaleAxes) {
+            Vec4 const col = colorFor(def.axis, def.color);
+            Matx4f const shaft =
+                Matx4f::translation(ctx->pos) * def.rot * Matx4f::scalingScalar(ctx->scale);
+            Renderer::SubmitFlat(m_ArrowMesh, col, shaft);
+            Vec3 const tipPos = ctx->pos + axisToVec3(def.axis) * ctx->scale;
+            Renderer::SubmitFlat(
+                m_ScaleCubeMesh, col,
+                Matx4f::translation(tipPos) * Matx4f::scalingScalar(ctx->scale * kCubeSize));
+        }
     } else {
         // Base torus lies in XZ plane; each ring re-oriented via a rotation before the uniform
         // scale. Two cones per ring mark the tangent at ±(1,0,0) in ring-local space.
@@ -245,7 +268,7 @@ bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
     if (!ctx) { return false; }
 
     GizmoAxis const hit =
-        (m_Mode == GizmoMode::Translation) ? HitTestAxes(vx, vy) : HitTestRings(vx, vy);
+        (m_Mode == GizmoMode::Rotation) ? HitTestRings(vx, vy) : HitTestAxes(vx, vy);
     if (hit == GizmoAxis::None) { return false; }
 
     auto& tc               = m_Scene.GetComponent<TransformComponent>(ctx->entity);
@@ -255,16 +278,19 @@ bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
     m_IsDragging           = true;
 
     Vec3 const ray = ScreenToRayDirection(vx, vy);
-    if (m_Mode == GizmoMode::Translation) {
-        m_DragStartHitPt =
-            RayAxisClosestPoint(m_Camera.GetPosition(), ray, ctx->pos, axisToVec3(hit));
-    } else {
+    if (m_Mode == GizmoMode::Rotation) {
         float t = NAN;
         m_RotDragRefPoint =
             RayPlaneIntersect(m_Camera.GetPosition(), ray, ctx->pos, axisToVec3(hit), t)
                 ? m_Camera.GetPosition() + ray * t
                 : ctx->pos;
         ringRefVectors(hit, m_RotDragRefU, m_RotDragRefV);
+    } else {
+        m_DragStartHitPt =
+            RayAxisClosestPoint(m_Camera.GetPosition(), ray, ctx->pos, axisToVec3(hit));
+        if (m_Mode == GizmoMode::Scale) {
+            m_DragStartDist = (m_DragStartHitPt - ctx->pos).dotProduct(axisToVec3(hit));
+        }
     }
     return true;
 }
@@ -291,7 +317,7 @@ bool GizmoRenderer::OnMouseButtonReleased() {
 bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
     if (!m_IsDragging) {
         m_HoveredAxis =
-            (m_Mode == GizmoMode::Translation) ? HitTestAxes(vx, vy) : HitTestRings(vx, vy);
+            (m_Mode == GizmoMode::Rotation) ? HitTestRings(vx, vy) : HitTestAxes(vx, vy);
         return false;
     }
 
@@ -309,6 +335,20 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
             RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, axisToVec3(m_DragAxis));
         tc.Translation += newHit - m_DragStartHitPt;
         m_DragStartHitPt = newHit;
+    } else if (m_Mode == GizmoMode::Scale) {
+        Vec3 const newHit =
+            RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, axisToVec3(m_DragAxis));
+        float const newDist = (newHit - pos).dotProduct(axisToVec3(m_DragAxis));
+        if (std::abs(m_DragStartDist) > 1e-4f) {
+            float const factor = newDist / m_DragStartDist;
+            if (m_DragAxis == GizmoAxis::X) {
+                tc.Scale.x = m_TransformAtDragStart.Scale.x * factor;
+            } else if (m_DragAxis == GizmoAxis::Y) {
+                tc.Scale.y = m_TransformAtDragStart.Scale.y * factor;
+            } else if (m_DragAxis == GizmoAxis::Z) {
+                tc.Scale.z = m_TransformAtDragStart.Scale.z * factor;
+            }
+        }
     } else {
         float t = NAN;
         if (!RayPlaneIntersect(m_Camera.GetPosition(), ray, pos, axisToVec3(m_DragAxis), t)) {
@@ -323,8 +363,7 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
             (180.f / PI_F);
         if (m_DragAxis == GizmoAxis::X) {
             tc.EulerDegrees.x = m_TransformAtDragStart.EulerDegrees.x + delta;
-            // Y rotation (right-hand rule) takes +X toward -Z, opposite to the atan2(z,x)
-            // sense.
+            // Y rotation (right-hand rule) takes +X toward -Z, opposite to the atan2(z,x) sense.
         } else if (m_DragAxis == GizmoAxis::Y) {
             tc.EulerDegrees.y = m_TransformAtDragStart.EulerDegrees.y - delta;
         } else if (m_DragAxis == GizmoAxis::Z) {
