@@ -1,6 +1,7 @@
 #include "Editor/EditorLayer.hpp"
 #include "Editor/EntityFactory.hpp"
 #include "Editor/Gizmos/GizmoRenderer.hpp"
+#include "Editor/Gizmos/Gizmo.hpp"
 #include "Editor/Panels/ViewportPanel.hpp"
 #include "Editor/Panels/OutlinerPanel.hpp"
 #include "Editor/Panels/InspectorPanel.hpp"
@@ -203,6 +204,15 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
 
     if (e.GetKeyCode() == static_cast<int>(KeyCode::Delete)) {
         if (m_OutlinerPanel) m_OutlinerPanel->TriggerDeleteConfirmation();
+        return true;
+    }
+
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::W)) {
+        if (m_GizmoRenderer) m_GizmoRenderer->SetMode(GizmoMode::Translation);
+        return true;
+    }
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::E)) {
+        if (m_GizmoRenderer) m_GizmoRenderer->SetMode(GizmoMode::Rotation);
         return true;
     }
 
