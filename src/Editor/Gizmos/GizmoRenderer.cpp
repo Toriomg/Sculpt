@@ -7,11 +7,8 @@
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Camera.hpp"
-#include "Platform/Graphics/Vertex.hpp"
 #include "Platform/Graphics/RenderCommand.hpp"
 #include <cmath>
-#include <numbers>
-#include <vector>
 #include <algorithm>
 
 // ---- file-scope helpers -----------------------------------------------------
@@ -49,106 +46,6 @@ static void ringRefVectors(GizmoAxis axis, Vec3& outU, Vec3& outV) {
     }
 }
 
-static std::shared_ptr<Mesh> makeMesh(std::vector<Vertex>& v, std::vector<uint32_t>& i) {
-    return Mesh::CreateMeshFromData(v.data(), static_cast<uint32_t>(v.size() * sizeof(Vertex)),
-                                    i.data(), static_cast<uint32_t>(i.size()));
-}
-
-// ---- mesh builders ----------------------------------------------------------
-
-static std::shared_ptr<Mesh> buildArrowMesh() {
-    constexpr int   N        = 12;
-    constexpr float r        = 0.03f;  // shaft radius
-    constexpr float shaftLen = 0.65f;
-    constexpr float R        = 0.14f;  // cone base radius
-    constexpr float TWO_PI   = 2.f * std::numbers::pi_v<float>;
-
-    std::vector<Vertex>   verts;
-    std::vector<uint32_t> idx;
-
-    auto addVert = [&](Vec3 p, Vec3 n) { verts.push_back({p, n, {}}); };
-    auto sz      = [&]() { return static_cast<uint32_t>(verts.size()); };
-
-    // Disc cap in the YZ plane at xPos. faceRight → normal faces +X, otherwise -X.
-    auto addCapX = [&](float xPos, float rad, bool faceRight) {
-        Vec3 n = {faceRight ? 1.f : -1.f, 0.f, 0.f};
-        uint32_t c   = sz(); addVert({xPos, 0.f, 0.f}, n);
-        uint32_t rim = sz();
-        for (int i = 0; i < N; ++i) {
-            float t = TWO_PI * i / N;
-            addVert({xPos, rad * std::cos(t), rad * std::sin(t)}, n);
-        }
-        for (int i = 0; i < N; ++i) {
-            if (faceRight) idx.insert(idx.end(), {c, rim+i, rim+(i+1)%N});
-            else           idx.insert(idx.end(), {c, rim+(i+1)%N, rim+i});
-        }
-    };
-
-    // Shaft cylinder
-    for (int i = 0; i < N; ++i) {
-        float t = TWO_PI*i/N, c = std::cos(t), s = std::sin(t);
-        addVert({0.f,      r*c, r*s}, {0.f, c, s});
-    }
-    for (int i = 0; i < N; ++i) {
-        float t = TWO_PI*i/N, c = std::cos(t), s = std::sin(t);
-        addVert({shaftLen, r*c, r*s}, {0.f, c, s});
-    }
-    for (int i = 0; i < N; ++i) {
-        uint32_t b0=i, b1=(i+1)%N, t0=N+i, t1=N+(i+1)%N;
-        idx.insert(idx.end(), {b0, t0, t1, b0, t1, b1});
-    }
-    addCapX(0.f,      r, false);  // shaft back cap
-    addCapX(shaftLen, r, true);   // shaft front cap (between shaft and cone)
-
-    // Cone sides (flat-shaded)
-    for (int i = 0; i < N; ++i) {
-        float t0 = TWO_PI*i/N, t1 = TWO_PI*(i+1)/N;
-        Vec3 v0 = {shaftLen, R*std::cos(t0), R*std::sin(t0)};
-        Vec3 v1 = {shaftLen, R*std::cos(t1), R*std::sin(t1)};
-        Vec3 v2 = {1.f, 0.f, 0.f};
-        Vec3 n  = (v1-v0).crossProduct(v2-v0).normalize();
-        uint32_t b = sz();
-        addVert(v0, n); addVert(v1, n); addVert(v2, n);
-        idx.insert(idx.end(), {b, b+1, b+2});
-    }
-    addCapX(shaftLen, R, false);  // cone base cap
-
-    return makeMesh(verts, idx);
-}
-
-static std::shared_ptr<Mesh> buildConeMesh() {
-    // Unit cone: base circle (radius 1) in XY plane at z=0, tip at z=+1.
-    constexpr int   N      = 12;
-    constexpr float TWO_PI = 2.f * std::numbers::pi_v<float>;
-
-    std::vector<Vertex>   verts;
-    std::vector<uint32_t> idx;
-
-    auto addVert = [&](Vec3 p, Vec3 n) { verts.push_back({p, n, {}}); };
-
-    for (int i = 0; i < N; ++i) {
-        float t0 = TWO_PI*i/N, t1 = TWO_PI*(i+1)/N;
-        Vec3 v0 = {std::cos(t0), std::sin(t0), 0.f};
-        Vec3 v1 = {std::cos(t1), std::sin(t1), 0.f};
-        Vec3 v2 = {0.f, 0.f, 1.f};
-        Vec3 n  = (v1-v0).crossProduct(v2-v0).normalize();
-        uint32_t b = static_cast<uint32_t>(verts.size());
-        addVert(v0, n); addVert(v1, n); addVert(v2, n);
-        idx.insert(idx.end(), {b, b+1, b+2});
-    }
-    uint32_t c   = static_cast<uint32_t>(verts.size());
-    addVert({0.f, 0.f, 0.f}, {0.f, 0.f, -1.f});
-    uint32_t rim = static_cast<uint32_t>(verts.size());
-    for (int i = 0; i < N; ++i) {
-        float t = TWO_PI * i / N;
-        addVert({std::cos(t), std::sin(t), 0.f}, {0.f, 0.f, -1.f});
-    }
-    for (int i = 0; i < N; ++i)
-        idx.insert(idx.end(), {c, rim+(i+1)%N, rim+i});
-
-    return makeMesh(verts, idx);
-}
-
 // ---- GizmoRenderer ----------------------------------------------------------
 
 GizmoRenderer::GizmoRenderer(Scene& scene, SelectionContext& selCtx, const Camera& camera)
@@ -157,11 +54,11 @@ GizmoRenderer::GizmoRenderer(Scene& scene, SelectionContext& selCtx, const Camer
 GizmoRenderer::~GizmoRenderer() = default;
 
 void GizmoRenderer::OnAttach() {
-    m_ArrowMesh  = buildArrowMesh();
+    m_ArrowMesh  = Mesh::CreateArrow();
     // Thin torus in XZ plane (Y = hole axis), unit major radius; re-oriented per ring at draw time.
-    m_RingMesh   = Mesh::CreateTorus(1.f, 0.035f, 64, 10);
-    m_CenterMesh = Mesh::CreateSphere(1.f, 8, 8);
-    m_ConeMesh   = buildConeMesh();
+    m_RingMesh   = Mesh::CreateTorus(1.0f, 0.035f, 64, 10);
+    m_CenterMesh = Mesh::CreateSphere(1.0f, 8, 8);
+    m_ConeMesh   = Mesh::CreateCone();
     m_HistSys    = m_Scene.GetSystem<HistorySystem>();
 }
 

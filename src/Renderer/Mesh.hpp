@@ -23,6 +23,10 @@ public:
     static std::shared_ptr<Mesh> CreateTorus(float majorRadius, float minorRadius, int majorSegments, int minorSegments);
     static std::shared_ptr<Mesh> CreateDodecahedron(float size);
     static std::shared_ptr<Mesh> CreateIcosahedron(float size);
+    // Unit arrow along +X: shaft from 0→0.65, cone tip at 1. Used by translation gizmo.
+    static std::shared_ptr<Mesh> CreateArrow(int segments = 12);
+    // Unit cone: base circle (radius 1) in XY plane at z=0, tip at z=+1. Used by rotation gizmo arrowheads.
+    static std::shared_ptr<Mesh> CreateCone(int segments = 12);
     static std::shared_ptr<Mesh> CreateMeshFromData(
         const void* vertices,
         uint32_t vertexSize,

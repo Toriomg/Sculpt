@@ -1,6 +1,9 @@
 ﻿#include "Mesh.hpp"
 #include "Platform/Graphics/Vertex.hpp"
 #include "Platform/CoreUtils/Math/maths.hpp"
+#include <cmath>
+#include <numbers>
+#include <vector>
 
 std::shared_ptr<Mesh> Mesh::CreateMeshFromData(const void* vertices, uint32_t vertexSize, const uint32_t* indices, uint32_t indexCount)
 {
@@ -449,4 +452,101 @@ std::shared_ptr<Mesh> Mesh::CreateIcosahedron(float size) {
         static_cast<uint32_t>(vertices.size() * sizeof(float)),
         indices.data(),
         static_cast<uint32_t>(indices.size()));
+}
+
+std::shared_ptr<Mesh> Mesh::CreateArrow(int segments) {
+    // Unit arrow along +X: cylindrical shaft from x=0 to x=0.65, conical tip from x=0.65 to x=1.
+    constexpr float shaftLen = 0.65f;
+    constexpr float r        = 0.03f;   // shaft radius
+    constexpr float R        = 0.14f;   // cone base radius
+    const float     TWO_PI   = 2.0f * std::numbers::pi_v<float>;
+
+    std::vector<Vertex>   verts;
+    std::vector<uint32_t> idx;
+
+    auto addVert = [&](Vec3 p, Vec3 n) { verts.push_back({p, n, {}}); };
+    auto sz      = [&]() { return static_cast<uint32_t>(verts.size()); };
+
+    // Disc cap in the YZ plane at xPos. faceRight → normal faces +X, otherwise −X.
+    auto addCapX = [&](float xPos, float rad, bool faceRight) {
+        Vec3 n = {faceRight ? 1.0f : -1.0f, 0.0f, 0.0f};
+        uint32_t c   = sz(); addVert({xPos, 0.0f, 0.0f}, n);
+        uint32_t rim = sz();
+        for (int i = 0; i < segments; ++i) {
+            float t = TWO_PI * i / segments;
+            addVert({xPos, rad * std::cos(t), rad * std::sin(t)}, n);
+        }
+        for (int i = 0; i < segments; ++i) {
+            if (faceRight) idx.insert(idx.end(), {c, rim+i, rim+(i+1)%segments});
+            else           idx.insert(idx.end(), {c, rim+(i+1)%segments, rim+i});
+        }
+    };
+
+    // Shaft cylinder
+    for (int i = 0; i < segments; ++i) {
+        float t = TWO_PI * i / segments, c = std::cos(t), s = std::sin(t);
+        addVert({0.0f,     r*c, r*s}, {0.0f, c, s});
+    }
+    for (int i = 0; i < segments; ++i) {
+        float t = TWO_PI * i / segments, c = std::cos(t), s = std::sin(t);
+        addVert({shaftLen, r*c, r*s}, {0.0f, c, s});
+    }
+    for (int i = 0; i < segments; ++i) {
+        uint32_t b0=i, b1=(i+1)%segments, t0=segments+i, t1=segments+(i+1)%segments;
+        idx.insert(idx.end(), {b0, t0, t1, b0, t1, b1});
+    }
+    addCapX(0.0f,     r, false);  // shaft back cap
+    addCapX(shaftLen, r, true);   // shaft front cap (between shaft and cone)
+
+    // Cone sides (flat-shaded)
+    for (int i = 0; i < segments; ++i) {
+        float t0 = TWO_PI*i/segments, t1 = TWO_PI*(i+1)/segments;
+        Vec3 v0 = {shaftLen, R*std::cos(t0), R*std::sin(t0)};
+        Vec3 v1 = {shaftLen, R*std::cos(t1), R*std::sin(t1)};
+        Vec3 v2 = {1.0f, 0.0f, 0.0f};
+        Vec3 n  = (v1-v0).crossProduct(v2-v0).normalize();
+        uint32_t b = sz();
+        addVert(v0, n); addVert(v1, n); addVert(v2, n);
+        idx.insert(idx.end(), {b, b+1, b+2});
+    }
+    addCapX(shaftLen, R, false);  // cone base cap
+
+    return CreateMeshFromData(verts.data(), static_cast<uint32_t>(verts.size() * sizeof(Vertex)),
+                              idx.data(),   static_cast<uint32_t>(idx.size()));
+}
+
+std::shared_ptr<Mesh> Mesh::CreateCone(int segments) {
+    // Unit cone: base circle (radius 1) in XY plane at z=0, tip at z=+1.
+    const float TWO_PI = 2.0f * std::numbers::pi_v<float>;
+
+    std::vector<Vertex>   verts;
+    std::vector<uint32_t> idx;
+
+    auto addVert = [&](Vec3 p, Vec3 n) { verts.push_back({p, n, {}}); };
+
+    // Lateral surface (flat-shaded)
+    for (int i = 0; i < segments; ++i) {
+        float t0 = TWO_PI*i/segments, t1 = TWO_PI*(i+1)/segments;
+        Vec3 v0 = {std::cos(t0), std::sin(t0), 0.0f};
+        Vec3 v1 = {std::cos(t1), std::sin(t1), 0.0f};
+        Vec3 v2 = {0.0f, 0.0f, 1.0f};
+        Vec3 n  = (v1-v0).crossProduct(v2-v0).normalize();
+        uint32_t b = static_cast<uint32_t>(verts.size());
+        addVert(v0, n); addVert(v1, n); addVert(v2, n);
+        idx.insert(idx.end(), {b, b+1, b+2});
+    }
+
+    // Base cap (in XY plane at z=0, normal −Z)
+    uint32_t c   = static_cast<uint32_t>(verts.size());
+    addVert({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f});
+    uint32_t rim = static_cast<uint32_t>(verts.size());
+    for (int i = 0; i < segments; ++i) {
+        float t = TWO_PI * i / segments;
+        addVert({std::cos(t), std::sin(t), 0.0f}, {0.0f, 0.0f, -1.0f});
+    }
+    for (int i = 0; i < segments; ++i)
+        idx.insert(idx.end(), {c, rim+(i+1)%segments, rim+i});
+
+    return CreateMeshFromData(verts.data(), static_cast<uint32_t>(verts.size() * sizeof(Vertex)),
+                              idx.data(),   static_cast<uint32_t>(idx.size()));
 }
