@@ -1,0 +1,52 @@
+
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  cert-*,
+  -cert-err58-cpp,
+  -cert-msc51-cpp,
+  -cert-dcl58-cpp,
+  -cert-msc32-c,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-avoid-magic-numbers,
+  modernize-*,
+  -modernize-use-designated-initializers,
+  -modernize-use-trailing-return-type,
+  misc-*,
+  -misc-non-private-member-variables-in-classes,
+  -misc-no-recursion,
+  performance-*,
+  -performance-enum-size,
+  readability-*,
+  -readability-enum-initial-value,
+  -readability-identifier-length,
+  -readability-identifier-naming,
+  -readability-isolate-declaration,
+  -readability-math-missing-parentheses,
+  -readability-named-parameter,
+  -readability-redundant-access-specifiers,
+  -readability-magic-numbers,
+  -readability-operators-representation
+
+CheckOptions:
+  bugprone-assert-side-effect.AssertMacros: 'assert,Expects,Ensures'
+  bugprone-implicit-widening-of-multiplication-result.IgnoreConstantIntExpr: false
+  bugprone-misplaced-widening-cast.CheckImplicitCasts: true
+  cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic: true
+  modernize-deprecated-headers.CheckHeaderFile: true
+  readability-function-cognitive-complexity.Threshold: 50
+  readability-function-cognitive-complexity.Threshold.DescribeBasicIncrements: true
+  readability-function-size.LineThreshold: 40
+  readability-function-size.ParameterThreshold: 4
+  readability-operators-representation.BinaryOperators: 'and;and_eq;bitand;bitor;or;or_eq;xor;xor_eq'
+  readability-operators-representation.OverloadedOperators: 'and;and_eq;bitand;bitor;or;or_eq;xor;xor_eq'
+
+HeaderFilterRegex: '^(?!.*vendor/).*'
+
+HeaderFileExtensions: ['h', 'hpp']
+ImplementationFileExtensions: ['cpp']
+
+FormatStyle: file
+
