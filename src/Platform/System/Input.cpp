@@ -34,11 +34,18 @@ bool InputManager::IsMouseButtonPressed(int button) {
     return m_MouseButtonState[button] && !m_LastMouseButtonState[button];
 }
 
-double InputManager::GetMouseX() { return m_CurrentMouseX; }
-double InputManager::GetMouseY() { return m_CurrentMouseY; }
-double InputManager::GetMouseDeltaX() { return m_MouseDeltaX; }
-double InputManager::GetMouseDeltaY() { return m_MouseDeltaY; }
-
+double InputManager::GetMouseX() {
+    return m_CurrentMouseX;
+}
+double InputManager::GetMouseY() {
+    return m_CurrentMouseY;
+}
+double InputManager::GetMouseDeltaX() {
+    return m_MouseDeltaX;
+}
+double InputManager::GetMouseDeltaY() {
+    return m_MouseDeltaY;
+}
 
 // --- Static GLFW Callbacks ---
 // These static functions get the singleton instance and update its state.
@@ -48,8 +55,7 @@ void InputManager::mouse_button_callback(GLFWwindow* window, int button, int act
     if (button <= GLFW_MOUSE_BUTTON_LAST) {
         if (action == GLFW_PRESS) {
             instance.m_MouseButtonState[button] = true;
-        }
-        else if (action == GLFW_RELEASE) {
+        } else if (action == GLFW_RELEASE) {
             instance.m_MouseButtonState[button] = false;
         }
     }
@@ -64,8 +70,8 @@ void InputManager::cursor_position_callback(GLFWwindow* window, double xpos, dou
         instance.m_FirstMouse = false;
     }
 
-    instance.m_LastMouseX = instance.m_CurrentMouseX;
-    instance.m_LastMouseY = instance.m_CurrentMouseY;
+    instance.m_LastMouseX    = instance.m_CurrentMouseX;
+    instance.m_LastMouseY    = instance.m_CurrentMouseY;
     instance.m_CurrentMouseX = xpos;
     instance.m_CurrentMouseY = ypos;
 

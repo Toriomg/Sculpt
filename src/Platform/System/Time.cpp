@@ -1,21 +1,19 @@
 #include "Time.hpp"
-#include <GLFW/glfw3.h> // We use GLFW to get the high-resolution time
+#include <GLFW/glfw3.h>  // We use GLFW to get the high-resolution time
 
 // Initialize the static member variables
 float Time::s_LastFrameTime = 0.0f;
-float Time::s_Time = 0.0f;
-float Time::s_DeltaTime = 0.0f;
+float Time::s_Time          = 0.0f;
+float Time::s_DeltaTime     = 0.0f;
 
-void Time::Init()
-{
+void Time::Init() {
     // Get the initial time when the application starts
     s_LastFrameTime = static_cast<float>(glfwGetTime());
-    s_Time = s_LastFrameTime;
-    s_DeltaTime = 0.0f;
+    s_Time          = s_LastFrameTime;
+    s_DeltaTime     = 0.0f;
 }
 
-void Time::Update()
-{
+void Time::Update() {
     // Get the current time from GLFW
     float currentTime = static_cast<float>(glfwGetTime());
 

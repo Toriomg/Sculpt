@@ -2,7 +2,7 @@
 
 class Panel {
 public:
-    virtual ~Panel() = default;
+    virtual ~Panel()             = default;
     virtual void OnImGuiRender() = 0;
-    bool IsVisible = true;
+    bool IsVisible               = true;
 };

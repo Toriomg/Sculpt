@@ -1,38 +1,37 @@
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 #include "MeshLoader.hpp"
 #include "Platform/Graphics/Vertex.hpp"
 #include "Renderer/Mesh.hpp"
-#include "Renderer/Mesh.hpp"
 
-
-std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
-	Assimp::Importer importer;
+std::shared_ptr<IAsset> MeshLoader::Load(std::string const& filepath) {
+    Assimp::Importer importer;
     // aiProcess_FlipUVs: OpenGL places V=0 at the bottom, but most DCC tools export V=0 at the top.
-    // aiProcess_CalcTangentSpace: pre-computed for future normal mapping; not consumed by the current Vertex struct.
-    const aiScene* scene = importer.ReadFile(filepath,
-		aiProcess_Triangulate |
-        aiProcess_GenSmoothNormals |
-		aiProcess_FlipUVs |
-		aiProcess_CalcTangentSpace);
+    // aiProcess_CalcTangentSpace: pre-computed for future normal mapping; not consumed by the
+    // current Vertex struct.
+    aiScene const* scene = importer.ReadFile(filepath, aiProcess_Triangulate |
+                                                           aiProcess_GenSmoothNormals |
+                                                           aiProcess_FlipUVs |
+                                                           aiProcess_CalcTangentSpace);
 
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		CORE_LOG_ERROR("[MeshLoader] Assimp error loading {0}: {1}", filepath, importer.GetErrorString());
-		return nullptr;
-	}
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        CORE_LOG_ERROR("[MeshLoader] Assimp error loading {0}: {1}", filepath,
+                       importer.GetErrorString());
+        return nullptr;
+    }
 
-	if (scene->mNumMeshes == 0) {
-		CORE_LOG_ERROR("[MeshLoader] No meshes found in file: {0}", filepath);
-		return nullptr;
-	}
+    if (scene->mNumMeshes == 0) {
+        CORE_LOG_ERROR("[MeshLoader] No meshes found in file: {0}", filepath);
+        return nullptr;
+    }
 
-	// Only the first mesh in the file is imported; multi-mesh files are not supported yet.
-	aiMesh* mesh = scene->mMeshes[0];
+    // Only the first mesh in the file is imported; multi-mesh files are not supported yet.
+    aiMesh* mesh = scene->mMeshes[0];
 
-	std::vector<Vertex> vertices;
-	vertices.reserve(mesh->mNumVertices);
+    std::vector<Vertex> vertices;
+    vertices.reserve(mesh->mNumVertices);
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
@@ -46,14 +45,14 @@ std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
             vertex.normal.y = mesh->mNormals[i].y;
             vertex.normal.z = mesh->mNormals[i].z;
         } else {
-            vertex.normal = { 0.0f, 0.0f, 0.0f };
+            vertex.normal = {0.0f, 0.0f, 0.0f};
         }
 
         if (mesh->mTextureCoords[0]) {
             vertex.texCoord.x = mesh->mTextureCoords[0][i].x;
             vertex.texCoord.y = mesh->mTextureCoords[0][i].y;
         } else {
-            vertex.texCoord = { 0.0f, 0.0f };
+            vertex.texCoord = {0.0f, 0.0f};
         }
 
         vertices.push_back(vertex);
@@ -62,21 +61,18 @@ std::shared_ptr<IAsset> MeshLoader::Load(const std::string& filepath) {
     std::vector<unsigned int> indices;
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
-        for (unsigned int j = 0; j < face.mNumIndices; j++) {
-            indices.push_back(face.mIndices[j]);
-        }
+        for (unsigned int j = 0; j < face.mNumIndices; j++) { indices.push_back(face.mIndices[j]); }
     }
 
     if (vertices.empty() || indices.empty()) {
-        CORE_LOG_WARN("[MeshLoader] Model loading resulted in an empty mesh for file: {0}", filepath);
+        CORE_LOG_WARN("[MeshLoader] Model loading resulted in an empty mesh for file: {0}",
+                      filepath);
         return nullptr;
     }
 
-    CORE_LOG_INFO("[MeshLoader] Successfully loaded model data: {0} ({1} vertices, {2} indices)", filepath, vertices.size(), indices.size());
+    CORE_LOG_INFO("[MeshLoader] Successfully loaded model data: {0} ({1} vertices, {2} indices)",
+                  filepath, vertices.size(), indices.size());
 
-    return Mesh::CreateMeshFromData(
-        vertices.data(),
-        vertices.size() * sizeof(Vertex),
-        indices.data(),
-        indices.size());
+    return Mesh::CreateMeshFromData(vertices.data(), vertices.size() * sizeof(Vertex),
+                                    indices.data(), indices.size());
 }

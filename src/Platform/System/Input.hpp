@@ -11,12 +11,12 @@ public:
     }
 
     // Delete copy constructor and assignment operator to prevent copies
-    InputManager(const InputManager&) = delete;
-    void operator=(const InputManager&) = delete;
+    InputManager(InputManager const&)   = delete;
+    void operator=(InputManager const&) = delete;
 
     // --- Public API ---
     void Init(GLFWwindow* window);
-    void Update(); // Call this once at the start of every frame
+    void Update();  // Call this once at the start of every frame
 
     // Mouse Button Queries
     bool IsMouseButtonDown(int button);     // Is the button currently held down?
@@ -39,9 +39,9 @@ private:
     double m_MouseDeltaX = 0.0, m_MouseDeltaY = 0.0;
 
     // To track "pressed this frame" vs "held down"
-    bool m_MouseButtonState[GLFW_MOUSE_BUTTON_LAST + 1] = { false };
-    bool m_LastMouseButtonState[GLFW_MOUSE_BUTTON_LAST + 1] = { false };
-    bool m_FirstMouse = true;
+    bool m_MouseButtonState[GLFW_MOUSE_BUTTON_LAST + 1]     = {false};
+    bool m_LastMouseButtonState[GLFW_MOUSE_BUTTON_LAST + 1] = {false};
+    bool m_FirstMouse                                       = true;
 
     // --- GLFW Callbacks (must be static) ---
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);

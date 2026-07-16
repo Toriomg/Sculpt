@@ -1,24 +1,21 @@
 #include "PickingSystem.hpp"
-#include "Core/Scene.hpp"
 #include "Core/Components/Component.hpp"
+#include "Core/Scene.hpp"
 #include "Platform/Graphics/Shader.hpp"
-#include "Renderer/Mesh.hpp"
 #include "Renderer/Camera.hpp"
+#include "Renderer/Mesh.hpp"
 #include <GL/glew.h>
 
 PickingSystem::PickingSystem()
     : m_PickingTexture(std::make_unique<PickingTexture>(m_ViewportWidth, m_ViewportHeight)),
-      m_PickingShader(std::make_unique<Shader>("res/shaders/Picking.shader")) {
-}
+      m_PickingShader(std::make_unique<Shader>("res/shaders/Picking.shader")) { }
 
 void PickingSystem::OnAttach(Scene* scene) {
     System::OnAttach(scene);
 }
 
 void PickingSystem::OnUpdate(float deltaTime) {
-    if (!m_PickingRequested) {
-        return;
-    }
+    if (!m_PickingRequested) { return; }
 
     ExecutePickingPass();
     m_PickingRequested = false;
@@ -26,16 +23,14 @@ void PickingSystem::OnUpdate(float deltaTime) {
 
 void PickingSystem::RequestPickingPass(uint32_t screenX, uint32_t screenY) {
     m_PickingRequested = true;
-    m_PickX = screenX;
-    m_PickY = screenY;
+    m_PickX            = screenX;
+    m_PickY            = screenY;
 }
 
 void PickingSystem::ExecutePickingPass() {
-    if (!m_Scene) {
-        return;
-    }
+    if (!m_Scene) { return; }
 
-    Camera* camera = nullptr;
+    Camera* camera  = nullptr;
     auto cameraView = m_Scene->GetAllEntitiesWith<CameraComponent>();
     for (auto entity : cameraView) {
         auto& cam = cameraView.get<CameraComponent>(entity);
@@ -45,24 +40,22 @@ void PickingSystem::ExecutePickingPass() {
         }
     }
 
-    if (!camera) {
-        return;
-    }
+    if (!camera) { return; }
 
-    uint32_t cameraWidth = static_cast<uint32_t>(camera->GetViewportWidth());
+    uint32_t cameraWidth  = static_cast<uint32_t>(camera->GetViewportWidth());
     uint32_t cameraHeight = static_cast<uint32_t>(camera->GetViewportHeight());
     if (cameraWidth != m_ViewportWidth || cameraHeight != m_ViewportHeight) {
         OnWindowResize(cameraWidth, cameraHeight);
     }
 
     CORE_LOG_TRACE("PickingSystem::ExecutePickingPass viewport={}x{} click=({},{})",
-        m_ViewportWidth, m_ViewportHeight, m_PickX, m_PickY);
+                   m_ViewportWidth, m_ViewportHeight, m_PickX, m_PickY);
 
     RenderPickingPass(*camera);
     m_LastResult = m_PickingTexture->ReadPixel(m_PickX, m_PickY);
 }
 
-void PickingSystem::RenderPickingPass(const Camera& camera) {
+void PickingSystem::RenderPickingPass(Camera const& camera) {
     m_PickingTexture->Bind();
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -71,18 +64,18 @@ void PickingSystem::RenderPickingPass(const Camera& camera) {
     m_PickingShader->Bind();
     m_PickingShader->SetUniformMat4f("u_ViewProjection", camera.GetViewProjectionMatrix());
 
-    auto group = m_Scene->GetAllEntitiesWith<TransformComponent, MeshComponent, SelectionComponent>();
+    auto group =
+        m_Scene->GetAllEntitiesWith<TransformComponent, MeshComponent, SelectionComponent>();
 
     for (auto entity : group) {
         auto& transform = group.get<TransformComponent>(entity);
-        auto& mesh = group.get<MeshComponent>(entity);
+        auto& mesh      = group.get<MeshComponent>(entity);
 
-        if (!mesh.MeshAsset) {
-            continue;
-        }
+        if (!mesh.MeshAsset) { continue; }
 
-        // +1 offset: pixel value 0 means "no entity" (the clear color), so all valid IDs start at 1.
-        // PickingTexture::ReadPixel reverses this by subtracting 1 before returning the entity.
+        // +1 offset: pixel value 0 means "no entity" (the clear color), so all valid IDs start
+        // at 1. PickingTexture::ReadPixel reverses this by subtracting 1 before returning the
+        // entity.
         uint32_t entityID = static_cast<uint32_t>(entity) + 1u;
         m_PickingShader->SetUniform1ui("u_ObjectID", entityID);
         m_PickingShader->SetUniformMat4f("u_Model", m_GlobalTransform * transform.GetMatrix());
@@ -102,7 +95,7 @@ void PickingSystem::RenderPickingPass(const Camera& camera) {
 }
 
 void PickingSystem::OnWindowResize(uint32_t width, uint32_t height) {
-    m_ViewportWidth = width;
+    m_ViewportWidth  = width;
     m_ViewportHeight = height;
     m_PickingTexture->Resize(width, height);
 }

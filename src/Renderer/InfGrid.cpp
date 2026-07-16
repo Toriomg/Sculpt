@@ -10,7 +10,7 @@ InfGrid::~InfGrid() {
     glDeleteVertexArrays(1, &m_VAO);
 }
 
-void InfGrid::Draw(const Matx4f& view, const Matx4f& projection, const Vec3& cameraPos) const {
+void InfGrid::Draw(Matx4f const& view, Matx4f const& projection, Vec3 const& cameraPos) const {
     // Grid vertices sit on the far plane (NDC z=1). GL_LEQUAL lets them pass where the
     // depth buffer still holds the clear value (1.0), i.e. pixels with no scene geometry.
     // Depth writes are suppressed so the grid does not occlude subsequent transparent draws.

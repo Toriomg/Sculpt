@@ -1,13 +1,14 @@
-// Framebuffer storing entity IDs and world positions per pixel; read back by PickingSystem for mouse click detection.
+// Framebuffer storing entity IDs and world positions per pixel; read back by PickingSystem for
+// mouse click detection.
 #pragma once
-#include <cstdint>
 #include "Platform/CoreUtils/Math/vec3.hpp"
+#include <cstdint>
 
 struct PickingResult {
-    uint32_t ObjectID = 0;
+    uint32_t ObjectID    = 0;
     uint32_t PrimitiveID = 0xFFFFFFFF;
-    Vec3 WorldPosition = Vec3(0.0f, 0.0f, 0.0f);
-    bool Valid = false;
+    Vec3 WorldPosition   = Vec3(0.0f, 0.0f, 0.0f);
+    bool Valid           = false;
 };
 
 class PickingTexture {
@@ -24,10 +25,10 @@ public:
 private:
     void Invalidate();
 
-    uint32_t m_FramebufferID = 0;
-    uint32_t m_IDTextureID = 0;
+    uint32_t m_FramebufferID     = 0;
+    uint32_t m_IDTextureID       = 0;
     uint32_t m_WorldPosTextureID = 0;
-    uint32_t m_DepthTextureID = 0;
-    uint32_t m_Width = 0;
-    uint32_t m_Height = 0;
+    uint32_t m_DepthTextureID    = 0;
+    uint32_t m_Width             = 0;
+    uint32_t m_Height            = 0;
 };

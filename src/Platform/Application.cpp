@@ -1,34 +1,32 @@
 #include "Application.hpp"
+#include "AssetManager/AssetManager.hpp"
+#include "Editor/EditorLayer.hpp"
+#include "Editor/ImGuiLayer.hpp"
 #include "Platform/CoreUtils/Log.hpp"
 #include "Platform/Jobs/TaskQueue.hpp"
 #include "Platform/System/Time.hpp"
-#include "AssetManager/AssetManager.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Editor/EditorLayer.hpp"
-#include "Editor/ImGuiLayer.hpp"
 
-Application::Application(const std::string& name, unsigned int width, unsigned int height)
-    : m_Window(nullptr), m_AppName(name)
-{
-	Log::Init();
-	AssetManager::Init();
-	TaskQueue::Init();
+Application::Application(std::string const& name, unsigned int width, unsigned int height)
+    : m_Window(nullptr), m_AppName(name) {
+    Log::Init();
+    AssetManager::Init();
+    TaskQueue::Init();
 
     m_Window = Window::Create();
     Input::Init(m_Window.get());
-	Renderer::Init(); // Initialize the Renderer
+    Renderer::Init();  // Initialize the Renderer
 
-	m_Window->SetVSync(true);
+    m_Window->SetVSync(true);
     m_Window->SetEventCallback([this](Event& e) { OnEvent(e); });
 
     // Setup Time
-	Time::Init();
+    Time::Init();
 
     m_LayerStack.PushLayer(std::make_unique<EditorLayer>([this]() { m_Running = false; }));
 
-    auto imguiLayer = std::make_unique<ImGuiLayer>(
-        static_cast<GLFWwindow*>(m_Window->GetNativeWindow())
-    );
+    auto imguiLayer =
+        std::make_unique<ImGuiLayer>(static_cast<GLFWwindow*>(m_Window->GetNativeWindow()));
     m_ImGuiLayer = imguiLayer.get();
     m_LayerStack.PushLayer(std::move(imguiLayer));
 
@@ -37,38 +35,31 @@ Application::Application(const std::string& name, unsigned int width, unsigned i
     WindowResizeEvent initResize(m_Window->GetWidth(), m_Window->GetHeight());
     OnEvent(initResize);
 
-	CORE_LOG_INFO("Application Initialized");
-	LOG_SEPARATOR();
+    CORE_LOG_INFO("Application Initialized");
+    LOG_SEPARATOR();
 }
 
-Application::~Application()
-{
-	TaskQueue::Shutdown();    // joins workers, drains final completions
-	AssetManager::Shutdown();
-	Input::Shutdown();
+Application::~Application() {
+    TaskQueue::Shutdown();  // joins workers, drains final completions
+    AssetManager::Shutdown();
+    Input::Shutdown();
     CORE_LOG_INFO("Program CORRECTLY ended");
 }
 
-void Application::Run()
-{
-    while (m_Running)
-    {
-		Time::Update();
-		Input::OnUpdate();
-		TaskQueue::ProcessCompletions();
+void Application::Run() {
+    while (m_Running) {
+        Time::Update();
+        Input::OnUpdate();
+        TaskQueue::ProcessCompletions();
 
         // ImGui panels run BEFORE the scene update so ViewportPanel can resize the FBO
         // before the scene renders into it. The viewport displays the previous frame's
         // render — a 1-frame lag that is imperceptible at interactive frame rates.
         m_ImGuiLayer->Begin();
-        for (auto& layer : m_LayerStack) {
-            layer->OnImGuiRender();
-        }
+        for (auto& layer : m_LayerStack) { layer->OnImGuiRender(); }
         m_ImGuiLayer->End();
 
-        for (auto& layer : m_LayerStack) {
-            layer->OnUpdate(Time::GetDeltaTime());
-        }
+        for (auto& layer : m_LayerStack) { layer->OnUpdate(Time::GetDeltaTime()); }
         m_Window->OnUpdate();
     }
 }
@@ -81,9 +72,7 @@ void Application::OnEvent(Event& e) {
     // Reverse iteration gives the topmost (most recently pushed) layer first,
     // so overlay layers can consume events before layers beneath them.
     for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
-        if (e.Handled) {
-            break;
-        }
+        if (e.Handled) { break; }
         (*it)->OnEvent(e);
     }
 }
@@ -91,5 +80,5 @@ void Application::OnEvent(Event& e) {
 bool Application::OnWindowClose(WindowCloseEvent& e) {
     m_Running = false;
     CORE_LOG_INFO("Window close event received. Shutting down.");
-    return true; // Return true: we handled it, no other layer needs it.
+    return true;  // Return true: we handled it, no other layer needs it.
 }

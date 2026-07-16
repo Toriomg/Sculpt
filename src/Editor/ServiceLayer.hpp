@@ -1,4 +1,5 @@
-// Initialization layer: bootstraps Renderer and AssetManager on attach; currently holds temporary demo geometry.
+// Initialization layer: bootstraps Renderer and AssetManager on attach; currently holds temporary
+// demo geometry.
 #pragma once
 #include "Platform/Layers/Layer.hpp"
 

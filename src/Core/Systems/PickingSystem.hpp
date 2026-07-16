@@ -1,9 +1,10 @@
-// GPU picking system: renders entity IDs into a PickingTexture each frame and reads back the hit entity on request.
+// GPU picking system: renders entity IDs into a PickingTexture each frame and reads back the hit
+// entity on request.
 #pragma once
-#include "System.hpp"
+#include "Platform/CoreUtils/Math/matx.hpp"
 #include "Platform/Graphics/PickingTexture.hpp"
 #include "Platform/Graphics/Shader.hpp"
-#include "Platform/CoreUtils/Math/matx.hpp"
+#include "System.hpp"
 #include <memory>
 
 class Camera;
@@ -17,23 +18,23 @@ public:
     void OnUpdate(float deltaTime) override;
 
     void RequestPickingPass(uint32_t screenX, uint32_t screenY);
-    const PickingResult& GetLastResult() const { return m_LastResult; }
+    PickingResult const& GetLastResult() const { return m_LastResult; }
 
     void OnWindowResize(uint32_t width, uint32_t height);
-    void SetGlobalTransform(const Matx4f& global) { m_GlobalTransform = global; }
+    void SetGlobalTransform(Matx4f const& global) { m_GlobalTransform = global; }
 
 private:
     void ExecutePickingPass();
-    void RenderPickingPass(const Camera& camera);
+    void RenderPickingPass(Camera const& camera);
 
     std::unique_ptr<PickingTexture> m_PickingTexture;
     std::unique_ptr<Shader> m_PickingShader;
     PickingResult m_LastResult;
 
-    Matx4f   m_GlobalTransform  = Matx4f::identity();
-    bool     m_PickingRequested = false;
-    uint32_t m_PickX            = 0;
-    uint32_t m_PickY            = 0;
-    uint32_t m_ViewportWidth    = 1280;
-    uint32_t m_ViewportHeight   = 720;
+    Matx4f m_GlobalTransform  = Matx4f::identity();
+    bool m_PickingRequested   = false;
+    uint32_t m_PickX          = 0;
+    uint32_t m_PickY          = 0;
+    uint32_t m_ViewportWidth  = 1280;
+    uint32_t m_ViewportHeight = 720;
 };

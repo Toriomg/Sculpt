@@ -1,9 +1,9 @@
-// Input-driven controller that translates and orbits the editor Camera each frame; does not own the camera.
+// Input-driven controller that translates and orbits the editor Camera each frame; does not own the
+// camera.
 #pragma once
-#include "Renderer/Camera.hpp" // It needs to know what a Camera is
+#include "Renderer/Camera.hpp"  // It needs to know what a Camera is
 
-class EditorCameraController
-{
+class EditorCameraController {
 public:
     // The controller is initialized with the camera it will control.
     EditorCameraController(Camera* camera);
@@ -13,11 +13,11 @@ public:
     void OnScrolled(float yOffset);
 
 private:
-    Camera* m_CameraToControl; // A pointer, does not own the camera
+    Camera* m_CameraToControl;  // A pointer, does not own the camera
 
     // Input-related state
     Vec2 m_LastMousePosition = Vec2(0.0f, 0.0f);
-    float m_MovementSpeed = 5.0f;
+    float m_MovementSpeed    = 5.0f;
     float m_MouseSensitivity = 0.1f;
-    float m_ScrollSpeed = 1.0f;
+    float m_ScrollSpeed      = 1.0f;
 };

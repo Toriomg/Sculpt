@@ -1,4 +1,5 @@
-// Base interface for all managed assets; Mesh and Texture derive from this and carry their own AssetHandle.
+// Base interface for all managed assets; Mesh and Texture derive from this and carry their own
+// AssetHandle.
 #pragma once
 #include "Platform/CoreUtils/AssetHandle.hpp"
 

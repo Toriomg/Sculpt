@@ -1,26 +1,26 @@
 #include "Editor/EditorLayer.hpp"
-#include "Editor/EntityFactory.hpp"
-#include "Editor/Gizmos/GizmoRenderer.hpp"
-#include "Editor/Gizmos/Gizmo.hpp"
-#include "Editor/Panels/ViewportPanel.hpp"
-#include "Editor/Panels/OutlinerPanel.hpp"
-#include "Editor/Panels/InspectorPanel.hpp"
-#include "Editor/Panels/MainMenuBar.hpp"
-#include "Editor/Panels/ScenePanel.hpp"
 #include "Core/Components/Component.hpp"
-#include "Core/Systems/SelectionSystem.hpp"
+#include "Core/Systems/HistorySystem.hpp"
 #include "Core/Systems/PickingSystem.hpp"
 #include "Core/Systems/RenderingSystem.hpp"
-#include "Core/Systems/HistorySystem.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Core/Systems/SelectionSystem.hpp"
+#include "Editor/EntityFactory.hpp"
+#include "Editor/Gizmos/Gizmo.hpp"
+#include "Editor/Gizmos/GizmoRenderer.hpp"
+#include "Editor/Panels/InspectorPanel.hpp"
+#include "Editor/Panels/MainMenuBar.hpp"
+#include "Editor/Panels/OutlinerPanel.hpp"
+#include "Editor/Panels/ScenePanel.hpp"
+#include "Editor/Panels/ViewportPanel.hpp"
 #include "Platform/Graphics/Framebuffer.hpp"
 #include "Platform/Graphics/RenderCommand.hpp"
 #include "Platform/System/Input/Input.hpp"
 #include "Platform/System/Input/KeyCodes.hpp"
+#include "Renderer/Renderer.hpp"
 #include "imgui.h"
 
 EditorLayer::EditorLayer(std::function<void()> onQuit)
-    : Layer("EditorLayer"), m_OnQuit(std::move(onQuit)) {}
+    : Layer("EditorLayer"), m_OnQuit(std::move(onQuit)) { }
 
 // Destructor defined here so forward-declared types (Framebuffer, panels) are fully visible.
 EditorLayer::~EditorLayer() = default;
@@ -30,11 +30,11 @@ void EditorLayer::OnAttach() {
 
     m_ActiveScene = std::make_unique<Scene>();
 
-    m_CameraEntity = m_ActiveScene->CreateGameObject("Main Camera");
-    auto& camComp = m_ActiveScene->AddComponent<CameraComponent>(m_CameraEntity);
-    auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
+    m_CameraEntity           = m_ActiveScene->CreateGameObject("Main Camera");
+    auto& camComp            = m_ActiveScene->AddComponent<CameraComponent>(m_CameraEntity);
+    auto& camTransform       = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
     camTransform.Translation = Vec3(0.0f, 0.0f, 5.0f);
-    camComp.SceneCamera.SetPosition({ 0.0f, 1.0f, 5.0f });
+    camComp.SceneCamera.SetPosition({0.0f, 1.0f, 5.0f});
 
     m_EntityFactory = std::make_unique<EntityFactory>(m_ActiveScene.get());
     if (auto r = m_EntityFactory->SpawnFromFile("res/models/monkey.obj"); !r)
@@ -42,37 +42,24 @@ void EditorLayer::OnAttach() {
 
     // Stores a raw pointer into the ECS component — safe while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
-    m_Grid = std::make_unique<InfGrid>();
-    m_ViewportFBO = std::make_unique<Framebuffer>(1470, 810);
+    m_Grid             = std::make_unique<InfGrid>();
+    m_ViewportFBO      = std::make_unique<Framebuffer>(1470, 810);
 
     auto* selSys = m_ActiveScene->GetSystem<SelectionSystem>();
 
-    m_GizmoRenderer = std::make_unique<GizmoRenderer>(
-        *m_ActiveScene,
-        selSys->GetSelectionContext(),
-        camComp.SceneCamera
-    );
+    m_GizmoRenderer = std::make_unique<GizmoRenderer>(*m_ActiveScene, selSys->GetSelectionContext(),
+                                                      camComp.SceneCamera);
     m_GizmoRenderer->OnAttach();
 
-    m_ViewportPanel  = std::make_unique<ViewportPanel>(
-        m_ViewportFBO.get(),
-        [this](uint32_t w, uint32_t h) { OnViewportResize(w, h); }
-    );
-    m_OutlinerPanel  = std::make_unique<OutlinerPanel>(m_ActiveScene.get(), selSys);
-    m_InspectorPanel = std::make_unique<InspectorPanel>(
-        m_ActiveScene.get(),
-        &selSys->GetSelectionContext()
-    );
-    m_ScenePanel = std::make_unique<ScenePanel>(&camComp.SceneCamera);
+    m_ViewportPanel = std::make_unique<ViewportPanel>(
+        m_ViewportFBO.get(), [this](uint32_t w, uint32_t h) { OnViewportResize(w, h); });
+    m_OutlinerPanel = std::make_unique<OutlinerPanel>(m_ActiveScene.get(), selSys);
+    m_InspectorPanel =
+        std::make_unique<InspectorPanel>(m_ActiveScene.get(), &selSys->GetSelectionContext());
+    m_ScenePanel  = std::make_unique<ScenePanel>(&camComp.SceneCamera);
     m_MainMenuBar = std::make_unique<MainMenuBar>(
-        m_OnQuit,
-        m_ActiveScene->GetSystem<HistorySystem>(),
-        m_EntityFactory.get(),
-        m_OutlinerPanel.get(),
-        m_InspectorPanel.get(),
-        m_ScenePanel.get(),
-        m_ViewportPanel.get()
-    );
+        m_OnQuit, m_ActiveScene->GetSystem<HistorySystem>(), m_EntityFactory.get(),
+        m_OutlinerPanel.get(), m_InspectorPanel.get(), m_ScenePanel.get(), m_ViewportPanel.get());
 }
 
 void EditorLayer::OnViewportResize(uint32_t width, uint32_t height) {
@@ -81,19 +68,16 @@ void EditorLayer::OnViewportResize(uint32_t width, uint32_t height) {
     camComp.SceneCamera.SetViewportSize(width, height);
     RenderCommand::SetViewport(0, 0, width, height);
     auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
-    if (pickSys)
-        pickSys->OnWindowResize(width, height);
-    if (m_GizmoRenderer)
-        m_GizmoRenderer->SetViewportSize(width, height);
+    if (pickSys) pickSys->OnWindowResize(width, height);
+    if (m_GizmoRenderer) m_GizmoRenderer->SetViewportSize(width, height);
 }
 
 void EditorLayer::OnUpdate(float deltaTime) {
-    auto& camComp     = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
+    auto& camComp      = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
     auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
 
     // Camera movement is gated on viewport focus so ImGui text fields can receive keyboard input.
-    if (!m_ViewportPanel || m_ViewportPanel->IsFocused())
-        m_CameraController->OnUpdate(deltaTime);
+    if (!m_ViewportPanel || m_ViewportPanel->IsFocused()) m_CameraController->OnUpdate(deltaTime);
 
     // Sync TransformComponent to camera position driven by the controller.
     camTransform.Translation = camComp.SceneCamera.GetPosition();
@@ -102,22 +86,16 @@ void EditorLayer::OnUpdate(float deltaTime) {
     // at draw time without baking it into entity TRS data.
     if (m_ScenePanel) {
         Matx4f global = m_ScenePanel->GetGlobalTransform();
-        if (auto* rs = m_ActiveScene->GetSystem<RenderingSystem>())
-            rs->SetGlobalTransform(global);
-        if (auto* ps = m_ActiveScene->GetSystem<PickingSystem>())
-            ps->SetGlobalTransform(global);
-        if (m_GizmoRenderer)
-            m_GizmoRenderer->SetGlobalTransform(global);
+        if (auto* rs = m_ActiveScene->GetSystem<RenderingSystem>()) rs->SetGlobalTransform(global);
+        if (auto* ps = m_ActiveScene->GetSystem<PickingSystem>()) ps->SetGlobalTransform(global);
+        if (m_GizmoRenderer) m_GizmoRenderer->SetGlobalTransform(global);
     }
 
     // Render the scene into the viewport FBO.
     m_ViewportFBO->Bind();
     m_ActiveScene->OnUpdate(deltaTime);
-    m_Grid->Draw(
-        camComp.SceneCamera.GetViewMatrix(),
-        camComp.SceneCamera.GetProjectionMatrix(),
-        camComp.SceneCamera.GetPosition()
-    );
+    m_Grid->Draw(camComp.SceneCamera.GetViewMatrix(), camComp.SceneCamera.GetProjectionMatrix(),
+                 camComp.SceneCamera.GetPosition());
     m_GizmoRenderer->Draw();
     m_ViewportFBO->Unbind();
 }
@@ -132,45 +110,42 @@ void EditorLayer::OnImGuiRender() {
 
 void EditorLayer::OnEvent(Event& e) {
     EventDispatcher dispatcher(e);
-    dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& e)  { return OnMouseButtonPressed(e); });
-    dispatcher.Dispatch<MouseButtonReleasedEvent>([this](MouseButtonReleasedEvent& e) { return OnMouseButtonReleased(e); });
-    dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e)                  { return OnKeyPressed(e); });
-    dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& e)                { return OnKeyReleased(e); });
-    dispatcher.Dispatch<MouseMovedEvent>([this](MouseMovedEvent& e)                  { return OnMouseMoved(e); });
-    dispatcher.Dispatch<MouseScrolledEvent>([this](MouseScrolledEvent& e)            { return OnMouseScrolled(e); });
-    dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& e)              { return OnWindowResize(e); });
+    dispatcher.Dispatch<MouseButtonPressedEvent>(
+        [this](MouseButtonPressedEvent& e) { return OnMouseButtonPressed(e); });
+    dispatcher.Dispatch<MouseButtonReleasedEvent>(
+        [this](MouseButtonReleasedEvent& e) { return OnMouseButtonReleased(e); });
+    dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) { return OnKeyPressed(e); });
+    dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& e) { return OnKeyReleased(e); });
+    dispatcher.Dispatch<MouseMovedEvent>([this](MouseMovedEvent& e) { return OnMouseMoved(e); });
+    dispatcher.Dispatch<MouseScrolledEvent>(
+        [this](MouseScrolledEvent& e) { return OnMouseScrolled(e); });
+    dispatcher.Dispatch<WindowResizeEvent>(
+        [this](WindowResizeEvent& e) { return OnWindowResize(e); });
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
-    if (e.GetMouseButton() != 0)
-        return false;
-    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered())
-        return false;
+    if (e.GetMouseButton() != 0) return false;
+    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) return false;
 
     Vec2 mousePos    = Input::GetMousePosition();
     Vec2 viewportMin = m_ViewportPanel->GetViewportMin();
     Vec2 relPos      = mousePos - viewportMin;
 
-    if (relPos.x < 0.0f || relPos.y < 0.0f)
-        return false;
+    if (relPos.x < 0.0f || relPos.y < 0.0f) return false;
 
     // Gizmo gets first right of refusal — prevents mis-selecting while dragging a handle.
-    if (m_GizmoRenderer && m_GizmoRenderer->OnMouseButtonPressed(relPos.x, relPos.y))
-        return true;
+    if (m_GizmoRenderer && m_GizmoRenderer->OnMouseButtonPressed(relPos.x, relPos.y)) return true;
 
     bool isShiftHeld = Input::IsKeyPressed(KeyCode::LeftShift);
     auto* selSystem  = m_ActiveScene->GetSystem<SelectionSystem>();
-    if (!selSystem)
-        return false;
+    if (!selSystem) return false;
 
-    LOG_TRACE("EditorLayer click: mouse=({:.0f},{:.0f}) viewportMin=({:.0f},{:.0f}) rel=({:.0f},{:.0f})",
+    LOG_TRACE(
+        "EditorLayer click: mouse=({:.0f},{:.0f}) viewportMin=({:.0f},{:.0f}) rel=({:.0f},{:.0f})",
         mousePos.x, mousePos.y, viewportMin.x, viewportMin.y, relPos.x, relPos.y);
 
-    selSystem->OnMouseClick(
-        static_cast<uint32_t>(relPos.x),
-        static_cast<uint32_t>(relPos.y),
-        isShiftHeld
-    );
+    selSystem->OnMouseClick(static_cast<uint32_t>(relPos.x), static_cast<uint32_t>(relPos.y),
+                            isShiftHeld);
     return true;
 }
 
@@ -190,8 +165,7 @@ bool EditorLayer::OnMouseMoved(MouseMovedEvent& e) {
 }
 
 bool EditorLayer::OnMouseScrolled(MouseScrolledEvent& e) {
-    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered())
-        return false;
+    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) return false;
     m_CameraController->OnScrolled(e.GetYOffset());
     return false;
 }
@@ -216,15 +190,21 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
         return true;
     }
 
-    bool ctrl = Input::IsKeyPressed(KeyCode::LeftControl)
-             || Input::IsKeyPressed(KeyCode::RightControl);
+    bool ctrl =
+        Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);
     if (!ctrl) return false;
 
     auto* hist = m_ActiveScene->GetSystem<HistorySystem>();
     if (!hist) return false;
 
-    if (e.GetKeyCode() == static_cast<int>(KeyCode::Z)) { hist->Undo(); return true; }
-    if (e.GetKeyCode() == static_cast<int>(KeyCode::Y)) { hist->Redo(); return true; }
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::Z)) {
+        hist->Undo();
+        return true;
+    }
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::Y)) {
+        hist->Redo();
+        return true;
+    }
     return false;
 }
 

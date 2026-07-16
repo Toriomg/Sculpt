@@ -9,27 +9,27 @@
 #include <thread>
 
 struct TaskEntry {
-    TaskHandle              handle;
-    std::unique_ptr<ITask>  task;
-    std::atomic<TaskStatus> status{ TaskStatus::Pending };
+    TaskHandle handle;
+    std::unique_ptr<ITask> task;
+    std::atomic<TaskStatus> status{TaskStatus::Pending};
 
-    TaskEntry(TaskHandle h, std::unique_ptr<ITask> t) : handle(h), task(std::move(t)) {}
+    TaskEntry(TaskHandle h, std::unique_ptr<ITask> t) : handle(h), task(std::move(t)) { }
 };
 
 struct TaskQueueData {
     std::vector<std::jthread> workers;
 
-    std::mutex              pendingMutex;
+    std::mutex pendingMutex;
     std::condition_variable_any pendingCV;
     std::queue<std::shared_ptr<TaskEntry>> pendingQueue;
 
-    std::mutex              completionMutex;
+    std::mutex completionMutex;
     std::queue<std::shared_ptr<TaskEntry>> completionQueue;
 
     // Accessed only from the main thread — no synchronization needed.
     std::flat_map<TaskHandle, std::shared_ptr<TaskEntry>> registry;
 
-    std::atomic<uint64_t> nextHandle{ 1 };
+    std::atomic<uint64_t> nextHandle{1};
 };
 
 static std::optional<TaskQueueData> s_Data;
@@ -37,8 +37,7 @@ static std::optional<TaskQueueData> s_Data;
 void TaskQueue::Init(unsigned int threadCount) {
     s_Data.emplace();
 
-    if (threadCount == 0)
-        threadCount = std::max(1u, std::thread::hardware_concurrency());
+    if (threadCount == 0) threadCount = std::max(1u, std::thread::hardware_concurrency());
 
     s_Data->workers.reserve(threadCount);
     for (unsigned int i = 0; i < threadCount; ++i) {
@@ -47,10 +46,9 @@ void TaskQueue::Init(unsigned int threadCount) {
                 std::shared_ptr<TaskEntry> entry;
                 {
                     std::unique_lock lock(s_Data->pendingMutex);
-                    bool hasWork = s_Data->pendingCV.wait(lock, stopToken,
-                        [] { return !s_Data->pendingQueue.empty(); });
-                    if (!hasWork)
-                        return;  // stop requested with nothing left to process
+                    bool hasWork = s_Data->pendingCV.wait(
+                        lock, stopToken, [] { return !s_Data->pendingQueue.empty(); });
+                    if (!hasWork) return;  // stop requested with nothing left to process
                     entry = std::move(s_Data->pendingQueue.front());
                     s_Data->pendingQueue.pop();
                 }
@@ -59,12 +57,13 @@ void TaskQueue::Init(unsigned int threadCount) {
                 try {
                     entry->task->Execute();
                     entry->status.store(TaskStatus::Completed, std::memory_order_release);
-                } catch (const std::exception& ex) {
+                } catch (std::exception const& ex) {
                     entry->status.store(TaskStatus::Failed, std::memory_order_release);
                     CORE_LOG_ERROR("TaskQueue: '{}' failed: {}", entry->task->GetName(), ex.what());
                 } catch (...) {
                     entry->status.store(TaskStatus::Failed, std::memory_order_release);
-                    CORE_LOG_ERROR("TaskQueue: '{}' threw unknown exception", entry->task->GetName());
+                    CORE_LOG_ERROR("TaskQueue: '{}' threw unknown exception",
+                                   entry->task->GetName());
                 }
 
                 {
@@ -81,8 +80,7 @@ void TaskQueue::Init(unsigned int threadCount) {
 void TaskQueue::Shutdown() {
     if (!s_Data) return;
 
-    for (auto& w : s_Data->workers)
-        w.request_stop();
+    for (auto& w : s_Data->workers) w.request_stop();
     s_Data->pendingCV.notify_all();
     s_Data->workers.clear();  // join all — no threads access s_Data after this
 
@@ -94,11 +92,10 @@ void TaskQueue::Shutdown() {
 }
 
 std::expected<TaskHandle, std::string> TaskQueue::SubmitTask(std::unique_ptr<ITask> task) {
-    if (!s_Data)
-        return std::unexpected(std::string("TaskQueue not initialized"));
+    if (!s_Data) return std::unexpected(std::string("TaskQueue not initialized"));
 
     TaskHandle handle = s_Data->nextHandle.fetch_add(1, std::memory_order_relaxed);
-    auto entry = std::make_shared<TaskEntry>(handle, std::move(task));
+    auto entry        = std::make_shared<TaskEntry>(handle, std::move(task));
 
     CORE_LOG_TRACE("TaskQueue: submitting '{}' (handle {})", entry->task->GetName(), handle);
 
@@ -132,8 +129,7 @@ void TaskQueue::ProcessCompletions() {
 }
 
 TaskStatus TaskQueue::GetStatus(TaskHandle handle) {
-    if (!s_Data || handle == k_InvalidTaskHandle)
-        return TaskStatus::Failed;
+    if (!s_Data || handle == k_InvalidTaskHandle) return TaskStatus::Failed;
     auto it = s_Data->registry.find(handle);
     if (it == s_Data->registry.end())
         return TaskStatus::Completed;  // already finalized and removed from registry
@@ -141,6 +137,6 @@ TaskStatus TaskQueue::GetStatus(TaskHandle handle) {
 }
 
 bool TaskQueue::IsComplete(TaskHandle handle) {
-    const TaskStatus s = GetStatus(handle);
+    TaskStatus const s = GetStatus(handle);
     return s == TaskStatus::Completed || s == TaskStatus::Failed;
 }

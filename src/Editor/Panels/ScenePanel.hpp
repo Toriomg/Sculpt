@@ -15,8 +15,8 @@ public:
 
 private:
     Camera* m_Camera;
-    Vec3  m_Translation{0.0f, 0.0f, 0.0f};
+    Vec3 m_Translation{0.0f, 0.0f, 0.0f};
     float m_Rotation = 0.0f;
-    Vec3  m_Scaling{1.0f, 1.0f, 1.0f};
+    Vec3 m_Scaling{1.0f, 1.0f, 1.0f};
     float m_Scalar = 1.0f;
 };

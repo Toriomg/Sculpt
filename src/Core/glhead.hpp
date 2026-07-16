@@ -1,11 +1,11 @@
 // Common STL include aggregator; pulled in transitively by most platform and core headers.
 #pragma once
-#include <iostream>
-#include <string>
+#include <cstdint>
 #include <cstring>
 #include <functional>
-#include <vector>
+#include <iostream>
+#include <map>
 #include <memory>
 #include <sstream>
-#include <cstdint>
-#include <map>
+#include <string>
+#include <vector>

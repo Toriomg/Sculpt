@@ -3,11 +3,11 @@
 
 namespace UIStyle {
 
-enum class Theme {
-    ModelingDark,   // primary dark theme — optimised for 3D viewport work
-    ModelingLight,  // high-brightness variant for bright-room use
-};
+    enum class Theme {
+        ModelingDark,   // primary dark theme — optimised for 3D viewport work
+        ModelingLight,  // high-brightness variant for bright-room use
+    };
 
-void ApplyTheme(Theme theme);
+    void ApplyTheme(Theme theme);
 
-} // namespace UIStyle
+}  // namespace UIStyle

@@ -16,7 +16,7 @@ public:
     void SpawnPrimitive(PrimitiveType type);
 
     // Returns an error string if the file does not exist; async load failures are logged.
-    std::expected<void, std::string> SpawnFromFile(const std::string& path);
+    std::expected<void, std::string> SpawnFromFile(std::string const& path);
 
 private:
     Scene* m_Scene;

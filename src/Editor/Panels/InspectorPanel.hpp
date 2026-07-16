@@ -1,8 +1,8 @@
 // Shows and edits the components (Name, Transform, Mesh) of the currently selected entity.
 #pragma once
-#include "Editor/Panels/Panel.hpp"
-#include "Core/Entity.hpp"
 #include "Core/Components/Component.hpp"
+#include "Core/Entity.hpp"
+#include "Editor/Panels/Panel.hpp"
 
 class Scene;
 class SelectionContext;
@@ -14,13 +14,13 @@ public:
     void OnImGuiRender() override;
 
 private:
-    Scene*            m_Scene;
-    SelectionContext*  m_SelectionContext;
-    HistorySystem*     m_HistSys           = nullptr;
+    Scene* m_Scene;
+    SelectionContext* m_SelectionContext;
+    HistorySystem* m_HistSys = nullptr;
 
-    Entity             m_SnapshotEntity    = entt::null;
+    Entity m_SnapshotEntity = entt::null;
     TransformComponent m_TransformSnapshot;
 
-    Entity m_TexturePathEntity             = entt::null;
-    char   m_TexturePathBuf[256]           = {};
+    Entity m_TexturePathEntity = entt::null;
+    char m_TexturePathBuf[256] = {};
 };

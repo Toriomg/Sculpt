@@ -1,17 +1,14 @@
 #include "EditorCameraController.hpp"
 #include "Platform/System/Input/Input.hpp"
 
-EditorCameraController::EditorCameraController(Camera* camera)
-    : m_CameraToControl(camera) {
-}
+EditorCameraController::EditorCameraController(Camera* camera) : m_CameraToControl(camera) { }
 
-void EditorCameraController::OnUpdate(float deltaTime)
-{
+void EditorCameraController::OnUpdate(float deltaTime) {
     // Safety check
     if (!m_CameraToControl) return;
 
     // --- Keyboard Movement ---
-    const float velocity = m_MovementSpeed * deltaTime;
+    float const velocity = m_MovementSpeed * deltaTime;
     Vec3 currentPosition = m_CameraToControl->GetPosition();
 
     if (Input::IsKeyPressed(KeyCode::W))
@@ -23,25 +20,23 @@ void EditorCameraController::OnUpdate(float deltaTime)
     if (Input::IsKeyPressed(KeyCode::D))
         currentPosition -= m_CameraToControl->GetRightDirection() * velocity;
     if (Input::IsKeyPressed(KeyCode::LeftShift))
-        currentPosition -= m_CameraToControl->GetUpDirection()    * velocity;
+        currentPosition -= m_CameraToControl->GetUpDirection() * velocity;
     if (Input::IsKeyPressed(KeyCode::Space))
-        currentPosition += m_CameraToControl->GetUpDirection()    * velocity;
+        currentPosition += m_CameraToControl->GetUpDirection() * velocity;
 
     m_CameraToControl->SetPosition(currentPosition);
 
-
     // --- Mouse Rotation ---
-    if (Input::IsMouseButtonPressed(MouseCode::Right))
-    {
-        const Vec2 currentMousePos = Input::GetMousePosition();
-        Vec2 delta = currentMousePos - m_LastMousePosition;
-        m_LastMousePosition = currentMousePos;
+    if (Input::IsMouseButtonPressed(MouseCode::Right)) {
+        Vec2 const currentMousePos = Input::GetMousePosition();
+        Vec2 delta                 = currentMousePos - m_LastMousePosition;
+        m_LastMousePosition        = currentMousePos;
 
         delta *= m_MouseSensitivity;
 
         float currentPitch = m_CameraToControl->GetPitch();
-        float currentYaw = m_CameraToControl->GetYaw();
-        
+        float currentYaw   = m_CameraToControl->GetYaw();
+
         currentYaw += delta.x;
         // Screen Y increases downward, but pitch should increase as we look up.
         currentPitch -= delta.y;
@@ -52,17 +47,14 @@ void EditorCameraController::OnUpdate(float deltaTime)
         if (currentPitch < -89.0f) currentPitch = -89.0f;
 
         m_CameraToControl->SetRotation(currentPitch, currentYaw);
-    }
-    else
-    {
+    } else {
         // Sync last position while RMB is not held so that re-pressing it doesn't
         // produce a large delta from wherever the cursor was when it was released.
         m_LastMousePosition = Input::GetMousePosition();
     }
 }
 
-void EditorCameraController::OnScrolled(float yOffset)
-{
+void EditorCameraController::OnScrolled(float yOffset) {
     if (!m_CameraToControl) return;
 
     Vec3 position = m_CameraToControl->GetPosition();

@@ -1,4 +1,5 @@
-// Off-screen render target: owns color and depth texture attachments; used by EditorLayer to render the 3D viewport.
+// Off-screen render target: owns color and depth texture attachments; used by EditorLayer to render
+// the 3D viewport.
 #pragma once
 #include <cstdint>
 
@@ -27,11 +28,11 @@ private:
     void Invalidate();
 
 private:
-    uint32_t m_RendererID = 0; // The ID of the framebuffer object itself
+    uint32_t m_RendererID = 0;  // The ID of the framebuffer object itself
 
     // Attachments
-    uint32_t m_ColorAttachmentID = 0; // The ID of the texture rendered color
-    uint32_t m_DepthAttachmentID = 0; // The ID of the texture used for depth testing
+    uint32_t m_ColorAttachmentID = 0;  // The ID of the texture rendered color
+    uint32_t m_DepthAttachmentID = 0;  // The ID of the texture used for depth testing
 
     // Specifications
     uint32_t m_Width;

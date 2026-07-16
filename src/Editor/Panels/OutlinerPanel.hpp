@@ -14,7 +14,7 @@ public:
     void TriggerDeleteConfirmation();
 
 private:
-    Scene*           m_Scene;
+    Scene* m_Scene;
     SelectionSystem* m_SelectionSystem;
-    bool             m_ShowDeleteModal = false;
+    bool m_ShowDeleteModal = false;
 };

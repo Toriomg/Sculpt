@@ -30,10 +30,8 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
-    m_Window = glfwCreateWindow(
-        static_cast<int>(width), static_cast<int>(height),
-        m_Data.Title.c_str(), nullptr, nullptr
-    );
+    m_Window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height),
+                                m_Data.Title.c_str(), nullptr, nullptr);
     if (!m_Window) {
         glfwTerminate();
         CORE_LOG_CRITICAL("ERROR: glfwCreateWindow() failed.");
@@ -53,20 +51,31 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
     });
 
     glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int w, int h) {
-        auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+        auto& data  = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
         data.Width  = static_cast<uint32_t>(w);
         data.Height = static_cast<uint32_t>(h);
         WindowResizeEvent event(data.Width, data.Height);
         data.EventCallback(event);
     });
 
-    glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int /*mods*/) {
-        auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
-        switch (action) {
-            case GLFW_PRESS:   { MouseButtonPressedEvent  e(button); data.EventCallback(e); break; }
-            case GLFW_RELEASE: { MouseButtonReleasedEvent e(button); data.EventCallback(e); break; }
-        }
-    });
+    glfwSetMouseButtonCallback(
+        m_Window, [](GLFWwindow* window, int button, int action, int /*mods*/) {
+            auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            switch (action) {
+                case GLFW_PRESS:
+                {
+                    MouseButtonPressedEvent e(button);
+                    data.EventCallback(e);
+                    break;
+                }
+                case GLFW_RELEASE:
+                {
+                    MouseButtonReleasedEvent e(button);
+                    data.EventCallback(e);
+                    break;
+                }
+            }
+        });
 
     glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
         auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
@@ -74,14 +83,30 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
         data.EventCallback(event);
     });
 
-    glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int /*scancode*/, int action, int /*mods*/) {
-        auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
-        switch (action) {
-            case GLFW_PRESS:   { KeyPressedEvent  e(key, false); data.EventCallback(e); break; }
-            case GLFW_RELEASE: { KeyReleasedEvent e(key);        data.EventCallback(e); break; }
-            case GLFW_REPEAT:  { KeyPressedEvent  e(key, true);  data.EventCallback(e); break; }
-        }
-    });
+    glfwSetKeyCallback(m_Window,
+                       [](GLFWwindow* window, int key, int /*scancode*/, int action, int /*mods*/) {
+                           auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+                           switch (action) {
+                               case GLFW_PRESS:
+                               {
+                                   KeyPressedEvent e(key, false);
+                                   data.EventCallback(e);
+                                   break;
+                               }
+                               case GLFW_RELEASE:
+                               {
+                                   KeyReleasedEvent e(key);
+                                   data.EventCallback(e);
+                                   break;
+                               }
+                               case GLFW_REPEAT:
+                               {
+                                   KeyPressedEvent e(key, true);
+                                   data.EventCallback(e);
+                                   break;
+                               }
+                           }
+                       });
 
     glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
         auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
@@ -108,9 +133,9 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
     glEnable(GL_DEPTH_TEST);
 
     CORE_LOG_INFO("OpenGL Info:");
-    CORE_LOG_INFO("  Vendor: {0}",   reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
-    CORE_LOG_INFO("  Renderer: {0}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-    CORE_LOG_INFO("  Version: {0}",  reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+    CORE_LOG_INFO("  Vendor: {0}", reinterpret_cast<char const*>(glGetString(GL_VENDOR)));
+    CORE_LOG_INFO("  Renderer: {0}", reinterpret_cast<char const*>(glGetString(GL_RENDERER)));
+    CORE_LOG_INFO("  Version: {0}", reinterpret_cast<char const*>(glGetString(GL_VERSION)));
 }
 
 void GlfwWindow::Shutdown() {

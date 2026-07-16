@@ -1,7 +1,6 @@
 #pragma once
 
-class Time
-{
+class Time {
 public:
     // Call this once at the beginning of the application
     static void Init();

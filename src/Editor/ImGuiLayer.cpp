@@ -1,12 +1,11 @@
 #include "Editor/ImGuiLayer.hpp"
 #include "Editor/UIStyle.hpp"
 #include "Platform/Graphics/RenderCommand.hpp"
-#include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+#include "imgui.h"
 
-ImGuiLayer::ImGuiLayer(GLFWwindow* window)
-    : Layer("ImGuiLayer"), m_Window(window) {}
+ImGuiLayer::ImGuiLayer(GLFWwindow* window) : Layer("ImGuiLayer"), m_Window(window) { }
 
 void ImGuiLayer::OnAttach() {
     IMGUI_CHECKVERSION();

@@ -1,11 +1,9 @@
 #include "SelectionSystem.hpp"
-#include "PickingSystem.hpp"
 #include "Core/Scene.hpp"
+#include "PickingSystem.hpp"
 
 void SelectionContext::Select(Entity entity, bool additive) {
-    if (!additive) {
-        m_SelectedEntities.clear();
-    }
+    if (!additive) { m_SelectedEntities.clear(); }
 
     bool wasAdded = m_SelectedEntities.insert(entity).second;
     if (wasAdded && OnSelectionChanged) {
@@ -23,26 +21,18 @@ void SelectionContext::Deselect(Entity entity) {
 }
 
 void SelectionContext::ClearSelection() {
-    if (m_SelectedEntities.empty()) {
-        return;
-    }
+    if (m_SelectedEntities.empty()) { return; }
 
     m_SelectedEntities.clear();
-    if (OnSelectionChanged) {
-        OnSelectionChanged({});
-    }
+    if (OnSelectionChanged) { OnSelectionChanged({}); }
 }
 
-void SelectionContext::SelectMultiple(const std::vector<Entity>& entities, bool additive) {
-    if (!additive) {
-        m_SelectedEntities.clear();
-    }
+void SelectionContext::SelectMultiple(std::vector<Entity> const& entities, bool additive) {
+    if (!additive) { m_SelectedEntities.clear(); }
 
     bool changed = false;
     for (Entity entity : entities) {
-        if (m_SelectedEntities.insert(entity).second) {
-            changed = true;
-        }
+        if (m_SelectedEntities.insert(entity).second) { changed = true; }
     }
 
     if (changed && OnSelectionChanged) {
@@ -59,15 +49,11 @@ void SelectionSystem::OnAttach(Scene* scene) {
 }
 
 void SelectionSystem::OnUpdate(float deltaTime) {
-    if (!m_Scene || !m_PickingSystem) {
-        return;
-    }
+    if (!m_Scene || !m_PickingSystem) { return; }
 }
 
 void SelectionSystem::OnMouseClick(uint32_t screenX, uint32_t screenY, bool additive) {
-    if (!m_PickingSystem) {
-        return;
-    }
+    if (!m_PickingSystem) { return; }
 
     LOG_TRACE("SelectionSystem::OnMouseClick screen=({},{})", screenX, screenY);
 
@@ -76,7 +62,7 @@ void SelectionSystem::OnMouseClick(uint32_t screenX, uint32_t screenY, bool addi
     m_PickingSystem->RequestPickingPass(screenX, screenY);
     m_PickingSystem->OnUpdate(0.0f);
 
-    const auto& result = m_PickingSystem->GetLastResult();
+    auto const& result = m_PickingSystem->GetLastResult();
 
     LOG_TRACE("SelectionSystem: result valid={} objectID={}", result.Valid, result.ObjectID);
 
@@ -84,11 +70,8 @@ void SelectionSystem::OnMouseClick(uint32_t screenX, uint32_t screenY, bool addi
         Entity entity = static_cast<Entity>(result.ObjectID - 1u);
         m_SelectionContext.Select(entity, additive);
     } else {
-        if (!additive) {
-            m_SelectionContext.ClearSelection();
-        }
+        if (!additive) { m_SelectionContext.ClearSelection(); }
     }
 }
 
-void SelectionSystem::ApplyHighlightShaders() {
-}
+void SelectionSystem::ApplyHighlightShaders() { }

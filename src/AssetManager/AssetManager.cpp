@@ -1,8 +1,8 @@
 #include "AssetManager.hpp"
-#include "Loader/LoaderSystem.hpp"
 #include "AssetRegistry.hpp"
-#include "Loader/TextureLoader.hpp"
+#include "Loader/LoaderSystem.hpp"
 #include "Loader/MeshLoader.hpp"
+#include "Loader/TextureLoader.hpp"
 #include "Platform/Jobs/TaskQueue.hpp"
 #include <functional>
 #include <optional>
@@ -13,7 +13,8 @@ struct AssetManagerData {
     std::unordered_map<std::string, AssetHandle> pathToHandleMap;
 };
 
-// Optional gives us a clear Init/Shutdown lifecycle without a heap allocation or a separate "initialized" flag.
+// Optional gives us a clear Init/Shutdown lifecycle without a heap allocation or a separate
+// "initialized" flag.
 static std::optional<AssetManagerData> s_Data;
 
 void AssetManager::Init() {
@@ -27,11 +28,10 @@ void AssetManager::Shutdown() {
     s_Data.reset();
 }
 
-AssetHandle AssetManager::Load(const std::string& filepath) {
+AssetHandle AssetManager::Load(std::string const& filepath) {
     // Return the cached handle if this path was already loaded, preventing duplicate GPU uploads.
     auto it = s_Data->pathToHandleMap.find(filepath);
-    if (it != s_Data->pathToHandleMap.end())
-        return it->second;
+    if (it != s_Data->pathToHandleMap.end()) return it->second;
 
     IAssetLoader* loader = s_Data->loaders.GetLoaderFor(filepath);
     if (!loader) {
@@ -62,24 +62,23 @@ std::shared_ptr<IAsset> AssetManager::Get(AssetHandle handle) {
 class AssetLoadTask final : public ITask {
 public:
     AssetLoadTask(std::string path, std::function<void(AssetHandle)> onComplete)
-        : m_Path(std::move(path)), m_OnComplete(std::move(onComplete)) {}
+        : m_Path(std::move(path)), m_OnComplete(std::move(onComplete)) { }
 
     std::string_view GetName() const override { return "AssetLoad"; }
-    void Execute() override {}
+    void Execute() override { }
 
     void Finalize() override {
         AssetHandle handle = AssetManager::Load(m_Path);
-        if (m_OnComplete)
-            m_OnComplete(handle);
+        if (m_OnComplete) m_OnComplete(handle);
     }
 
 private:
-    std::string                      m_Path;
+    std::string m_Path;
     std::function<void(AssetHandle)> m_OnComplete;
 };
 
-void AssetManager::LoadAsync(const std::string& filepath, std::function<void(AssetHandle)> onComplete) {
+void AssetManager::LoadAsync(std::string const& filepath,
+                             std::function<void(AssetHandle)> onComplete) {
     auto result = TaskQueue::Submit<AssetLoadTask>(filepath, std::move(onComplete));
-    if (!result)
-        LOG_ERROR("AssetManager: LoadAsync failed for '{}': {}", filepath, result.error());
+    if (!result) LOG_ERROR("AssetManager: LoadAsync failed for '{}': {}", filepath, result.error());
 }

@@ -1,4 +1,5 @@
-// Static high-level rendering API: BeginScene sets the view-projection, Submit draws a Mesh+Material pair.
+// Static high-level rendering API: BeginScene sets the view-projection, Submit draws a
+// Mesh+Material pair.
 #pragma once
 
 #include "Core/glhead.hpp"
@@ -16,41 +17,28 @@ public:
     static void Init();
     static void Shutdown();
 
-    static void BeginScene(const Matx4f& ViewProjectionMatrix);
+    static void BeginScene(Matx4f const& ViewProjectionMatrix);
     static void EndScene();
 
     // The main function to draw an object
-    static void Submit(
-        const std::shared_ptr<Mesh>& mesh,
-        const std::shared_ptr<Material>& material,
-        const Matx4f& transform
-    );
+    static void Submit(std::shared_ptr<Mesh> const& mesh, std::shared_ptr<Material> const& material,
+                       Matx4f const& transform);
 
     // Three-pass wireframe: black fill → white edges → white vertex dots
-    static void SubmitWireframe(
-        const std::shared_ptr<Mesh>& mesh,
-        const Matx4f& transform
-    );
+    static void SubmitWireframe(std::shared_ptr<Mesh> const& mesh, Matx4f const& transform);
 
     // Single-pass flat-color draw reusing WireframeShader. For editor overlays (gizmos, debug).
-    static void SubmitFlat(
-        const std::shared_ptr<Mesh>& mesh,
-        const Vec4& color,
-        const Matx4f& transform
-    );
+    static void SubmitFlat(std::shared_ptr<Mesh> const& mesh, Vec4 const& color,
+                           Matx4f const& transform);
 
     // Draws a screen-space outline around the mesh using the outline shader.
     // Caller is responsible for setting up stencil state before and after.
-    static void SubmitOutline(
-        const std::shared_ptr<Mesh>& mesh,
-        const Vec4& color,
-        float thickness,
-        const Matx4f& transform
-    );
+    static void SubmitOutline(std::shared_ptr<Mesh> const& mesh, Vec4 const& color, float thickness,
+                              Matx4f const& transform);
 
     static void OnWindowResize(uint32_t width, uint32_t height);
 
     static void SetDebugSelectionMode(bool enable);
     static bool IsDebugSelectionModeEnabled();
-    static const std::shared_ptr<Shader>& GetDebugSelectionShader();
+    static std::shared_ptr<Shader> const& GetDebugSelectionShader();
 };

@@ -3,8 +3,7 @@
 
 void HistorySystem::Push(std::unique_ptr<Command> cmd) {
     cmd->Execute();
-    if (m_UndoStack.size() >= k_MaxHistory)
-        m_UndoStack.erase(m_UndoStack.begin());
+    if (m_UndoStack.size() >= k_MaxHistory) m_UndoStack.erase(m_UndoStack.begin());
     m_UndoStack.push_back(std::move(cmd));
     m_RedoStack.clear();
 }

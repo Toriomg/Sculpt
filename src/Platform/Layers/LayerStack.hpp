@@ -1,25 +1,25 @@
-// Ordered container of Layer instances; events propagate top-to-bottom, updates fire in insertion order.
+// Ordered container of Layer instances; events propagate top-to-bottom, updates fire in insertion
+// order.
 #pragma once
 #include "Layer.hpp"
-#include <vector>
 #include <memory>
+#include <vector>
 
 class LayerStack {
 public:
     LayerStack() = default;
     ~LayerStack() {
-        for (auto& layer : m_Layers)
-            layer->OnDetach();
+        for (auto& layer : m_Layers) layer->OnDetach();
     }
 
     void PushLayer(std::unique_ptr<Layer> layer);
     void PopLayer(Layer* layer);
     bool isEmpty() const { return m_Layers.empty(); }
 
-    auto begin()  { return m_Layers.begin(); }
-    auto end()    { return m_Layers.end(); }
+    auto begin() { return m_Layers.begin(); }
+    auto end() { return m_Layers.end(); }
     auto rbegin() { return m_Layers.rbegin(); }
-    auto rend()   { return m_Layers.rend(); }
+    auto rend() { return m_Layers.rend(); }
 
 private:
     std::vector<std::unique_ptr<Layer>> m_Layers;

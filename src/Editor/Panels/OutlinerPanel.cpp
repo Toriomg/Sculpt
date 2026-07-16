@@ -1,16 +1,15 @@
 #include "Editor/Panels/OutlinerPanel.hpp"
+#include "Core/Components/Component.hpp"
 #include "Core/Scene.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
-#include "Core/Components/Component.hpp"
 #include "imgui.h"
 #include <vector>
 
 OutlinerPanel::OutlinerPanel(Scene* scene, SelectionSystem* selectionSystem)
-    : m_Scene(scene), m_SelectionSystem(selectionSystem) {}
+    : m_Scene(scene), m_SelectionSystem(selectionSystem) { }
 
 void OutlinerPanel::TriggerDeleteConfirmation() {
-    if (m_SelectionSystem->GetSelectionContext().GetSelectionCount() > 0)
-        m_ShowDeleteModal = true;
+    if (m_SelectionSystem->GetSelectionContext().GetSelectionCount() > 0) m_ShowDeleteModal = true;
 }
 
 void OutlinerPanel::OnImGuiRender() {
@@ -20,11 +19,11 @@ void OutlinerPanel::OnImGuiRender() {
     ImGui::Begin("Outliner");
 
     auto& selCtx = m_SelectionSystem->GetSelectionContext();
-    auto view = m_Scene->GetAllEntitiesWith<NameComponent>();
+    auto view    = m_Scene->GetAllEntitiesWith<NameComponent>();
 
     for (auto entity : view) {
-        const std::string& name = view.get<NameComponent>(entity).Name;
-        bool selected = selCtx.IsEntitySelected(entity);
+        std::string const& name = view.get<NameComponent>(entity).Name;
+        bool selected           = selCtx.IsEntitySelected(entity);
 
         if (ImGui::Selectable(name.c_str(), selected)) {
             bool additive = ImGui::GetIO().KeyShift;
@@ -37,8 +36,7 @@ void OutlinerPanel::OnImGuiRender() {
 
     bool hasSelection = selCtx.GetSelectionCount() > 0;
     if (!hasSelection) ImGui::BeginDisabled();
-    if (ImGui::Button("Delete Selected", ImVec2(-1, 0)))
-        m_ShowDeleteModal = true;
+    if (ImGui::Button("Delete Selected", ImVec2(-1, 0))) m_ShowDeleteModal = true;
     if (!hasSelection) ImGui::EndDisabled();
 
     // Confirmation modal — must be triggered via OpenPopup once, then handled every frame.
@@ -52,21 +50,20 @@ void OutlinerPanel::OnImGuiRender() {
         ImGui::Spacing();
         for (auto entity : selCtx.GetSelectedEntities()) {
             if (m_Scene->HasComponent<NameComponent>(entity))
-                ImGui::TextDisabled("  %s", m_Scene->GetComponent<NameComponent>(entity).Name.c_str());
+                ImGui::TextDisabled("  %s",
+                                    m_Scene->GetComponent<NameComponent>(entity).Name.c_str());
         }
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
-        if (ImGui::Button("Cancel", ImVec2(120, 0)))
-            ImGui::CloseCurrentPopup();
+        if (ImGui::Button("Cancel", ImVec2(120, 0))) ImGui::CloseCurrentPopup();
         ImGui::SameLine();
         if (ImGui::Button("Delete", ImVec2(120, 0))) {
             // Snapshot before clearing selection since ClearSelection modifies the set.
             std::vector<Entity> toDelete(selCtx.GetSelectedEntities().begin(),
                                          selCtx.GetSelectedEntities().end());
             selCtx.ClearSelection();
-            for (Entity e : toDelete)
-                m_Scene->DestroyEntity(e);
+            for (Entity e : toDelete) m_Scene->DestroyEntity(e);
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();

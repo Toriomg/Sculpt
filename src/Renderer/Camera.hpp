@@ -1,12 +1,14 @@
-// Scene camera: tracks position and orientation; computes view and projection matrices for Renderer::BeginScene.
+// Scene camera: tracks position and orientation; computes view and projection matrices for
+// Renderer::BeginScene.
 #pragma once
 
-#include "Platform/CoreUtils/Math/maths.hpp"
 #include "Platform/CoreUtils/Log.hpp"
+#include "Platform/CoreUtils/Math/maths.hpp"
 
 class Camera {
 public:
     enum class ProjectionType { Perspective = 0, Orthographic = 1 };
+
 public:
     Camera();
 
@@ -15,12 +17,12 @@ public:
     ProjectionType GetProjectionType() const { return m_ProjectionType; }
 
     // --- Accessors ---
-    const Matx4f& GetProjectionMatrix() const { return m_ProjectionMatrix; }
-    const Matx4f& GetViewMatrix() const { return m_ViewMatrix; }
-    const Matx4f& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+    Matx4f const& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+    Matx4f const& GetViewMatrix() const { return m_ViewMatrix; }
+    Matx4f const& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
-    const Vec3& GetPosition() const { return m_Position; }
-    void SetPosition(const Vec3& position);
+    Vec3 const& GetPosition() const { return m_Position; }
+    void SetPosition(Vec3 const& position);
 
     // Returns the yaw (Y-axis rotation) and pitch (X-axis rotation) in radians.
     float GetYaw() const { return m_Yaw; }
@@ -31,9 +33,9 @@ public:
 
     // --- Viewport ---
     void SetViewportSize(float width, float height);
-	float GetViewportWidth() const { return m_ViewportWidth; }
-	float GetViewportHeight() const { return m_ViewportHeight; }
-    float GetAspectRatio() const { return m_ViewportWidth/m_ViewportHeight; }
+    float GetViewportWidth() const { return m_ViewportWidth; }
+    float GetViewportHeight() const { return m_ViewportHeight; }
+    float GetAspectRatio() const { return m_ViewportWidth / m_ViewportHeight; }
 
     void SetPerspectiveFOV(float fov);
     float GetPerspectiveFOV() const { return m_PerspectiveFOV; }
@@ -46,12 +48,14 @@ public:
     void SetNearClip(float nearClip);
     void SetFarClip(float farClip);
 
-    const Vec3& GetFrontDirection() const { return m_Front; }
-    const Vec3& GetUpDirection() const { return m_Up; }
-    const Vec3& GetRightDirection() const { return m_Right; }
+    Vec3 const& GetFrontDirection() const { return m_Front; }
+    Vec3 const& GetUpDirection() const { return m_Up; }
+    Vec3 const& GetRightDirection() const { return m_Right; }
+
 private:
     void RecalculateProjectionMatrix();
     void RecalculateViewMatrix();
+
 private:
     ProjectionType m_ProjectionType = ProjectionType::Perspective;
     Matx4f m_ProjectionMatrix;
@@ -62,11 +66,11 @@ private:
     This are temporal values they are intended to be modified after the Camera Constructor
     */
     // Camera Transform
-    Vec3 m_Position = { 0.0f, 0.0f, 5.0f }; // Start 5 units back
+    Vec3 m_Position = {0.0f, 0.0f, 5.0f};  // Start 5 units back
     Vec3 m_Front, m_Up, m_Right;
 
-    float m_Pitch = 0.0f; // Rotation around X-axis (looking up/down)
-    float m_Yaw = 0.0f; // Rotation around Y-axis (looking left/right)
+    float m_Pitch = 0.0f;  // Rotation around X-axis (looking up/down)
+    float m_Yaw   = 0.0f;  // Rotation around Y-axis (looking left/right)
 
     float m_ViewportWidth = 1280, m_ViewportHeight = 720;
 
@@ -74,9 +78,9 @@ private:
     float m_PerspectiveFOV = 90.0f;
 
     // Orthographic properties
-    float m_OrthographicSize = 10.0f; // Represents the vertical size
+    float m_OrthographicSize = 10.0f;  // Represents the vertical size
 
     // Shared properties
     float m_NearClip = 0.1f;
-    float m_FarClip = 1000.0f;
+    float m_FarClip  = 1000.0f;
 };

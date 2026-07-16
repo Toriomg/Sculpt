@@ -4,7 +4,7 @@
 #include <cstdio>
 
 ViewportPanel::ViewportPanel(Framebuffer* framebuffer, ResizeCallback onResize)
-    : m_Framebuffer(framebuffer), m_OnResize(std::move(onResize)) {}
+    : m_Framebuffer(framebuffer), m_OnResize(std::move(onResize)) { }
 
 void ViewportPanel::OnImGuiRender() {
     if (!IsVisible) return;
@@ -19,7 +19,7 @@ void ViewportPanel::OnImGuiRender() {
 
     // Record the screen-space origin of the content area (used to offset picking coordinates).
     ImVec2 contentPos = ImGui::GetCursorScreenPos();
-    m_ViewportMin = Vec2(contentPos.x, contentPos.y);
+    m_ViewportMin     = Vec2(contentPos.x, contentPos.y);
 
     ImVec2 size = ImGui::GetContentRegionAvail();
     if (size.x > 0.0f && size.y > 0.0f) {
@@ -33,12 +33,7 @@ void ViewportPanel::OnImGuiRender() {
         }
         uint32_t texID = m_Framebuffer->GetColorAttachmentRendererID();
         // UV is flipped vertically: OpenGL FBOs have origin at bottom-left, ImGui at top-left.
-        ImGui::Image(
-            static_cast<ImTextureID>(texID),
-            size,
-            ImVec2{0.0f, 1.0f},
-            ImVec2{1.0f, 0.0f}
-        );
+        ImGui::Image(static_cast<ImTextureID>(texID), size, ImVec2{0.0f, 1.0f}, ImVec2{1.0f, 0.0f});
 
         // FPS overlay — drawn over the viewport image via the window draw list.
         float fps = ImGui::GetIO().Framerate;

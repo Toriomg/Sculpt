@@ -1,11 +1,12 @@
-// Static input polling API with a swappable platform-specific InputImpl; initialized by Application with a GlfwInput.
+// Static input polling API with a swappable platform-specific InputImpl; initialized by Application
+// with a GlfwInput.
 #pragma once
-#include <memory>
 #include "KeyCodes.hpp"
-#include "Platform/System/Window/Window.hpp"
 #include "Platform/CoreUtils/Math/maths.hpp"
+#include "Platform/System/Window/Window.hpp"
+#include <memory>
 
-class Window; // Forward-declare
+class Window;  // Forward-declare
 
 // The public-facing static class
 class Input {
@@ -23,16 +24,16 @@ public:
     static Vec2 GetMousePosition();
     static float GetMouseX();
     static float GetMouseY();
-	static std::string GetKeyName(int keycode);
+    static std::string GetKeyName(int keycode);
     // This inner class is the key to platform abstraction
     class InputImpl {
     public:
-        virtual ~InputImpl() = default;
-        virtual void OnUpdateImpl() = 0;
-        virtual bool IsKeyPressedImpl(KeyCode key) = 0;
+        virtual ~InputImpl()                                    = default;
+        virtual void OnUpdateImpl()                             = 0;
+        virtual bool IsKeyPressedImpl(KeyCode key)              = 0;
         virtual bool IsMouseButtonPressedImpl(MouseCode button) = 0;
-        virtual Vec2 GetMousePositionImpl() = 0;
-        virtual std::string GetKeyNameImpl(int keycode) const = 0;
+        virtual Vec2 GetMousePositionImpl()                     = 0;
+        virtual std::string GetKeyNameImpl(int keycode) const   = 0;
     };
 
 private:

@@ -1,13 +1,14 @@
-// Primary editor layer: owns Scene, Camera, EditorCameraController, viewport FBO, and all UI panels.
+// Primary editor layer: owns Scene, Camera, EditorCameraController, viewport FBO, and all UI
+// panels.
 #pragma once
-#include "Platform/Layers/Layer.hpp"
 #include "Core/Scene.hpp"
+#include "Editor/EditorCameraController.hpp"
+#include "Platform/Layers/Layer.hpp"
 #include "Platform/System/Events/KeyboardEvent.hpp"
 #include "Platform/System/Events/MouseEvent.hpp"
 #include "Platform/System/Events/WindowEvent.hpp"
-#include "Editor/EditorCameraController.hpp"
-#include "Renderer/InfGrid.hpp"
 #include "Renderer/Camera.hpp"
+#include "Renderer/InfGrid.hpp"
 #include <functional>
 #include <memory>
 
@@ -24,8 +25,8 @@ class EditorLayer : public Layer {
 public:
     explicit EditorLayer(std::function<void()> onQuit);
     ~EditorLayer() override;
-    EditorLayer(const EditorLayer&)            = delete;
-    EditorLayer& operator=(const EditorLayer&) = delete;
+    EditorLayer(EditorLayer const&)            = delete;
+    EditorLayer& operator=(EditorLayer const&) = delete;
     EditorLayer(EditorLayer&&)                 = default;
     EditorLayer& operator=(EditorLayer&&)      = default;
 
@@ -45,23 +46,23 @@ private:
 
     void OnViewportResize(uint32_t width, uint32_t height);
 
-    std::unique_ptr<Scene>                  m_ActiveScene;
+    std::unique_ptr<Scene> m_ActiveScene;
     std::unique_ptr<EditorCameraController> m_CameraController;
-    std::unique_ptr<InfGrid>               m_Grid;
-    std::unique_ptr<Framebuffer>           m_ViewportFBO;
+    std::unique_ptr<InfGrid> m_Grid;
+    std::unique_ptr<Framebuffer> m_ViewportFBO;
 
     Camera m_EditorCamera;
     Entity m_CameraEntity;
 
     Vec2 m_LastMousePosition{0.0f, 0.0f};
 
-    std::unique_ptr<EntityFactory>   m_EntityFactory;
-    std::unique_ptr<GizmoRenderer>   m_GizmoRenderer;
-    std::unique_ptr<ViewportPanel>   m_ViewportPanel;
-    std::unique_ptr<OutlinerPanel>   m_OutlinerPanel;
-    std::unique_ptr<InspectorPanel>  m_InspectorPanel;
-    std::unique_ptr<MainMenuBar>     m_MainMenuBar;
-    std::unique_ptr<ScenePanel>      m_ScenePanel;
+    std::unique_ptr<EntityFactory> m_EntityFactory;
+    std::unique_ptr<GizmoRenderer> m_GizmoRenderer;
+    std::unique_ptr<ViewportPanel> m_ViewportPanel;
+    std::unique_ptr<OutlinerPanel> m_OutlinerPanel;
+    std::unique_ptr<InspectorPanel> m_InspectorPanel;
+    std::unique_ptr<MainMenuBar> m_MainMenuBar;
+    std::unique_ptr<ScenePanel> m_ScenePanel;
 
     std::function<void()> m_OnQuit;
 };

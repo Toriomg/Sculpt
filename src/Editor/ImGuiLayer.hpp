@@ -1,4 +1,5 @@
-// ImGui context ownership and per-frame Begin/End lifecycle; Application calls Begin() before panels and End() after.
+// ImGui context ownership and per-frame Begin/End lifecycle; Application calls Begin() before
+// panels and End() after.
 #pragma once
 #include "Platform/Layers/Layer.hpp"
 
