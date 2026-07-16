@@ -2,7 +2,7 @@
 #include "AssetManager/AssetManager.hpp"
 #include "Core/Components/Component.hpp"
 #include "Core/Scene.hpp"
-#include "Core/Systems/Commands/TransformCommand.hpp"
+#include "Core/Systems/Commands/MultiTransformCommand.hpp"
 #include "Core/Systems/HistorySystem.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Editor/Gizmos/Gizmo.hpp"
@@ -63,7 +63,7 @@ void InspectorPanel::DrawTransformSection(Entity entity, TransformComponent& tc)
             entity == m_SnapshotEntity)
         {
             m_HistSys->Push(
-                std::make_unique<TransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
+                std::make_unique<MultiTransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
         }
     };
 
@@ -93,7 +93,7 @@ void InspectorPanel::DrawTransformSection(Entity entity, TransformComponent& tc)
     if (ImGui::IsItemDeactivatedAfterEdit() && (m_HistSys != nullptr) && entity == m_SnapshotEntity)
     {
         m_HistSys->Push(
-            std::make_unique<TransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
+            std::make_unique<MultiTransformCommand>(m_Scene, entity, m_TransformSnapshot, tc));
     }
 }
 

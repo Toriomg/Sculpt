@@ -29,6 +29,8 @@ public:
     std::function<void(std::vector<Entity> const&)> OnSelectionChanged;
 
 private:
+    void NotifyChanged();
+
     std::unordered_set<entt::entity> m_SelectedEntities;
     entt::entity m_ActiveEntity = entt::null;
 };

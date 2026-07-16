@@ -10,8 +10,12 @@ class Scene;
 
 class MultiTransformCommand : public Command {
 public:
+    // Multi-entity constructor.
     MultiTransformCommand(Scene* scene, std::vector<std::pair<Entity, TransformComponent>> before,
                           std::vector<std::pair<Entity, TransformComponent>> after);
+    // Single-entity convenience — delegates to the multi-entity constructor.
+    MultiTransformCommand(Scene* scene, Entity entity, TransformComponent before,
+                          TransformComponent after);
 
     void Execute() override;
     void Undo() override;

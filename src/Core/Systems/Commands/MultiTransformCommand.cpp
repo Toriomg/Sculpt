@@ -6,6 +6,13 @@ MultiTransformCommand::MultiTransformCommand(
     std::vector<std::pair<Entity, TransformComponent>> after)
     : m_Scene(scene), m_Before(std::move(before)), m_After(std::move(after)) { }
 
+MultiTransformCommand::MultiTransformCommand(Scene* scene, Entity entity, TransformComponent before,
+                                             TransformComponent after)
+    : m_Scene(scene), m_Before({
+                        {entity, before}
+}),
+      m_After({{entity, after}}) { }
+
 void MultiTransformCommand::Execute() {
     for (auto const& [entity, tc] : m_After) {
         if (m_Scene->HasComponent<TransformComponent>(entity)) {

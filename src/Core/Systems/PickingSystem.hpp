@@ -12,13 +12,17 @@ class Camera;
 class PickingSystem : public System {
 public:
     PickingSystem();
-    ~PickingSystem() override = default;
+    ~PickingSystem() override                      = default;
+    PickingSystem(PickingSystem const&)            = delete;
+    PickingSystem& operator=(PickingSystem const&) = delete;
+    PickingSystem(PickingSystem&&)                 = delete;
+    PickingSystem& operator=(PickingSystem&&)      = delete;
 
     void OnAttach(Scene* scene) override;
     void OnUpdate(float deltaTime) override;
 
     void RequestPickingPass(uint32_t screenX, uint32_t screenY);
-    PickingResult const& GetLastResult() const { return m_LastResult; }
+    [[nodiscard]] PickingResult const& GetLastResult() const { return m_LastResult; }
 
     void OnWindowResize(uint32_t width, uint32_t height);
     void SetGlobalTransform(Matx4f const& global) { m_GlobalTransform = global; }
