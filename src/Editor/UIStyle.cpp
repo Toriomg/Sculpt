@@ -1,4 +1,5 @@
 #include "Editor/UIStyle.hpp"
+#include "Renderer/Renderer.hpp"
 #include "imgui.h"
 
 namespace UIStyle {
@@ -189,8 +190,14 @@ namespace UIStyle {
 
     void ApplyTheme(Theme theme) {
         switch (theme) {
-            case Theme::ModelingDark:  applyModelingDark(); break;
-            case Theme::ModelingLight: applyModelingLight(); break;
+            case Theme::ModelingDark:
+                applyModelingDark();
+                Renderer::SetSceneClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+                break;
+            case Theme::ModelingLight:
+                applyModelingLight();
+                Renderer::SetSceneClearColor({0.55f, 0.55f, 0.55f, 1.0f});
+                break;
         }
     }
 

@@ -1,6 +1,7 @@
 #include "Editor/ImGuiLayer.hpp"
 #include "Editor/UIStyle.hpp"
 #include "Platform/Graphics/RenderCommand.hpp"
+#include "Renderer/Renderer.hpp"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "imgui.h"
@@ -30,7 +31,7 @@ void ImGuiLayer::Begin() {
     ImGui::NewFrame();
     // Clear the screen so stale content from the previous frame doesn't bleed through
     // the semi-transparent areas of ImGui windows.
-    RenderCommand::SetClearColor({0.15f, 0.15f, 0.15f, 1.0f});
+    RenderCommand::SetClearColor(Renderer::GetSceneClearColor());
     RenderCommand::Clear();
 }
 

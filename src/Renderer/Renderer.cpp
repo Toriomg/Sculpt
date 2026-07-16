@@ -13,6 +13,8 @@ namespace {
         std::shared_ptr<Shader> DebugSelectionShader;
         std::shared_ptr<Shader> OutlineShader;
         bool DebugSelectionEnabled = false;
+        Vec4 ClearColor            = {0.1f, 0.1f, 0.1f, 1.0f};
+        Vec3 GridColor             = {0.5f, 0.5f, 0.5f};
     };
 
     // One scene at a time — single-threaded renderer, no synchronization needed.
@@ -56,9 +58,25 @@ void Renderer::BeginScene(Matx4f const& ViewProjectionMatrix) {
     // At the beginning of rendering a scene, cache the camera's
     // combined view and projection matrix. This will be used for
     // every single object that gets drawn in this frame.
-    RenderCommand::SetClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f));
+    RenderCommand::SetClearColor(s_SceneData.ClearColor);
     RenderCommand::Clear();
     s_SceneData.View = ViewProjectionMatrix;
+}
+
+void Renderer::SetSceneClearColor(Vec4 const& color) {
+    s_SceneData.ClearColor = color;
+}
+
+Vec4 Renderer::GetSceneClearColor() {
+    return s_SceneData.ClearColor;
+}
+
+void Renderer::SetGridColor(Vec3 const& color) {
+    s_SceneData.GridColor = color;
+}
+
+Vec3 Renderer::GetGridColor() {
+    return s_SceneData.GridColor;
 }
 
 void Renderer::EndScene() { }

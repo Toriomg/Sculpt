@@ -41,4 +41,10 @@ public:
     static void SetDebugSelectionMode(bool enable);
     static bool IsDebugSelectionModeEnabled();
     static std::shared_ptr<Shader> const& GetDebugSelectionShader();
+
+    static void SetSceneClearColor(Vec4 const& color);
+    static Vec4 GetSceneClearColor();
+
+    static void SetGridColor(Vec3 const& color);
+    static Vec3 GetGridColor();
 };

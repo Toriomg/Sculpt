@@ -1,6 +1,7 @@
-// Top menu bar: File, Add (entity creation), Edit (undo/redo), View (panel toggles), Debug.
+// Top menu bar: File, Add (entity creation), Edit (undo/redo), View (panel toggles + theme), Debug.
 #pragma once
 #include "Editor/Panels/Panel.hpp"
+#include "Editor/UIStyle.hpp"
 #include <functional>
 #include <string>
 
@@ -22,10 +23,11 @@ private:
     Panel* m_Inspector;
     Panel* m_ScenePanel;
     Panel* m_Viewport;
-    bool m_ShowDemo           = false;
-    bool m_ShowSelectionDebug = false;
-    bool m_ShowImportModal    = false;
-    bool m_ShowErrorModal     = false;
-    char m_ImportPathBuf[256] = {};
+    UIStyle::Theme m_CurrentTheme = UIStyle::Theme::ModelingDark;
+    bool m_ShowDemo               = false;
+    bool m_ShowSelectionDebug     = false;
+    bool m_ShowImportModal        = false;
+    bool m_ShowErrorModal         = false;
+    char m_ImportPathBuf[256]     = {};
     std::string m_ErrorMessage;
 };
