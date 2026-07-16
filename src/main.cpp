@@ -4,7 +4,7 @@
 // (libdecor-gtk, libpango, libfontconfig via GLFW Wayland decorations) don't
 // drown out real leaks. No LSAN_OPTIONS environment variable needed.
 #ifdef LSAN_SUPPRESSIONS_PATH
-extern "C" char const* _lsan_default_options() {
+extern "C" char const* __lsan_default_options() { //NOLINT
     return "suppressions=" LSAN_SUPPRESSIONS_PATH;
 }
 #endif
