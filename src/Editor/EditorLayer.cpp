@@ -35,6 +35,8 @@ void EditorLayer::OnAttach() {
     camComp.SceneCamera.SetPosition({ 0.0f, 1.0f, 5.0f });
 
     m_EntityFactory = std::make_unique<EntityFactory>(m_ActiveScene.get());
+    if (auto r = m_EntityFactory->SpawnFromFile("res/models/monkey.obj"); !r)
+        CORE_LOG_ERROR("Default scene asset missing: {}", r.error());
 
     // Stores a raw pointer into the ECS component — safe while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
@@ -194,8 +196,10 @@ bool EditorLayer::OnMouseScrolled(MouseScrolledEvent& e) {
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
-    // Let ImGui consume keyboard input when a text field is focused.
-    if (ImGui::GetIO().WantCaptureKeyboard) return false;
+    // Block shortcuts only when the user is actively typing in an InputText widget.
+    // WantCaptureKeyboard is true for any focused ImGui window (too aggressive);
+    // WantTextInput is true only during active text entry.
+    if (ImGui::GetIO().WantTextInput) return false;
 
     if (e.GetKeyCode() == static_cast<int>(KeyCode::Delete)) {
         if (m_OutlinerPanel) m_OutlinerPanel->TriggerDeleteConfirmation();
