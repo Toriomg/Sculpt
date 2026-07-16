@@ -33,6 +33,12 @@ public:
     bool OnMouseButtonReleased();
     bool OnMouseMoved(float vx, float vy);
 
+    struct SnapConfig {
+        float translate = 1.0f;   // world units
+        float rotate    = 15.0f;  // degrees
+        float scale     = 0.1f;   // absolute scale increment
+    };
+
     void SetViewportSize(uint32_t w, uint32_t h);
     void SetGlobalTransform(Matx4f const& global) { m_GlobalTransform = global; }
     void SetMode(GizmoMode mode) { m_Mode = mode; }
@@ -40,10 +46,15 @@ public:
     void ToggleSpace() {
         m_Space = (m_Space == GizmoSpace::Global) ? GizmoSpace::Local : GizmoSpace::Global;
     }
+    void SetSnapConfig(SnapConfig cfg) { m_Snap = cfg; }
 
 private:
     // Returns the world-space direction of axis in the current gizmo space.
     Vec3 AxisDir(GizmoAxis axis, TransformComponent const& tc) const;
+
+    void ApplyTranslationDrag(TransformComponent& tc, Vec3 pos, Vec3 ray, bool snap);
+    void ApplyScaleDrag(TransformComponent& tc, Vec3 pos, Vec3 ray, bool snap);
+    void ApplyRotationDrag(TransformComponent& tc, Vec3 pos, Vec3 ray, bool snap);
 
     GizmoAxis HitTestAxes(float mouseX, float mouseY);
     GizmoAxis HitTestRings(float mouseX, float mouseY);
@@ -90,6 +101,7 @@ private:
     TransformComponent m_TransformAtDragStart;
     Matx4f m_GlobalTransform = Matx4f::identity();
 
+    SnapConfig m_Snap;
     HistorySystem* m_HistSys = nullptr;
 
     uint32_t m_ViewportW = 1470;

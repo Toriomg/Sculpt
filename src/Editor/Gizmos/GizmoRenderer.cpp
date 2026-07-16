@@ -6,6 +6,8 @@
 #include "Core/Systems/HistorySystem.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Platform/Graphics/RenderCommand.hpp"
+#include "Platform/System/Input/Input.hpp"
+#include "Platform/System/Input/KeyCodes.hpp"
 #include "Renderer/Camera.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Renderer.hpp"
@@ -346,6 +348,51 @@ bool GizmoRenderer::OnMouseButtonReleased() {
     return true;
 }
 
+void GizmoRenderer::ApplyTranslationDrag(TransformComponent& tc, Vec3 pos, Vec3 ray, bool snap) {
+    Vec3 const newHit = RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, m_DragAxisDir);
+    float disp        = (newHit - m_DragStartHitPt).dotProduct(m_DragAxisDir);
+    if (snap) { disp = std::round(disp / m_Snap.translate) * m_Snap.translate; }
+    tc.Translation = m_TransformAtDragStart.Translation + m_DragAxisDir * disp;
+}
+
+void GizmoRenderer::ApplyScaleDrag(TransformComponent& tc, Vec3 pos, Vec3 ray, bool snap) {
+    Vec3 const newHit   = RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, m_DragAxisDir);
+    float const newDist = (newHit - pos).dotProduct(m_DragAxisDir);
+    if (std::abs(m_DragStartDist) < 1e-4f) { return; }
+    float const factor = newDist / m_DragStartDist;
+    auto applyS        = [&](float base) {
+        float v = base * factor;
+        return snap ? std::round(v / m_Snap.scale) * m_Snap.scale : v;
+    };
+    if (m_DragAxis == GizmoAxis::X) {
+        tc.Scale.x = applyS(m_TransformAtDragStart.Scale.x);
+    } else if (m_DragAxis == GizmoAxis::Y) {
+        tc.Scale.y = applyS(m_TransformAtDragStart.Scale.y);
+    } else if (m_DragAxis == GizmoAxis::Z) {
+        tc.Scale.z = applyS(m_TransformAtDragStart.Scale.z);
+    }
+}
+
+void GizmoRenderer::ApplyRotationDrag(TransformComponent& tc, Vec3 pos, Vec3 ray, bool snap) {
+    float t = NAN;
+    if (!RayPlaneIntersect(m_Camera.GetPosition(), ray, pos, m_DragAxisDir, t)) { return; }
+    Vec3 const newHit = m_Camera.GetPosition() + ray * t;
+    Vec3 const refVec = m_RotDragRefPoint - pos;
+    Vec3 const newVec = newHit - pos;
+    float delta = (std::atan2(newVec.dotProduct(m_RotDragRefV), newVec.dotProduct(m_RotDragRefU)) -
+                   std::atan2(refVec.dotProduct(m_RotDragRefV), refVec.dotProduct(m_RotDragRefU))) *
+                  (180.f / PI_F);
+    if (snap) { delta = std::round(delta / m_Snap.rotate) * m_Snap.rotate; }
+    if (m_DragAxis == GizmoAxis::X) {
+        tc.EulerDegrees.x = m_TransformAtDragStart.EulerDegrees.x + delta;
+        // Y rotation (right-hand rule) takes +X toward -Z, opposite to the atan2(z,x) sense.
+    } else if (m_DragAxis == GizmoAxis::Y) {
+        tc.EulerDegrees.y = m_TransformAtDragStart.EulerDegrees.y - delta;
+    } else if (m_DragAxis == GizmoAxis::Z) {
+        tc.EulerDegrees.z = m_TransformAtDragStart.EulerDegrees.z + delta;
+    }
+}
+
 bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
     if (!m_IsDragging) {
         m_HoveredAxis =
@@ -358,45 +405,17 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
         return false;
     }
 
-    auto& tc       = m_Scene.GetComponent<TransformComponent>(m_DragEntity);
-    Vec3 const pos = m_GlobalTransform.transformPoint(tc.Translation);
-    Vec3 const ray = ScreenToRayDirection(vx, vy);
+    auto& tc        = m_Scene.GetComponent<TransformComponent>(m_DragEntity);
+    Vec3 const pos  = m_GlobalTransform.transformPoint(tc.Translation);
+    Vec3 const ray  = ScreenToRayDirection(vx, vy);
+    bool const snap = Input::IsKeyPressed(KeyCode::LeftControl);
 
     if (m_Mode == GizmoMode::Translation) {
-        Vec3 const newHit = RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, m_DragAxisDir);
-        tc.Translation += newHit - m_DragStartHitPt;
-        m_DragStartHitPt = newHit;
+        ApplyTranslationDrag(tc, pos, ray, snap);
     } else if (m_Mode == GizmoMode::Scale) {
-        Vec3 const newHit   = RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, m_DragAxisDir);
-        float const newDist = (newHit - pos).dotProduct(m_DragAxisDir);
-        if (std::abs(m_DragStartDist) > 1e-4f) {
-            float const factor = newDist / m_DragStartDist;
-            if (m_DragAxis == GizmoAxis::X) {
-                tc.Scale.x = m_TransformAtDragStart.Scale.x * factor;
-            } else if (m_DragAxis == GizmoAxis::Y) {
-                tc.Scale.y = m_TransformAtDragStart.Scale.y * factor;
-            } else if (m_DragAxis == GizmoAxis::Z) {
-                tc.Scale.z = m_TransformAtDragStart.Scale.z * factor;
-            }
-        }
+        ApplyScaleDrag(tc, pos, ray, snap);
     } else {
-        float t = NAN;
-        if (!RayPlaneIntersect(m_Camera.GetPosition(), ray, pos, m_DragAxisDir, t)) { return true; }
-        Vec3 const newHit = m_Camera.GetPosition() + ray * t;
-        Vec3 const refVec = m_RotDragRefPoint - pos;
-        Vec3 const newVec = newHit - pos;
-        float const delta =
-            (std::atan2(newVec.dotProduct(m_RotDragRefV), newVec.dotProduct(m_RotDragRefU)) -
-             std::atan2(refVec.dotProduct(m_RotDragRefV), refVec.dotProduct(m_RotDragRefU))) *
-            (180.f / PI_F);
-        if (m_DragAxis == GizmoAxis::X) {
-            tc.EulerDegrees.x = m_TransformAtDragStart.EulerDegrees.x + delta;
-            // Y rotation (right-hand rule) takes +X toward -Z, opposite to the atan2(z,x) sense.
-        } else if (m_DragAxis == GizmoAxis::Y) {
-            tc.EulerDegrees.y = m_TransformAtDragStart.EulerDegrees.y - delta;
-        } else if (m_DragAxis == GizmoAxis::Z) {
-            tc.EulerDegrees.z = m_TransformAtDragStart.EulerDegrees.z + delta;
-        }
+        ApplyRotationDrag(tc, pos, ray, snap);
     }
     return true;
 }
