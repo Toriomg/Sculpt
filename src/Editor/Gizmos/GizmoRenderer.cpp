@@ -2,7 +2,7 @@
 #include "Core/Scene.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Core/Systems/HistorySystem.hpp"
-#include "Core/Systems/TransformCommand.hpp"
+#include "Core/Systems/Commands/TransformCommand.hpp"
 #include "Core/Components/Component.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Renderer.hpp"
@@ -184,7 +184,7 @@ void GizmoRenderer::Draw() {
     if (!m_Scene.HasComponent<TransformComponent>(entity)) return;
 
     auto& tc = m_Scene.GetComponent<TransformComponent>(entity);
-    Vec3 gizmoPos = {tc.Transform.m[0][3], tc.Transform.m[1][3], tc.Transform.m[2][3]};
+    Vec3 gizmoPos = m_GlobalTransform.transformPoint(tc.Translation);
 
     Vec3  diff  = gizmoPos - m_Camera.GetPosition();
     float dist  = diff.length();
@@ -260,7 +260,7 @@ GizmoAxis GizmoRenderer::HitTestAxes(float mouseX, float mouseY) {
     if (!m_Scene.HasComponent<TransformComponent>(entity)) return GizmoAxis::None;
 
     auto& tc = m_Scene.GetComponent<TransformComponent>(entity);
-    Vec3 gizmoPos = {tc.Transform.m[0][3], tc.Transform.m[1][3], tc.Transform.m[2][3]};
+    Vec3 gizmoPos = m_GlobalTransform.transformPoint(tc.Translation);
 
     Vec3  diff  = gizmoPos - m_Camera.GetPosition();
     float scale = diff.length() * 0.15f;
@@ -299,9 +299,9 @@ bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
 
     m_DragEntity = *selected.begin();
     auto& tc     = m_Scene.GetComponent<TransformComponent>(m_DragEntity);
-    Vec3 gizmoPos = {tc.Transform.m[0][3], tc.Transform.m[1][3], tc.Transform.m[2][3]};
+    Vec3 gizmoPos = m_GlobalTransform.transformPoint(tc.Translation);
 
-    m_TransformAtDragStart = tc.Transform;
+    m_TransformAtDragStart = tc;
     m_DragAxis             = hit;
     m_IsDragging           = true;
     m_DragStartHitPt = RayAxisClosestPoint(
@@ -315,8 +315,8 @@ bool GizmoRenderer::OnMouseButtonReleased() {
 
     if (m_HistSys && m_DragEntity != entt::null
             && m_Scene.HasComponent<TransformComponent>(m_DragEntity)) {
-        const Matx4f& after = m_Scene.GetComponent<TransformComponent>(m_DragEntity).Transform;
-        if (after != m_TransformAtDragStart) {
+        const TransformComponent& after = m_Scene.GetComponent<TransformComponent>(m_DragEntity);
+        if (after.GetMatrix() != m_TransformAtDragStart.GetMatrix()) {
             m_HistSys->Push(std::make_unique<TransformCommand>(
                 &m_Scene, m_DragEntity, m_TransformAtDragStart, after));
         }
@@ -338,7 +338,7 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
     if (selected.empty()) { m_IsDragging = false; return false; }
 
     auto& tc = m_Scene.GetComponent<TransformComponent>(*selected.begin());
-    Vec3 gizmoPos = {tc.Transform.m[0][3], tc.Transform.m[1][3], tc.Transform.m[2][3]};
+    Vec3 gizmoPos = m_GlobalTransform.transformPoint(tc.Translation);
     Vec3 axisVec  = axisToVec3(m_DragAxis);
 
     Vec3 newHit = RayAxisClosestPoint(
@@ -346,9 +346,7 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
         gizmoPos, axisVec);
 
     Vec3 delta = newHit - m_DragStartHitPt;
-    tc.Transform.m[0][3] += delta.x;
-    tc.Transform.m[1][3] += delta.y;
-    tc.Transform.m[2][3] += delta.z;
+    tc.Translation += delta;
 
     m_DragStartHitPt = newHit;
     return true;

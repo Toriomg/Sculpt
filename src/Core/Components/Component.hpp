@@ -25,17 +25,23 @@ struct NameComponent : public Component {
 
 struct TransformComponent : public Component
 {
-    Matx4f Transform = Matx4f::identity();
+    Vec3       Translation = {0.0f, 0.0f, 0.0f};
+    Quaternion Rotation    = Quaternion::identity();
+    Vec3       Scale       = {1.0f, 1.0f, 1.0f};
 
     TransformComponent() = default;
     TransformComponent(const TransformComponent&) = default;
     TransformComponent& operator=(const TransformComponent&) = default;
-    TransformComponent(const Matx4f& transform)
-        : Transform(transform) {
+
+    Matx4f GetMatrix() const {
+        return Matx4f::translation(Translation)
+             * QuatRotation(Rotation)
+             * Matx4f::scaling(Scale);
     }
-    Vec3 GetTranslation() const {
-        return Vec3(Transform.m[0][3], Transform.m[1][3], Transform.m[2][3]);
-	}
+
+    Vec3 GetEulerDegrees() const {
+        return QuatToEulerDegrees(Rotation);
+    }
 };
 
 struct MeshComponent : public Component

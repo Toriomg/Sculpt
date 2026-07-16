@@ -9,6 +9,7 @@
 #include "Core/Components/Component.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Core/Systems/PickingSystem.hpp"
+#include "Core/Systems/RenderingSystem.hpp"
 #include "Core/Systems/HistorySystem.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Platform/Graphics/Framebuffer.hpp"
@@ -31,7 +32,7 @@ void EditorLayer::OnAttach() {
     m_CameraEntity = m_ActiveScene->CreateGameObject("Main Camera");
     auto& camComp = m_ActiveScene->AddComponent<CameraComponent>(m_CameraEntity);
     auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
-    camTransform.Transform = Matx4f::translation(Vec3(0.0f, 0.0f, 5.0f));
+    camTransform.Translation = Vec3(0.0f, 0.0f, 5.0f);
     camComp.SceneCamera.SetPosition({ 0.0f, 1.0f, 5.0f });
 
     m_EntityFactory = std::make_unique<EntityFactory>(m_ActiveScene.get());
@@ -94,19 +95,18 @@ void EditorLayer::OnUpdate(float deltaTime) {
         m_CameraController->OnUpdate(deltaTime);
 
     // Sync TransformComponent to camera position driven by the controller.
-    camTransform.Transform = Matx4f::translation(camComp.SceneCamera.GetPosition());
+    camTransform.Translation = camComp.SceneCamera.GetPosition();
 
-    // Apply the scene panel's global transform on top of each entity's local transform.
-    // m_PrevGlobalInv undoes last frame's global, recovering any Inspector edits made
-    // between frames. The new global is then applied and its inverse saved for next frame.
+    // Pass the ScenePanel's global transform to render and pick systems so they apply it
+    // at draw time without baking it into entity TRS data.
     if (m_ScenePanel) {
-        Matx4f curGlobal = m_ScenePanel->GetGlobalTransform();
-        auto view = m_ActiveScene->GetAllEntitiesWith<MeshComponent, TransformComponent>();
-        for (auto entity : view) {
-            auto& tc = m_ActiveScene->GetComponent<TransformComponent>(entity);
-            tc.Transform = curGlobal * (m_PrevGlobalInv * tc.Transform);
-        }
-        m_PrevGlobalInv = m_ScenePanel->GetInverseGlobalTransform();
+        Matx4f global = m_ScenePanel->GetGlobalTransform();
+        if (auto* rs = m_ActiveScene->GetSystem<RenderingSystem>())
+            rs->SetGlobalTransform(global);
+        if (auto* ps = m_ActiveScene->GetSystem<PickingSystem>())
+            ps->SetGlobalTransform(global);
+        if (m_GizmoRenderer)
+            m_GizmoRenderer->SetGlobalTransform(global);
     }
 
     // Render the scene into the viewport FBO.

@@ -55,8 +55,6 @@ private:
 
     Vec2 m_LastMousePosition{0.0f, 0.0f};
 
-    Matx4f m_PrevGlobalInv = Matx4f::identity();
-
     std::unique_ptr<EntityFactory>   m_EntityFactory;
     std::unique_ptr<GizmoRenderer>   m_GizmoRenderer;
     std::unique_ptr<ViewportPanel>   m_ViewportPanel;

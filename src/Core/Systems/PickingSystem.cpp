@@ -85,7 +85,7 @@ void PickingSystem::RenderPickingPass(const Camera& camera) {
         // PickingTexture::ReadPixel reverses this by subtracting 1 before returning the entity.
         uint32_t entityID = static_cast<uint32_t>(entity) + 1u;
         m_PickingShader->SetUniform1ui("u_ObjectID", entityID);
-        m_PickingShader->SetUniformMat4f("u_Model", transform.Transform);
+        m_PickingShader->SetUniformMat4f("u_Model", m_GlobalTransform * transform.GetMatrix());
 
         auto va = mesh.MeshAsset->GetVertexArray();
         auto ib = mesh.MeshAsset->GetIndexBuffer();

@@ -1,4 +1,5 @@
 #include "maths.hpp"
+#include <cmath>
 
 Vec3 rotateVec3(const Vec3& v, const Vec3& axis, float angle) {
     Quaternion rotationQ(axis, angle);
@@ -12,6 +13,31 @@ Vec3 rotateVec3(const Vec3& v, const Vec3& axis, float angle) {
 
     // The result is the vector part of the new quaternion
     return Vec3(p_rotated.x, p_rotated.y, p_rotated.z);
+}
+
+Quaternion QuatFromEulerDegrees(const Vec3& eulerDegrees) {
+    Quaternion qx({1.0f, 0.0f, 0.0f}, radians(eulerDegrees.x));
+    Quaternion qy({0.0f, 1.0f, 0.0f}, radians(eulerDegrees.y));
+    Quaternion qz({0.0f, 0.0f, 1.0f}, radians(eulerDegrees.z));
+    return (qz * qy * qx).normalize();
+}
+
+Vec3 QuatToEulerDegrees(const Quaternion& q) {
+    Matx4f m = QuatRotation(q);
+    constexpr float kGimbalThreshold = 1.0f - 1e-6f;
+    constexpr float RAD_TO_DEG = 180.0f / PI_F;
+
+    if (m.m[2][0] <= -kGimbalThreshold) {
+        return { std::atan2(m.m[0][1], m.m[0][2]) * RAD_TO_DEG,  90.0f, 0.0f };
+    }
+    if (m.m[2][0] >= kGimbalThreshold) {
+        return { std::atan2(-m.m[0][1], -m.m[0][2]) * RAD_TO_DEG, -90.0f, 0.0f };
+    }
+    return {
+        std::atan2(m.m[2][1], m.m[2][2]) * RAD_TO_DEG,
+        std::asin(-m.m[2][0])            * RAD_TO_DEG,
+        std::atan2(m.m[1][0], m.m[0][0]) * RAD_TO_DEG
+    };
 }
 
 Matx4f QuatRotation(const Quaternion& q) {

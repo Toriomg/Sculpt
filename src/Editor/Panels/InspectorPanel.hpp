@@ -2,7 +2,7 @@
 #pragma once
 #include "Editor/Panels/Panel.hpp"
 #include "Core/Entity.hpp"
-#include "Platform/CoreUtils/Math/matx.hpp"
+#include "Core/Components/Component.hpp"
 
 class Scene;
 class SelectionContext;
@@ -18,8 +18,8 @@ private:
     SelectionContext*  m_SelectionContext;
     HistorySystem*     m_HistSys           = nullptr;
 
-    Entity m_SnapshotEntity    = entt::null;
-    Matx4f m_TransformSnapshot = Matx4f::identity();
+    Entity             m_SnapshotEntity    = entt::null;
+    TransformComponent m_TransformSnapshot;
 
     Entity m_TexturePathEntity             = entt::null;
     char   m_TexturePathBuf[256]           = {};
