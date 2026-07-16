@@ -80,6 +80,28 @@ void InspectorPanel::OnImGuiRender() {
                 m_HistSys->Push(std::make_unique<TransformCommand>(
                     m_Scene, entity, m_TransformSnapshot, tc.Transform));
             }
+
+            // Uniform scale: display the average of the three axes; dragging multiplies all
+            // axes by the same ratio so non-uniform scales are preserved proportionally.
+            float uniformScale = (tc.Transform.m[0][0] + tc.Transform.m[1][1] + tc.Transform.m[2][2]) / 3.0f;
+            ImGui::DragFloat("Uniform Scale", &uniformScale, 0.01f, 0.001f, 100.0f);
+            if (ImGui::IsItemActivated()) {
+                m_TransformSnapshot = tc.Transform;
+                m_SnapshotEntity    = entity;
+            }
+            if (ImGui::IsItemActive() && uniformScale > 0.0f) {
+                float snapshotAvg = (m_TransformSnapshot.m[0][0] + m_TransformSnapshot.m[1][1] + m_TransformSnapshot.m[2][2]) / 3.0f;
+                if (snapshotAvg > 0.0f) {
+                    float ratio = uniformScale / snapshotAvg;
+                    tc.Transform.m[0][0] = m_TransformSnapshot.m[0][0] * ratio;
+                    tc.Transform.m[1][1] = m_TransformSnapshot.m[1][1] * ratio;
+                    tc.Transform.m[2][2] = m_TransformSnapshot.m[2][2] * ratio;
+                }
+            }
+            if (ImGui::IsItemDeactivatedAfterEdit() && m_HistSys && entity == m_SnapshotEntity) {
+                m_HistSys->Push(std::make_unique<TransformCommand>(
+                    m_Scene, entity, m_TransformSnapshot, tc.Transform));
+            }
         }
     }
 
