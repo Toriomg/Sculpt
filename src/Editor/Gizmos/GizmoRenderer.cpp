@@ -507,7 +507,8 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
         float deltaDeg     = (currentAngle - startAngle) * (180.0f / PI_F);
 
         if      (m_DragAxis == GizmoAxis::X) tc.EulerDegrees.x = m_TransformAtDragStart.EulerDegrees.x + deltaDeg;
-        else if (m_DragAxis == GizmoAxis::Y) tc.EulerDegrees.y = m_TransformAtDragStart.EulerDegrees.y + deltaDeg;
+        // Y rotation (right-hand rule) takes +X toward -Z, opposite to the atan2(z,x) sense.
+        else if (m_DragAxis == GizmoAxis::Y) tc.EulerDegrees.y = m_TransformAtDragStart.EulerDegrees.y - deltaDeg;
         else if (m_DragAxis == GizmoAxis::Z) tc.EulerDegrees.z = m_TransformAtDragStart.EulerDegrees.z + deltaDeg;
     }
     return true;
