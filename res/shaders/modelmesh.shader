@@ -39,9 +39,6 @@ uniform bool u_HasTexture;
 uniform vec3 u_cameraPos;
 
 
-// Model selection uniforms
-uniform bool u_IsSelected;
-uniform vec4 u_HighlightColor;
 // Triangle selection uniforms
 uniform bool u_IsTriangleSelected;
 uniform int u_SelectedTriangleID;
@@ -103,13 +100,7 @@ void main()
 	
 	vec3 baseColor;
 
-	if (u_IsSelected) {
-        // mix() interpola entre dos colores. Un factor de 0.5 mezcla ambos a partes iguales.
-        baseColor = mix(objectColor, u_HighlightColor.rgb, 0.5); 
-    }
-    else {
-        baseColor = objectColor;
-    }
+	baseColor = objectColor;
 
 	if (u_IsTriangleSelected && gl_PrimitiveID  == u_SelectedTriangleID) {
         // Use a stronger mix for the triangle highlight to make it stand out

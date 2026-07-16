@@ -9,6 +9,7 @@ struct SceneData {
     Matx4f View;
     std::shared_ptr<Shader> WireframeShader;
     std::shared_ptr<Shader> DebugSelectionShader;
+    std::shared_ptr<Shader> OutlineShader;
     bool DebugSelectionEnabled = false;
 };
 
@@ -25,6 +26,7 @@ void Renderer::Init() {
 	RenderCommand::Init();
     s_SceneData.WireframeShader = std::make_shared<Shader>("res/shaders/wireframe.shader");
     s_SceneData.DebugSelectionShader = std::make_shared<Shader>("res/shaders/debug_selection.shader");
+    s_SceneData.OutlineShader = std::make_shared<Shader>("res/shaders/outline.shader");
 }
 
 void Renderer::SetDebugSelectionMode(bool enable) {
@@ -121,6 +123,22 @@ void Renderer::SubmitWireframe(const std::shared_ptr<Mesh>& mesh, const Matx4f& 
     shader->SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
     RenderCommand::DrawPoints(vertexArray, mesh->GetVertexCount());
 
+    shader->Unbind();
+}
+
+void Renderer::SubmitOutline(
+    const std::shared_ptr<Mesh>& mesh,
+    const Vec4& color,
+    float thickness,
+    const Matx4f& transform)
+{
+    const auto& shader = s_SceneData.OutlineShader;
+    shader->Bind();
+    shader->SetUniformMat4f("u_ViewProjection", s_SceneData.View);
+    shader->SetUniformMat4f("u_Model", transform);
+    shader->SetUniform4f("u_OutlineColor", color.x, color.y, color.z, color.w);
+    shader->SetUniform1f("u_OutlineThickness", thickness);
+    RenderCommand::Draw(mesh->GetVertexArray(), mesh->GetIndexBuffer());
     shader->Unbind();
 }
 

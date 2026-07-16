@@ -39,6 +39,15 @@ public:
         const Matx4f& transform
     );
 
+    // Draws a screen-space outline around the mesh using the outline shader.
+    // Caller is responsible for setting up stencil state before and after.
+    static void SubmitOutline(
+        const std::shared_ptr<Mesh>& mesh,
+        const Vec4& color,
+        float thickness,
+        const Matx4f& transform
+    );
+
     static void OnWindowResize(uint32_t width, uint32_t height);
 
     static void SetDebugSelectionMode(bool enable);

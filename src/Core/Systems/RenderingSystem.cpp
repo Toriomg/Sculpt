@@ -5,6 +5,7 @@
 #include "Renderer/Material.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Camera.hpp"
+#include "Core/glhead.hpp"
 
 
 void RenderingSystem::OnUpdate(float deltaTime)
@@ -72,15 +73,31 @@ void RenderingSystem::OnUpdate(float deltaTime)
                     mainCamera->GetPosition().z);
 
                 bool isSelected = selectionContext && selectionContext->IsEntitySelected(entity);
-                meshComp.MaterialAsset->GetShader()->SetUniform1i("u_IsSelected", isSelected ? 1 : 0);
+
                 if (isSelected) {
-                    meshComp.MaterialAsset->GetShader()->SetUniform4f("u_HighlightColor", 1.0f, 1.0f, 0.0f, 1.0f);
+                    // Stencil write pass: mark pixels covered by this entity
+                    glEnable(GL_STENCIL_TEST);
+                    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+                    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+                    glStencilMask(0xFF);
                 }
 
                 if (meshComp.Wireframe)
                     Renderer::SubmitWireframe(meshComp.MeshAsset, worldTransform);
                 else
                     Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, worldTransform);
+
+                if (isSelected) {
+                    // Outline pass: draw scaled mesh only where stencil == 0 (outside the entity)
+                    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+                    glStencilMask(0x00);
+                    glDisable(GL_DEPTH_TEST);
+                    Renderer::SubmitOutline(meshComp.MeshAsset, Vec4(1.0f, 0.5f, 0.0f, 1.0f), 0.008f, worldTransform);
+                    // Restore state
+                    glEnable(GL_DEPTH_TEST);
+                    glStencilMask(0xFF);
+                    glDisable(GL_STENCIL_TEST);
+                }
             }
         }
         // Tell the Renderer we are done with this frame.
