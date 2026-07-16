@@ -193,10 +193,12 @@ namespace UIStyle {
             case Theme::ModelingDark:
                 applyModelingDark();
                 Renderer::SetSceneClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+                Renderer::SetGridColor({0.5f, 0.5f, 0.5f});
                 break;
             case Theme::ModelingLight:
                 applyModelingLight();
                 Renderer::SetSceneClearColor({0.55f, 0.55f, 0.55f, 1.0f});
+                Renderer::SetGridColor({0.2f, 0.2f, 0.2f});
                 break;
         }
     }

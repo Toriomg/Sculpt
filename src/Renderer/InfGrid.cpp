@@ -1,4 +1,5 @@
 #include "Renderer/InfGrid.hpp"
+#include "Renderer/Renderer.hpp"
 #include <GL/glew.h>
 
 InfGrid::InfGrid() {
@@ -23,6 +24,8 @@ void InfGrid::Draw(Matx4f const& view, Matx4f const& projection, Vec3 const& cam
     m_Shader->SetUniformMat4f("u_view", view);
     m_Shader->SetUniformMat4f("u_projection", projection);
     m_Shader->SetUniform3f("u_cameraPos", cameraPos.x, cameraPos.y, cameraPos.z);
+    Vec3 const gridColor = Renderer::GetGridColor();
+    m_Shader->SetUniform3f("u_gridColor", gridColor.x, gridColor.y, gridColor.z);
 
     // The vertex positions are generated inside the vertex shader from gl_VertexID;
     // only a bound VAO is required by the core profile — no vertex data is uploaded.

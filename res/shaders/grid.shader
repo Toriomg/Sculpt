@@ -34,6 +34,7 @@ void main()
 
 in vec3 v_worldPos;
 uniform vec3 u_cameraPos;
+uniform vec3 u_gridColor;
 out vec4 FragColor;
 
 // Returns the intensity of a grid line at 'coord' with a line half-width of 'width' pixels.
@@ -71,7 +72,7 @@ void main()
 
     float total_intensity = max(major_intensity, max(mid_intensity, tiny_intensity));
 
-    vec4 gridColor = vec4(0.0, 0.0, 0.0, total_intensity);
+    vec4 gridColor = vec4(u_gridColor, total_intensity);
 
     // Exponential fog fades the grid out at distance so it doesn't dominate the horizon.
     float fogFactor = 1.0 - exp(-dist * 0.005);
