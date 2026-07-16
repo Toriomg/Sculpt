@@ -32,8 +32,8 @@ void Framebuffer::Invalidate() {
     glBindTexture(GL_TEXTURE_2D, m_ColorAttachmentID);
     // Create an empty texture with the specified dimensions.
     // GL_RGBA8 is a common format for 8 bits per channel (Red, Green, Blue, Alpha).
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                 nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(m_Width),
+                 static_cast<GLsizei>(m_Height), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     // Set texture filtering parameters. GL_LINEAR provides smooth scaling.
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -46,8 +46,9 @@ void Framebuffer::Invalidate() {
     glBindTexture(GL_TEXTURE_2D, m_DepthAttachmentID);
     // We create a texture with a combined depth and stencil format.
     // GL_DEPTH24_STENCIL8 is a common and well-supported format.
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_Width, m_Height, 0, GL_DEPTH_STENCIL,
-                 GL_UNSIGNED_INT_24_8, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, static_cast<GLsizei>(m_Width),
+                 static_cast<GLsizei>(m_Height), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8,
+                 nullptr);
     // Attach the depth/stencil texture to the framebuffer.
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D,
                            m_DepthAttachmentID, 0);
@@ -77,7 +78,7 @@ void Framebuffer::Resize(uint32_t width, uint32_t height) {
 void Framebuffer::Bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
     // When we bind our FBO, we should also set the viewport to match its size.
-    glViewport(0, 0, m_Width, m_Height);
+    glViewport(0, 0, static_cast<GLsizei>(m_Width), static_cast<GLsizei>(m_Height));
 }
 
 void Framebuffer::Unbind() {

@@ -14,7 +14,7 @@ void PickingSystem::OnAttach(Scene* scene) {
     System::OnAttach(scene);
 }
 
-void PickingSystem::OnUpdate(float  /*deltaTime*/) {
+void PickingSystem::OnUpdate(float /*deltaTime*/) {
     if (!m_PickingRequested) { return; }
 
     ExecutePickingPass();
@@ -30,8 +30,8 @@ void PickingSystem::RequestPickingPass(uint32_t screenX, uint32_t screenY) {
 void PickingSystem::ExecutePickingPass() {
     if (m_Scene == nullptr) { return; }
 
-    Camera const* camera  = nullptr;
-    auto cameraView = m_Scene->GetAllEntitiesWith<CameraComponent>();
+    Camera const* camera = nullptr;
+    auto cameraView      = m_Scene->GetAllEntitiesWith<CameraComponent>();
     for (auto entity : cameraView) {
         auto& cam = cameraView.get<CameraComponent>(entity);
         if (cam.IsPrimary) {
@@ -85,13 +85,14 @@ void PickingSystem::RenderPickingPass(Camera const& camera) {
 
         va->Bind();
         ib->Bind();
-        glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(ib->GetCount()), GL_UNSIGNED_INT,
+                       nullptr);
     }
 
     PickingTexture::Unbind();
     // Restore the viewport: PickingTexture::Bind() sets it to the picking FBO's dimensions,
     // which may differ from the main viewport after a resize event arrives before render.
-    glViewport(0, 0, m_ViewportWidth, m_ViewportHeight);
+    glViewport(0, 0, static_cast<GLsizei>(m_ViewportWidth), static_cast<GLsizei>(m_ViewportHeight));
 }
 
 void PickingSystem::OnWindowResize(uint32_t width, uint32_t height) {

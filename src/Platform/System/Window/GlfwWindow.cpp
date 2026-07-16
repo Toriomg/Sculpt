@@ -1,7 +1,7 @@
 #include "GlfwWindow.hpp"
 
-#include <utility>
 #include "Platform/CoreUtils/Log.hpp"
+#include <utility>
 
 std::unique_ptr<Window> Window::Create(std::string_view title, uint32_t width, uint32_t height) {
     return std::make_unique<GlfwWindow>(title, width, height);
@@ -76,6 +76,7 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
                     data.EventCallback(e);
                     break;
                 }
+                default: break;
             }
         });
 
@@ -107,6 +108,7 @@ void GlfwWindow::Init(std::string_view title, uint32_t width, uint32_t height) {
                                    data.EventCallback(e);
                                    break;
                                }
+                               default: break;
                            }
                        });
 
@@ -153,9 +155,7 @@ void GlfwWindow::OnUpdate() {
     // so we poll the actual size each frame and synthesize the event when it changes.
     int fbWidth = 0, fbHeight = 0;
     glfwGetFramebufferSize(m_Window, &fbWidth, &fbHeight);
-    if (std::cmp_not_equal(fbWidth, m_Data.Width) ||
-        std::cmp_not_equal(fbHeight, m_Data.Height))
-    {
+    if (std::cmp_not_equal(fbWidth, m_Data.Width) || std::cmp_not_equal(fbHeight, m_Data.Height)) {
         m_Data.Width  = static_cast<uint32_t>(fbWidth);
         m_Data.Height = static_cast<uint32_t>(fbHeight);
         if (m_Data.EventCallback) {

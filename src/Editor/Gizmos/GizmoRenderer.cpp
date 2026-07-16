@@ -1,6 +1,5 @@
 #include "Editor/Gizmos/GizmoRenderer.hpp"
 
-#include <cmath>
 #include "Core/Components/Component.hpp"
 #include "Core/Scene.hpp"
 #include "Core/Systems/Commands/TransformCommand.hpp"
@@ -11,55 +10,59 @@
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Renderer.hpp"
 #include <algorithm>
+#include <array>
 #include <cmath>
 
 // ---- file-scope helpers -----------------------------------------------------
 
-static Vec3 axisToVec3(GizmoAxis a) {
-    switch (a) {
-        case GizmoAxis::X: return {1.f, 0.f, 0.f};
-        case GizmoAxis::Y: return {0.f, 1.f, 0.f};
-        case GizmoAxis::Z: return {0.f, 0.f, 1.f};
-        default:           return {0.f, 0.f, 0.f};
+namespace {
+
+    Vec3 axisToVec3(GizmoAxis a) {
+        switch (a) {
+            case GizmoAxis::X: return {1.f, 0.f, 0.f};
+            case GizmoAxis::Y: return {0.f, 1.f, 0.f};
+            case GizmoAxis::Z: return {0.f, 0.f, 1.f};
+            default:           return {0.f, 0.f, 0.f};
+        }
     }
-}
 
-static float segDist2D(float px, float py, float ax, float ay, float bx, float by) {
-    float abx = bx - ax, aby = by - ay, apx = px - ax, apy = py - ay;
-    float const ab2 = abx * abx + aby * aby;
-    float const t   = (ab2 > 1e-12f) ? std::clamp((apx * abx + apy * aby) / ab2, 0.f, 1.f) : 0.f;
-    float dx = px - (ax + t * abx), dy = py - (ay + t * aby);
-    return std::sqrt(dx * dx + dy * dy);
-}
-
-static Vec2 worldToScreen(Vec3 const& w, Matx4f const& VP, float W, float H) {
-    Vec4 const clip = VP * Vec4(w.x, w.y, w.z, 1.f);
-    if (std::abs(clip.w) < 1e-6f) { return {-9999.f, -9999.f};
-}
-    float nx = clip.x / clip.w, ny = clip.y / clip.w;
-    return {(nx * 0.5f + 0.5f) * W, (1.f - (ny * 0.5f + 0.5f)) * H};
-}
-
-static void ringRefVectors(GizmoAxis axis, Vec3& outU, Vec3& outV) {
-    switch (axis) {
-        case GizmoAxis::X:
-            outU = {0, 1, 0};
-            outV = {0, 0, 1};
-            break;
-        case GizmoAxis::Y:
-            outU = {1, 0, 0};
-            outV = {0, 0, 1};
-            break;
-        case GizmoAxis::Z:
-            outU = {1, 0, 0};
-            outV = {0, 1, 0};
-            break;
-        default:
-            outU = {1, 0, 0};
-            outV = {0, 0, 1};
-            break;
+    float segDist2D(float px, float py, float ax, float ay, float bx, float by) {
+        float const abx = bx - ax, aby = by - ay, apx = px - ax, apy = py - ay;
+        float const ab2 = abx * abx + aby * aby;
+        float const t  = (ab2 > 1e-12f) ? std::clamp((apx * abx + apy * aby) / ab2, 0.f, 1.f) : 0.f;
+        float const dx = px - (ax + t * abx), dy = py - (ay + t * aby);
+        return std::sqrt(dx * dx + dy * dy);
     }
-}
+
+    Vec2 worldToScreen(Vec3 const& w, Matx4f const& VP, float W, float H) {
+        Vec4 const clip = VP * Vec4(w.x, w.y, w.z, 1.f);
+        if (std::abs(clip.w) < 1e-6f) { return {-9999.f, -9999.f}; }
+        float const nx = clip.x / clip.w, ny = clip.y / clip.w;
+        return {(nx * 0.5f + 0.5f) * W, (1.f - (ny * 0.5f + 0.5f)) * H};
+    }
+
+    void ringRefVectors(GizmoAxis axis, Vec3& outU, Vec3& outV) {
+        switch (axis) {
+            case GizmoAxis::X:
+                outU = {0, 1, 0};
+                outV = {0, 0, 1};
+                break;
+            case GizmoAxis::Y:
+                outU = {1, 0, 0};
+                outV = {0, 0, 1};
+                break;
+            case GizmoAxis::Z:
+                outU = {1, 0, 0};
+                outV = {0, 1, 0};
+                break;
+            default:
+                outU = {1, 0, 0};
+                outV = {0, 0, 1};
+                break;
+        }
+    }
+
+}  // namespace
 
 // ---- GizmoRenderer ----------------------------------------------------------
 
@@ -70,7 +73,8 @@ GizmoRenderer::~GizmoRenderer() = default;
 
 void GizmoRenderer::OnAttach() {
     m_ArrowMesh = Mesh::CreateArrow();
-    // Thin torus in XZ plane (Y = hole axis), unit major radius; re-oriented per ring at draw time.
+    // Thin torus in XZ plane (Y = hole axis), unit major radius; re-oriented per ring at draw
+    // time.
     m_RingMesh   = Mesh::CreateTorus(1.0f, 0.035f, 64, 10);
     m_CenterMesh = Mesh::CreateSphere(1.0f, 8, 8);
     m_ConeMesh   = Mesh::CreateCone();
@@ -86,11 +90,9 @@ void GizmoRenderer::SetViewportSize(uint32_t w, uint32_t h) {
 
 std::optional<GizmoRenderer::GizmoCtx> GizmoRenderer::ActiveGizmoCtx() {
     auto const& sel = m_SelCtx.GetSelectedEntities();
-    if (sel.empty()) { return std::nullopt;
-}
+    if (sel.empty()) { return std::nullopt; }
     entt::entity const e = *sel.begin();
-    if (!m_Scene.HasComponent<TransformComponent>(e)) { return std::nullopt;
-}
+    if (!m_Scene.HasComponent<TransformComponent>(e)) { return std::nullopt; }
     Vec3 const pos =
         m_GlobalTransform.transformPoint(m_Scene.GetComponent<TransformComponent>(e).Translation);
     float const scale = (pos - m_Camera.GetPosition()).length() * 0.15f;
@@ -101,12 +103,10 @@ std::optional<GizmoRenderer::GizmoCtx> GizmoRenderer::ActiveGizmoCtx() {
 
 void GizmoRenderer::Draw() {
     auto ctx = ActiveGizmoCtx();
-    if (!ctx) { return;
-}
+    if (!ctx) { return; }
 
     auto colorFor = [&](GizmoAxis axis, Vec4 base) -> Vec4 {
-        if (m_HoveredAxis != axis && m_DragAxis != axis) { return base;
-}
+        if (m_HoveredAxis != axis && m_DragAxis != axis) { return base; }
         return {std::min(base.x * 1.6f, 1.f), std::min(base.y * 1.6f, 1.f),
                 std::min(base.z * 1.6f, 1.f), 1.f};
     };
@@ -129,14 +129,14 @@ void GizmoRenderer::Draw() {
         // scale. Two cones per ring mark the tangent at ±(1,0,0) in ring-local space.
         constexpr float coneR = 0.12f, coneH = 0.28f;
         struct RingDef {
-            GizmoAxis axis;
+            GizmoAxis axis{GizmoAxis::None};
             Vec4 color;
             Matx4f rot;
         };
-        RingDef const rings[3] = {
-          {GizmoAxis::X, {1.f, 0.2f, 0.2f, 1.f}, Matx4f::rotationZ(90.f)},
-          {GizmoAxis::Y, {0.2f, 1.f, 0.2f, 1.f},      Matx4f::identity()},
-          {GizmoAxis::Z, {0.2f, 0.2f, 1.f, 1.f}, Matx4f::rotationX(90.f)},
+        std::array<RingDef, 3> const rings = {
+          RingDef{GizmoAxis::X, {1.f, 0.2f, 0.2f, 1.f}, Matx4f::rotationZ(90.f)},
+          RingDef{GizmoAxis::Y, {0.2f, 1.f, 0.2f, 1.f},      Matx4f::identity()},
+          RingDef{GizmoAxis::Z, {0.2f, 0.2f, 1.f, 1.f}, Matx4f::rotationX(90.f)},
         };
         Matx4f const cs = Matx4f::scaling(Vec3{coneR, coneR, coneH});
         for (auto const& ring : rings) {
@@ -171,19 +171,19 @@ Vec3 GizmoRenderer::ScreenToRayDirection(float x, float y) const {
 }
 
 Vec3 GizmoRenderer::RayAxisClosestPoint(Vec3 P, Vec3 D, Vec3 Q, Vec3 A) {
-    Vec3 const w  = P - Q;
+    Vec3 const w = P - Q;
     float b = A.dotProduct(D), d = A.dotProduct(w), e = D.dotProduct(w);
     float const den = 1.f - b * b;
-    if (std::abs(den) < 1e-6f) { return Q;
-}
+    if (std::abs(den) < 1e-6f) { return Q; }
     return Q + A * ((d - b * e) / den);
 }
 
 bool GizmoRenderer::RayPlaneIntersect(Vec3 rayOrigin, Vec3 rayDir, Vec3 planePoint,
                                       Vec3 planeNormal, float& outT) {
     float const denom = rayDir.dotProduct(planeNormal);
-    if (std::abs(denom) < 0.08f) { return false;  // ~5° grazing threshold
-}
+    if (std::abs(denom) < 0.08f) {
+        return false;  // ~5° grazing threshold
+    }
     outT = (planePoint - rayOrigin).dotProduct(planeNormal) / denom;
     return outT >= 0.f;
 }
@@ -192,17 +192,16 @@ bool GizmoRenderer::RayPlaneIntersect(Vec3 rayOrigin, Vec3 rayDir, Vec3 planePoi
 
 GizmoAxis GizmoRenderer::HitTestAxes(float mouseX, float mouseY) {
     auto ctx = ActiveGizmoCtx();
-    if (!ctx) { return GizmoAxis::None;
-}
+    if (!ctx) { return GizmoAxis::None; }
 
     Matx4f const VP = m_Camera.GetViewProjectionMatrix();
     auto W = static_cast<float>(m_ViewportW), H = static_cast<float>(m_ViewportH);
     Vec2 const sc = worldToScreen(ctx->pos, VP, W, H);
 
-    constexpr float kThresh     = 8.f;
-    constexpr GizmoAxis axes[3] = {GizmoAxis::X, GizmoAxis::Y, GizmoAxis::Z};
-    float best                  = kThresh;
-    GizmoAxis hit               = GizmoAxis::None;
+    constexpr float kThresh                 = 8.f;
+    constexpr std::array<GizmoAxis, 3> axes = {GizmoAxis::X, GizmoAxis::Y, GizmoAxis::Z};
+    float best                              = kThresh;
+    GizmoAxis hit                           = GizmoAxis::None;
 
     for (GizmoAxis const axis : axes) {
         Vec2 const end = worldToScreen(ctx->pos + axisToVec3(axis) * ctx->scale, VP, W, H);
@@ -217,21 +216,19 @@ GizmoAxis GizmoRenderer::HitTestAxes(float mouseX, float mouseY) {
 
 GizmoAxis GizmoRenderer::HitTestRings(float mouseX, float mouseY) {
     auto ctx = ActiveGizmoCtx();
-    if (!ctx) { return GizmoAxis::None;
-}
+    if (!ctx) { return GizmoAxis::None; }
 
     Vec3 const rayOrigin = m_Camera.GetPosition();
     Vec3 const rayDir    = ScreenToRayDirection(mouseX, mouseY);
     float const tol      = ctx->scale * 0.18f;
 
-    constexpr GizmoAxis axes[3] = {GizmoAxis::X, GizmoAxis::Y, GizmoAxis::Z};
-    float best                  = tol;
-    GizmoAxis hit               = GizmoAxis::None;
+    constexpr std::array<GizmoAxis, 3> axes = {GizmoAxis::X, GizmoAxis::Y, GizmoAxis::Z};
+    float best                              = tol;
+    GizmoAxis hit                           = GizmoAxis::None;
 
     for (GizmoAxis const axis : axes) {
         float t = NAN;
-        if (!RayPlaneIntersect(rayOrigin, rayDir, ctx->pos, axisToVec3(axis), t)) { continue;
-}
+        if (!RayPlaneIntersect(rayOrigin, rayDir, ctx->pos, axisToVec3(axis), t)) { continue; }
         float const err = std::abs((rayOrigin + rayDir * t - ctx->pos).length() - ctx->scale);
         if (err < best) {
             best = err;
@@ -245,12 +242,11 @@ GizmoAxis GizmoRenderer::HitTestRings(float mouseX, float mouseY) {
 
 bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
     auto ctx = ActiveGizmoCtx();
-    if (!ctx) { return false;
-}
+    if (!ctx) { return false; }
 
-    GizmoAxis const hit = (m_Mode == GizmoMode::Translation) ? HitTestAxes(vx, vy) : HitTestRings(vx, vy);
-    if (hit == GizmoAxis::None) { return false;
-}
+    GizmoAxis const hit =
+        (m_Mode == GizmoMode::Translation) ? HitTestAxes(vx, vy) : HitTestRings(vx, vy);
+    if (hit == GizmoAxis::None) { return false; }
 
     auto& tc               = m_Scene.GetComponent<TransformComponent>(ctx->entity);
     m_DragEntity           = ctx->entity;
@@ -274,8 +270,7 @@ bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
 }
 
 bool GizmoRenderer::OnMouseButtonReleased() {
-    if (!m_IsDragging) { return false;
-}
+    if (!m_IsDragging) { return false; }
 
     if ((m_HistSys != nullptr) &&
         m_DragEntity != entt::null &&
@@ -285,7 +280,7 @@ bool GizmoRenderer::OnMouseButtonReleased() {
         if (after.GetMatrix() != m_TransformAtDragStart.GetMatrix()) {
             m_HistSys->Push(std::make_unique<TransformCommand>(&m_Scene, m_DragEntity,
                                                                m_TransformAtDragStart, after));
-}
+        }
     }
     m_IsDragging = false;
     m_DragAxis   = GizmoAxis::None;
@@ -305,19 +300,20 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
         return false;
     }
 
-    auto& tc = m_Scene.GetComponent<TransformComponent>(m_DragEntity);
+    auto& tc       = m_Scene.GetComponent<TransformComponent>(m_DragEntity);
     Vec3 const pos = m_GlobalTransform.transformPoint(tc.Translation);
     Vec3 const ray = ScreenToRayDirection(vx, vy);
 
     if (m_Mode == GizmoMode::Translation) {
-        Vec3 const newHit = RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, axisToVec3(m_DragAxis));
+        Vec3 const newHit =
+            RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, axisToVec3(m_DragAxis));
         tc.Translation += newHit - m_DragStartHitPt;
         m_DragStartHitPt = newHit;
     } else {
         float t = NAN;
         if (!RayPlaneIntersect(m_Camera.GetPosition(), ray, pos, axisToVec3(m_DragAxis), t)) {
             return true;
-}
+        }
         Vec3 const newHit = m_Camera.GetPosition() + ray * t;
         Vec3 const refVec = m_RotDragRefPoint - pos;
         Vec3 const newVec = newHit - pos;
@@ -327,12 +323,13 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
             (180.f / PI_F);
         if (m_DragAxis == GizmoAxis::X) {
             tc.EulerDegrees.x = m_TransformAtDragStart.EulerDegrees.x + delta;
-        // Y rotation (right-hand rule) takes +X toward -Z, opposite to the atan2(z,x) sense.
+            // Y rotation (right-hand rule) takes +X toward -Z, opposite to the atan2(z,x)
+            // sense.
         } else if (m_DragAxis == GizmoAxis::Y) {
             tc.EulerDegrees.y = m_TransformAtDragStart.EulerDegrees.y - delta;
         } else if (m_DragAxis == GizmoAxis::Z) {
             tc.EulerDegrees.z = m_TransformAtDragStart.EulerDegrees.z + delta;
-}
+        }
     }
     return true;
 }

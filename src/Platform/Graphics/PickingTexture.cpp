@@ -38,8 +38,8 @@ void PickingTexture::Invalidate() {
     // GL_NEAREST is mandatory — linear filtering would blend adjacent entity IDs producing garbage.
     glGenTextures(1, &m_IDTextureID);
     glBindTexture(GL_TEXTURE_2D, m_IDTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32UI, m_Width, m_Height, 0, GL_RG_INTEGER, GL_UNSIGNED_INT,
-                 nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32UI, static_cast<GLsizei>(m_Width),
+                 static_cast<GLsizei>(m_Height), 0, GL_RG_INTEGER, GL_UNSIGNED_INT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_IDTextureID, 0);
@@ -48,7 +48,8 @@ void PickingTexture::Invalidate() {
     // 32-bit float precision is required for accurate world coordinates at large scene scales.
     glGenTextures(1, &m_WorldPosTextureID);
     glBindTexture(GL_TEXTURE_2D, m_WorldPosTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_Width, m_Height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, static_cast<GLsizei>(m_Width),
+                 static_cast<GLsizei>(m_Height), 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_WorldPosTextureID,
@@ -56,14 +57,14 @@ void PickingTexture::Invalidate() {
 
     glGenTextures(1, &m_DepthTextureID);
     glBindTexture(GL_TEXTURE_2D, m_DepthTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, m_Width, m_Height, 0, GL_DEPTH_COMPONENT,
-                 GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, static_cast<GLsizei>(m_Width),
+                 static_cast<GLsizei>(m_Height), 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthTextureID, 0);
 
-    uint32_t attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, attachments);
+    std::array<uint32_t, 2> const attachments = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, attachments.data());
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         // Frame buffer is not complete
@@ -74,7 +75,7 @@ void PickingTexture::Invalidate() {
 
 void PickingTexture::Bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
-    glViewport(0, 0, m_Width, m_Height);
+    glViewport(0, 0, static_cast<GLsizei>(m_Width), static_cast<GLsizei>(m_Height));
 }
 
 void PickingTexture::Unbind() {
@@ -100,12 +101,14 @@ PickingResult PickingTexture::ReadPixel(uint32_t x, uint32_t y) const {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FramebufferID);
 
     glReadBuffer(GL_COLOR_ATTACHMENT0);
-    uint32_t idData[2] = {0, 0};
-    glReadPixels(x, yGL, 1, 1, GL_RG_INTEGER, GL_UNSIGNED_INT, idData);
+    std::array<uint32_t, 2> idData = {0, 0};
+    glReadPixels(static_cast<GLint>(x), static_cast<GLint>(yGL), 1, 1, GL_RG_INTEGER,
+                 GL_UNSIGNED_INT, idData.data());
 
     glReadBuffer(GL_COLOR_ATTACHMENT1);
-    float worldPos[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    glReadPixels(x, yGL, 1, 1, GL_RGBA, GL_FLOAT, worldPos);
+    std::array<float, 4> worldPos = {0.0f, 0.0f, 0.0f, 0.0f};
+    glReadPixels(static_cast<GLint>(x), static_cast<GLint>(yGL), 1, 1, GL_RGBA, GL_FLOAT,
+                 worldPos.data());
 
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);

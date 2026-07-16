@@ -46,8 +46,8 @@ namespace {
 }  // namespace
 
 void EntityFactory::SpawnPrimitive(PrimitiveType type) {
-    auto mesh     = MeshOf(type);
-    auto material = std::make_shared<Material>(m_DefaultShader);
+    auto mesh           = MeshOf(type);
+    auto material       = std::make_shared<Material>(m_DefaultShader);
     Entity const entity = m_Scene->CreateGameObject(NameOf(type));
     m_Scene->AddComponent<MeshComponent>(entity, mesh, material);
     m_Scene->AddComponent<SelectionComponent>(entity);
@@ -56,7 +56,7 @@ void EntityFactory::SpawnPrimitive(PrimitiveType type) {
 std::expected<void, std::string> EntityFactory::SpawnFromFile(std::string const& path) {
     if (!std::filesystem::exists(path)) {
         return std::unexpected(std::format("File not found: {}", path));
-}
+    }
 
     std::string const name = path.substr(path.find_last_of("/\\") + 1);
     Entity const entity    = m_Scene->CreateGameObject(name);
@@ -65,17 +65,19 @@ std::expected<void, std::string> EntityFactory::SpawnFromFile(std::string const&
     Scene* scene = m_Scene;
     auto* selSys = m_Scene->GetSystem<SelectionSystem>();
     auto shader  = m_DefaultShader;
-    AssetManager::LoadAsync(path, [scene, entity, shader, selSys](AssetHandle handle) {
-        auto mesh = AssetManager::GetAs<Mesh>(handle);
-        if (!mesh) {
-            CORE_LOG_ERROR("Mesh load failed for async asset; removing placeholder entity.");
-            if (selSys) { selSys->GetSelectionContext().Deselect(entity);
-}
-            scene->DestroyEntity(entity);
-            return;
-        }
-        auto material = std::make_shared<Material>(shader);
-        scene->AddComponent<MeshComponent>(entity, mesh, material);
-    });
+    AssetManager::LoadAsync(path,
+                            [scene, entity, shader, selSys](AssetHandle handle) {
+                                auto mesh = AssetManager::GetAs<Mesh>(handle);
+                                if (!mesh) {
+                                    CORE_LOG_ERROR(
+                                        "Mesh load failed for async asset; removing placeholder "
+                                        "entity.");  // NOLINT(bugprone-lambda-function-name)
+                                    if (selSys) { selSys->GetSelectionContext().Deselect(entity); }
+                                    scene->DestroyEntity(entity);
+                                    return;
+                                }
+                                auto material = std::make_shared<Material>(shader);
+                                scene->AddComponent<MeshComponent>(entity, mesh, material);
+                            });
     return {};
 }

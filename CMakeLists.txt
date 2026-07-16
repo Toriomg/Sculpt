@@ -56,6 +56,7 @@ target_compile_options(MyOpenGLApp PRIVATE
 )
 
 target_compile_definitions(MyOpenGLApp PRIVATE
+    FMT_HEADER_ONLY
     $<$<CONFIG:Debug>:LSAN_SUPPRESSIONS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/lsan.supp">
 )
 

@@ -5,18 +5,21 @@
 #include "Platform/Graphics/Shader.hpp"
 #include "Platform/Graphics/Texture.hpp"
 
-struct SceneData {
-    Matx4f View;
-    std::shared_ptr<Shader> WireframeShader;
-    std::shared_ptr<Shader> DebugSelectionShader;
-    std::shared_ptr<Shader> OutlineShader;
-    bool DebugSelectionEnabled = false;
-};
+namespace {
 
-// We create a static instance of this data for the Renderer to use.
-// It is OK as a single scene is rendered at a time, so this is thread-safe.
-// NOT AN ATTRIBUTE OF RENDERER CLASS DUE TO SINGLETON PATTERN
-static SceneData s_SceneData;
+    struct SceneData {
+        Matx4f View;
+        std::shared_ptr<Shader> WireframeShader;
+        std::shared_ptr<Shader> DebugSelectionShader;
+        std::shared_ptr<Shader> OutlineShader;
+        bool DebugSelectionEnabled = false;
+    };
+
+    // One scene at a time — single-threaded renderer, no synchronization needed.
+    SceneData
+        s_SceneData;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,bugprone-throwing-static-initialization)
+
+}  // namespace
 /*
 Public API implementation
 */
@@ -73,7 +76,7 @@ void Renderer::Submit(std::shared_ptr<Mesh> const& mesh, std::shared_ptr<Materia
     shader->SetUniformMat4f("u_Model", transform);
     shader->SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
 
-    bool hasTexture           = false;
+    bool hasTexture                 = false;
     AssetHandle const textureHandle = material->GetTextureHandle();
     if (textureHandle) {
         auto texture = std::static_pointer_cast<Texture>(AssetManager::Get(textureHandle));

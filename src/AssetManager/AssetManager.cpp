@@ -7,15 +7,20 @@
 #include <functional>
 #include <optional>
 
-struct AssetManagerData {
-    LoaderSystem loaders;
-    AssetRegistry registry;
-    std::unordered_map<std::string, AssetHandle> pathToHandleMap;
-};
+namespace {
 
-// Optional gives us a clear Init/Shutdown lifecycle without a heap allocation or a separate
-// "initialized" flag.
-static std::optional<AssetManagerData> s_Data;
+    struct AssetManagerData {
+        LoaderSystem loaders;
+        AssetRegistry registry;
+        std::unordered_map<std::string, AssetHandle> pathToHandleMap;
+    };
+
+    // Optional gives us a clear Init/Shutdown lifecycle without a heap allocation or a separate
+    // "initialized" flag.
+    std::optional<AssetManagerData>
+        s_Data;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+
+}  // namespace
 
 void AssetManager::Init() {
     s_Data.emplace();
@@ -29,10 +34,10 @@ void AssetManager::Shutdown() {
 }
 
 AssetHandle AssetManager::Load(std::string const& filepath) {
+    if (!s_Data) { return AssetHandle{}; }
     // Return the cached handle if this path was already loaded, preventing duplicate GPU uploads.
     auto it = s_Data->pathToHandleMap.find(filepath);
-    if (it != s_Data->pathToHandleMap.end()) { return it->second;
-}
+    if (it != s_Data->pathToHandleMap.end()) { return it->second; }
 
     IAssetLoader* loader = s_Data->loaders.GetLoaderFor(filepath);
     if (loader == nullptr) {
@@ -55,33 +60,38 @@ AssetHandle AssetManager::Load(std::string const& filepath) {
 }
 
 std::shared_ptr<IAsset> AssetManager::Get(AssetHandle handle) {
+    if (!s_Data) { return nullptr; }
     return s_Data->registry.Get(handle);
 }
 
-// Defers the full load to the main thread via Finalize(); Execute() is reserved for future
-// CPU-only work (file read, decode) once loaders are split into CPU and GPU phases.
-class AssetLoadTask final : public ITask {
-public:
-    AssetLoadTask(std::string path, std::function<void(AssetHandle)> onComplete)
-        : m_Path(std::move(path)), m_OnComplete(std::move(onComplete)) { }
+namespace {
 
-    [[nodiscard]] std::string_view GetName() const override { return "AssetLoad"; }
-    void Execute() override { }
+    // Defers the full load to the main thread via Finalize(); Execute() is reserved for future
+    // CPU-only work (file read, decode) once loaders are split into CPU and GPU phases.
+    class AssetLoadTask final : public ITask {
+    public:
+        AssetLoadTask(std::string path, std::function<void(AssetHandle)> onComplete)
+            : m_Path(std::move(path)), m_OnComplete(std::move(onComplete)) { }
 
-    void Finalize() override {
-        AssetHandle const handle = AssetManager::Load(m_Path);
-        if (m_OnComplete) { m_OnComplete(handle);
-}
-    }
+        [[nodiscard]] std::string_view GetName() const override { return "AssetLoad"; }
+        void Execute() override { }
 
-private:
-    std::string m_Path;
-    std::function<void(AssetHandle)> m_OnComplete;
-};
+        void Finalize() override {
+            AssetHandle const handle = AssetManager::Load(m_Path);
+            if (m_OnComplete) { m_OnComplete(handle); }
+        }
+
+    private:
+        std::string m_Path;
+        std::function<void(AssetHandle)> m_OnComplete;
+    };
+
+}  // namespace
 
 void AssetManager::LoadAsync(std::string const& filepath,
                              std::function<void(AssetHandle)> onComplete) {
     auto result = TaskQueue::Submit<AssetLoadTask>(filepath, std::move(onComplete));
-    if (!result) { LOG_ERROR("AssetManager: LoadAsync failed for '{}': {}", filepath, result.error());
-}
+    if (!result) {
+        LOG_ERROR("AssetManager: LoadAsync failed for '{}': {}", filepath, result.error());
+    }
 }

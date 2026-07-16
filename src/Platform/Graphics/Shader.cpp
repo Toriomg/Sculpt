@@ -1,3 +1,4 @@
+#include <array>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -7,7 +8,7 @@
 
 Shader::Shader(std::string_view filepath) : m_FilePath(filepath), m_RendererID(0) {
     ShaderProgramSource const source = ParseShader(m_FilePath);
-    m_RendererID               = CreateShader(source.VertexSource, source.FragmentSource);
+    m_RendererID                     = CreateShader(source.VertexSource, source.FragmentSource);
 }
 
 Shader::Shader(std::string_view vertFilepath, std::string_view fragFilepath)
@@ -46,7 +47,7 @@ ShaderProgramSource Shader::ParseShader(std::string_view filepath) {
     enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
 
     std::string line;  // String to hold each line of the shader file
-    std::stringstream ss[2];
+    std::array<std::stringstream, 2> ss;
     ShaderType type = ShaderType::NONE;  // Initialize the shader type to NONE
 
     // Read each line of the shader file
@@ -78,8 +79,8 @@ ShaderProgramSource Shader::ParseShader(std::string_view filepath) {
 }
 
 unsigned int Shader::CompileShader(std::string const& source, unsigned int type) {
-    unsigned int const id = glCreateShader(type);        // Create a shader object of the specified type
-    char const* src = source.c_str();              // Convert the source string to a C-style string
+    unsigned int const id = glCreateShader(type);  // Create a shader object of the specified type
+    char const* src       = source.c_str();        // Convert the source string to a C-style string
     GLCall(glShaderSource(id, 1, &src, nullptr));  // Attach the source code to the shader object
     GLCall(glCompileShader(id));                   // Compile the shader
 
@@ -106,8 +107,9 @@ unsigned int Shader::CompileShader(std::string const& source, unsigned int type)
 unsigned int Shader::CreateShader(std::string const& vertexShader,
                                   std::string const& fragmentShader) {
     /*Must pass the parsed shader not the filepath*/
-    unsigned int const program = glCreateProgram();                         // Create a shader program
-    unsigned int const vs = CompileShader(vertexShader, GL_VERTEX_SHADER);  // Compile the vertex shader
+    unsigned int const program = glCreateProgram();  // Create a shader program
+    unsigned int const vs =
+        CompileShader(vertexShader, GL_VERTEX_SHADER);  // Compile the vertex shader
     unsigned int const fs =
         CompileShader(fragmentShader, GL_FRAGMENT_SHADER);  // Compile the vertex shader
 
@@ -116,10 +118,8 @@ unsigned int Shader::CreateShader(std::string const& vertexShader,
         // The error message was already printed inside CompileShader
         GLCall(glDeleteProgram(program));  // Clean up the program objec)t
         // Clean up the successfully compiled shader
-        if (vs != 0) { GLCall(glDeleteShader(vs));
-}
-        if (fs != 0) { GLCall(glDeleteShader(fs));
-}
+        if (vs != 0) { GLCall(glDeleteShader(vs)); }
+        if (fs != 0) { GLCall(glDeleteShader(fs)); }
         return 0;
     }
 
@@ -209,8 +209,7 @@ GLint Shader::GetUniformLocation(std::string const& name) const {
     auto [it, inserted] = m_UniformLocationCache.try_emplace(name, -1);
     if (inserted) {
         it->second = glGetUniformLocation(m_RendererID, name.c_str());
-        if (it->second == -1) { LOG_ERROR("Warning: uniform '{0}' doesn't exist!", name);
-}
+        if (it->second == -1) { LOG_ERROR("Warning: uniform '{0}' doesn't exist!", name); }
     }
     return it->second;
 }

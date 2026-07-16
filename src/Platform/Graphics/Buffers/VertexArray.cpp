@@ -21,7 +21,8 @@ void VertexArray::AddBuffer(VertexBuffer const& vb, VertexBufferLayout const& la
         // offset to a pointer without triggering UB from integer-to-pointer casts.
         GLCall(glVertexAttribPointer(
             i, element.count, element.type, element.normalized, layout.GetStride(),
-            reinterpret_cast<void const*>(static_cast<uintptr_t>(offset))));
+            reinterpret_cast<void const*>(
+                static_cast<uintptr_t>(offset))));  // NOLINT(performance-no-int-to-ptr)
         offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
     }
 }
@@ -38,7 +39,8 @@ void VertexArray::AddBufferPtr(std::shared_ptr<VertexBuffer> const& vb,
         GLCall(glEnableVertexAttribArray(i));
         GLCall(glVertexAttribPointer(
             i, element.count, element.type, element.normalized, layout.GetStride(),
-            reinterpret_cast<void const*>(static_cast<uintptr_t>(offset))));
+            reinterpret_cast<void const*>(
+                static_cast<uintptr_t>(offset))));  // NOLINT(performance-no-int-to-ptr)
         offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
     }
 

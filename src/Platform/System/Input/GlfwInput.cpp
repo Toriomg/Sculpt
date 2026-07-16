@@ -2,9 +2,9 @@
 
 #include <cmath>
 
-GlfwInput::GlfwInput(Window* window) : m_NativeWindow(static_cast<GLFWwindow*>(window->GetNativeWindow())) {
+GlfwInput::GlfwInput(Window* window)
+    : m_NativeWindow(static_cast<GLFWwindow*>(window->GetNativeWindow())) {
     // We need the native GLFW window handle for polling
-    
 }
 
 void GlfwInput::OnUpdateImpl() {
@@ -30,7 +30,7 @@ Vec2 GlfwInput::GetMousePositionImpl() {
 
 std::string GlfwInput::GetKeyNameImpl(int keycode) const {
     char const* name = glfwGetKeyName(keycode, 0);
-    if (name != nullptr) { return std::string(name); }
+    if (name != nullptr) { return {name}; }
 
     switch (keycode) {
         case GLFW_KEY_SPACE:         return "Space";

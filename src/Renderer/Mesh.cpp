@@ -1,5 +1,4 @@
 ﻿#include "Mesh.hpp"
-#include "Platform/CoreUtils/Math/maths.hpp"
 #include "Platform/Graphics/Vertex.hpp"
 #include <cmath>
 #include <cstddef>
@@ -66,10 +65,10 @@ std::shared_ptr<Mesh> Mesh::CreateCube(float size) {
     // The cube uses 36 unique vertices (no shared corners across faces, for correct flat normals),
     // so a sequential IBO adds no benefit — it exists only because Mesh always requires an IBO.
     std::vector<uint32_t> indices(36);
-    for (uint32_t i = 0; i < 36; i += 3) {
-        indices[i]     = i;
-        indices[i + 1] = i + 2;
-        indices[i + 2] = i + 1;
+    for (size_t i = 0; i < 36; i += 3) {
+        indices[i]     = static_cast<uint32_t>(i);
+        indices[i + 1] = static_cast<uint32_t>(i + 2);
+        indices[i + 2] = static_cast<uint32_t>(i + 1);
     }
 
     CORE_LOG_INFO("Square with {0} faces", indices.size() / 3);
@@ -82,6 +81,7 @@ std::shared_ptr<Mesh> Mesh::CreatePyramid(float size) {
     float const halfSize = size / 2.0f;
     float const height   = size;  // You can make this a separate parameter if you wish
 
+    // NOLINTBEGIN(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
     float vertices[] = {
       // --- Base Face (Y-) ---
       // Positions(3)           Normals(3)             TexCoords(2)
@@ -112,6 +112,7 @@ std::shared_ptr<Mesh> Mesh::CreatePyramid(float size) {
       10, 12, 11,           // Right
       13, 15, 14            // Left
     };
+    // NOLINTEND(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
     CORE_LOG_INFO("Pyramid with {0} faces", sizeof(indices) / sizeof(uint32_t) / 3);
     return CreateMeshFromData(vertices, sizeof(vertices), indices,
                               sizeof(indices) / sizeof(uint32_t));
@@ -122,17 +123,17 @@ std::shared_ptr<Mesh> Mesh::CreateSphere(float radius, int sectors, int stacks) 
     std::vector<float> vertices;
     std::vector<uint32_t> indices;
 
-    float const PI   = std::numbers::pi_v<float>;
-    float const sectorStep = 2 * PI / sectors;
-    float const stackStep  = PI / stacks;
+    float const PI         = std::numbers::pi_v<float>;
+    float const sectorStep = 2.0f * PI / static_cast<float>(sectors);
+    float const stackStep  = PI / static_cast<float>(stacks);
 
     for (int i = 0; i <= stacks; ++i) {
-        float const stackAngle = PI / 2 - i * stackStep;
+        float const stackAngle = PI * 0.5f - static_cast<float>(i) * stackStep;
         float const xy         = radius * cosf(stackAngle);
         float const z          = radius * sinf(stackAngle);
 
         for (int j = 0; j <= sectors; ++j) {
-            float const sectorAngle = j * sectorStep;
+            float const sectorAngle = static_cast<float>(j) * sectorStep;
 
             // Vertex position
             float const x = xy * cosf(sectorAngle);
@@ -150,8 +151,8 @@ std::shared_ptr<Mesh> Mesh::CreateSphere(float radius, int sectors, int stacks) 
             vertices.push_back(nz);
 
             // Texture coords
-            float const u = static_cast<float>(j) / sectors;
-            float const v = static_cast<float>(i) / stacks;
+            float const u = static_cast<float>(j) / static_cast<float>(sectors);
+            float const v = static_cast<float>(i) / static_cast<float>(stacks);
             vertices.push_back(u);
             vertices.push_back(v);
         }
@@ -197,11 +198,11 @@ std::shared_ptr<Mesh> Mesh::CreateTorus(float majorRadius, float minorRadius, in
 
     // Generate vertices
     for (int i = 0; i <= minorSegments; ++i) {
-        float const v          = static_cast<float>(i) / minorSegments;
+        float const v          = static_cast<float>(i) / static_cast<float>(minorSegments);
         float const minorAngle = v * 2.0f * PI;
 
         for (int j = 0; j <= majorSegments; ++j) {
-            float const u          = static_cast<float>(j) / majorSegments;
+            float const u          = static_cast<float>(j) / static_cast<float>(majorSegments);
             float const majorAngle = u * 2.0f * PI;
 
             // --- Vertex Position ---
@@ -273,6 +274,7 @@ std::shared_ptr<Mesh> Mesh::CreateDodecahedron(float size) {
     // Raw cube-corner vertices (±1,±1,±1) have length sqrt(3) — the max among all 20.
     float const scale = size / std::numbers::sqrt3_v<float>;
 
+    // NOLINTBEGIN(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
     float const rawVertices[20][3] = {
       {      1,       1,       1},
       {     -1,       1,       1},
@@ -310,6 +312,7 @@ std::shared_ptr<Mesh> Mesh::CreateDodecahedron(float size) {
       {6, 19,  2,  9, 11},
       {7, 14, 15,  6, 11}
     };
+    // NOLINTEND(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
 
     constexpr int kFaceCount       = 12;
     constexpr int kFaceVerts       = 5;
@@ -317,11 +320,11 @@ std::shared_ptr<Mesh> Mesh::CreateDodecahedron(float size) {
     constexpr float kTwoPi         = 2.0f * PI_F;
 
     std::vector<float> vertices;
-    vertices.reserve(static_cast<size_t>(kFaceCount * kFaceVerts * kFloatsPerVertex));
+    vertices.reserve(static_cast<size_t>(kFaceCount) * kFaceVerts * kFloatsPerVertex);
     std::vector<uint32_t> indices;
-    indices.reserve(static_cast<size_t>(kFaceCount * 3 * 3));
+    indices.reserve(static_cast<size_t>(kFaceCount) * 3 * 3);
 
-    for (const auto & face : faces) {
+    for (auto const& face : faces) {
         // Flat-shaded: compute one outward normal per pentagonal face.
         uint32_t const i0 = face[0], i1 = face[1], i2 = face[2];
         float const e1x = rawVertices[i1][0] - rawVertices[i0][0];
@@ -355,7 +358,8 @@ std::shared_ptr<Mesh> Mesh::CreateDodecahedron(float size) {
             vertices.push_back(ny);
             vertices.push_back(nz);
 
-            float const angle = PI_F * 0.5f + kTwoPi * k / kFaceVerts;
+            float const angle =
+                PI_F * 0.5f + kTwoPi * static_cast<float>(k) / static_cast<float>(kFaceVerts);
             vertices.push_back(0.5f + 0.5f * std::cos(angle));
             vertices.push_back(0.5f + 0.5f * std::sin(angle));
         }
@@ -384,6 +388,7 @@ std::shared_ptr<Mesh> Mesh::CreateIcosahedron(float size) {
     // Raw vertices have length sqrt(1 + phi^2) = sqrt(phi + 2).
     float const scale = size / std::sqrt(phi + 2.0f);
 
+    // NOLINTBEGIN(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
     float const rawVertices[12][3] = {
       { 0.0f,  1.0f,   phi},
       { 0.0f, -1.0f,   phi},
@@ -421,6 +426,7 @@ std::shared_ptr<Mesh> Mesh::CreateIcosahedron(float size) {
       {1,  6,  8},
       {8,  6, 10}
     };
+    // NOLINTEND(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
 
     constexpr int kFaceCount       = 20;
     constexpr int kFaceVerts       = 3;
@@ -428,11 +434,11 @@ std::shared_ptr<Mesh> Mesh::CreateIcosahedron(float size) {
     constexpr float kTwoPi         = 2.0f * PI_F;
 
     std::vector<float> vertices;
-    vertices.reserve(static_cast<size_t>(kFaceCount * kFaceVerts * kFloatsPerVertex));
+    vertices.reserve(static_cast<size_t>(kFaceCount) * kFaceVerts * kFloatsPerVertex);
     std::vector<uint32_t> indices;
-    indices.reserve(static_cast<size_t>(kFaceCount * kFaceVerts));
+    indices.reserve(static_cast<size_t>(kFaceCount) * kFaceVerts);
 
-    for (const auto *face : faces) {
+    for (auto const* face : faces) {
         // Flat-shaded: one outward normal per triangular face.
         uint32_t const i0 = face[0], i1 = face[1], i2 = face[2];
         float const e1x = rawVertices[i1][0] - rawVertices[i0][0];
@@ -466,7 +472,8 @@ std::shared_ptr<Mesh> Mesh::CreateIcosahedron(float size) {
             vertices.push_back(ny);
             vertices.push_back(nz);
 
-            float const angle = PI_F * 0.5f + kTwoPi * k / kFaceVerts;
+            float const angle =
+                PI_F * 0.5f + kTwoPi * static_cast<float>(k) / static_cast<float>(kFaceVerts);
             vertices.push_back(0.5f + 0.5f * std::cos(angle));
             vertices.push_back(0.5f + 0.5f * std::sin(angle));
         }
@@ -502,28 +509,36 @@ std::shared_ptr<Mesh> Mesh::CreateArrow(int segments) {
         addVert({xPos, 0.0f, 0.0f}, n);
         uint32_t const rim = sz();
         for (int i = 0; i < segments; ++i) {
-            float const t = TWO_PI * i / segments;
+            float const t = TWO_PI * static_cast<float>(i) / static_cast<float>(segments);
             addVert({xPos, rad * std::cos(t), rad * std::sin(t)}, n);
         }
         for (int i = 0; i < segments; ++i) {
-            if (faceRight) { idx.insert(idx.end(), {c, rim + i, rim + (i + 1) % segments});
-            } else { idx.insert(idx.end(), {c, rim + (i + 1) % segments, rim + i});
-}
+            if (faceRight) {
+                idx.insert(idx.end(), {c, rim + i, rim + (i + 1) % segments});
+            } else {
+                idx.insert(idx.end(), {c, rim + (i + 1) % segments, rim + i});
+            }
         }
     };
 
     // Shaft cylinder
     for (int i = 0; i < segments; ++i) {
-        float t = TWO_PI * i / segments, c = std::cos(t), s = std::sin(t);
+        float const t = TWO_PI * static_cast<float>(i) / static_cast<float>(segments);
+        float const c = std::cos(t);
+        float const s = std::sin(t);
         addVert({0.0f, r * c, r * s}, {0.0f, c, s});
     }
     for (int i = 0; i < segments; ++i) {
-        float t = TWO_PI * i / segments, c = std::cos(t), s = std::sin(t);
+        float const t = TWO_PI * static_cast<float>(i) / static_cast<float>(segments);
+        float const c = std::cos(t);
+        float const s = std::sin(t);
         addVert({shaftLen, r * c, r * s}, {0.0f, c, s});
     }
     for (int i = 0; i < segments; ++i) {
-        uint32_t b0 = i, b1 = (i + 1) % segments, t0 = segments + i,
-                 t1 = segments + (i + 1) % segments;
+        auto const b0 = static_cast<uint32_t>(i);
+        auto const b1 = static_cast<uint32_t>((i + 1) % segments);
+        auto const t0 = static_cast<uint32_t>(segments + i);
+        auto const t1 = static_cast<uint32_t>(segments + (i + 1) % segments);
         idx.insert(idx.end(), {b0, t0, t1, b0, t1, b1});
     }
     addCapX(0.0f, r, false);     // shaft back cap
@@ -531,7 +546,8 @@ std::shared_ptr<Mesh> Mesh::CreateArrow(int segments) {
 
     // Cone sides (flat-shaded)
     for (int i = 0; i < segments; ++i) {
-        float t0 = TWO_PI * i / segments, t1 = TWO_PI * (i + 1) / segments;
+        float const t0   = TWO_PI * static_cast<float>(i) / static_cast<float>(segments);
+        float const t1   = TWO_PI * static_cast<float>(i + 1) / static_cast<float>(segments);
         Vec3 const v0    = {shaftLen, R * std::cos(t0), R * std::sin(t0)};
         Vec3 const v1    = {shaftLen, R * std::cos(t1), R * std::sin(t1)};
         Vec3 const v2    = {1.0f, 0.0f, 0.0f};
@@ -559,12 +575,13 @@ std::shared_ptr<Mesh> Mesh::CreateCone(int segments) {
 
     // Lateral surface (flat-shaded)
     for (int i = 0; i < segments; ++i) {
-        float t0 = TWO_PI * i / segments, t1 = TWO_PI * (i + 1) / segments;
-        Vec3 const v0    = {std::cos(t0), std::sin(t0), 0.0f};
-        Vec3 const v1    = {std::cos(t1), std::sin(t1), 0.0f};
-        Vec3 const v2    = {0.0f, 0.0f, 1.0f};
-        Vec3 const n     = (v1 - v0).crossProduct(v2 - v0).normalize();
-        auto const b = static_cast<uint32_t>(verts.size());
+        float const t0 = TWO_PI * static_cast<float>(i) / static_cast<float>(segments);
+        float const t1 = TWO_PI * static_cast<float>(i + 1) / static_cast<float>(segments);
+        Vec3 const v0  = {std::cos(t0), std::sin(t0), 0.0f};
+        Vec3 const v1  = {std::cos(t1), std::sin(t1), 0.0f};
+        Vec3 const v2  = {0.0f, 0.0f, 1.0f};
+        Vec3 const n   = (v1 - v0).crossProduct(v2 - v0).normalize();
+        auto const b   = static_cast<uint32_t>(verts.size());
         addVert(v0, n);
         addVert(v1, n);
         addVert(v2, n);
@@ -576,12 +593,12 @@ std::shared_ptr<Mesh> Mesh::CreateCone(int segments) {
     addVert({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f});
     auto const rim = static_cast<uint32_t>(verts.size());
     for (int i = 0; i < segments; ++i) {
-        float const t = TWO_PI * i / segments;
+        float const t = TWO_PI * static_cast<float>(i) / static_cast<float>(segments);
         addVert({std::cos(t), std::sin(t), 0.0f}, {0.0f, 0.0f, -1.0f});
     }
     for (int i = 0; i < segments; ++i) {
         idx.insert(idx.end(), {c, rim + (i + 1) % segments, rim + i});
-}
+    }
 
     return CreateMeshFromData(verts.data(), static_cast<uint32_t>(verts.size() * sizeof(Vertex)),
                               idx.data(), static_cast<uint32_t>(idx.size()));

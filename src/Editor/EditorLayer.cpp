@@ -20,7 +20,7 @@
 #include "imgui.h"
 
 EditorLayer::EditorLayer(std::function<void()> onQuit)
-    : Layer("EditorLayer"), m_OnQuit(std::move(onQuit)) { }
+    : Layer("EditorLayer"), m_CameraEntity(entt::null), m_OnQuit(std::move(onQuit)) { }
 
 // Destructor defined here so forward-declared types (Framebuffer, panels) are fully visible.
 EditorLayer::~EditorLayer() = default;
@@ -39,7 +39,7 @@ void EditorLayer::OnAttach() {
     m_EntityFactory = std::make_unique<EntityFactory>(m_ActiveScene.get());
     if (auto r = m_EntityFactory->SpawnFromFile("res/models/monkey.obj"); !r) {
         CORE_LOG_ERROR("Default scene asset missing: {}", r.error());
-}
+    }
 
     // Stores a raw pointer into the ECS component — safe while the entity lives.
     m_CameraController = std::make_unique<EditorCameraController>(&camComp.SceneCamera);
@@ -66,13 +66,11 @@ void EditorLayer::OnAttach() {
 void EditorLayer::OnViewportResize(uint32_t width, uint32_t height) {
     m_ViewportFBO->Resize(width, height);
     auto& camComp = m_ActiveScene->GetComponent<CameraComponent>(m_CameraEntity);
-    camComp.SceneCamera.SetViewportSize(width, height);
+    camComp.SceneCamera.SetViewportSize(static_cast<float>(width), static_cast<float>(height));
     RenderCommand::SetViewport(0, 0, width, height);
     auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
-    if (pickSys != nullptr) { pickSys->OnWindowResize(width, height);
-}
-    if (m_GizmoRenderer) { m_GizmoRenderer->SetViewportSize(width, height);
-}
+    if (pickSys != nullptr) { pickSys->OnWindowResize(width, height); }
+    if (m_GizmoRenderer) { m_GizmoRenderer->SetViewportSize(width, height); }
 }
 
 void EditorLayer::OnUpdate(float deltaTime) {
@@ -80,8 +78,9 @@ void EditorLayer::OnUpdate(float deltaTime) {
     auto& camTransform = m_ActiveScene->GetComponent<TransformComponent>(m_CameraEntity);
 
     // Camera movement is gated on viewport focus so ImGui text fields can receive keyboard input.
-    if (!m_ViewportPanel || m_ViewportPanel->IsFocused()) { m_CameraController->OnUpdate(deltaTime);
-}
+    if (!m_ViewportPanel || m_ViewportPanel->IsFocused()) {
+        m_CameraController->OnUpdate(deltaTime);
+    }
 
     // Sync TransformComponent to camera position driven by the controller.
     camTransform.Translation = camComp.SceneCamera.GetPosition();
@@ -90,12 +89,13 @@ void EditorLayer::OnUpdate(float deltaTime) {
     // at draw time without baking it into entity TRS data.
     if (m_ScenePanel) {
         Matx4f const global = m_ScenePanel->GetGlobalTransform();
-        if (auto* rs = m_ActiveScene->GetSystem<RenderingSystem>()) { rs->SetGlobalTransform(global);
-}
-        if (auto* ps = m_ActiveScene->GetSystem<PickingSystem>()) { ps->SetGlobalTransform(global);
-}
-        if (m_GizmoRenderer) { m_GizmoRenderer->SetGlobalTransform(global);
-}
+        if (auto* rs = m_ActiveScene->GetSystem<RenderingSystem>()) {
+            rs->SetGlobalTransform(global);
+        }
+        if (auto* ps = m_ActiveScene->GetSystem<PickingSystem>()) {
+            ps->SetGlobalTransform(global);
+        }
+        if (m_GizmoRenderer) { m_GizmoRenderer->SetGlobalTransform(global); }
     }
 
     // Render the scene into the viewport FBO.
@@ -131,26 +131,23 @@ void EditorLayer::OnEvent(Event& e) {
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
-    if (e.GetMouseButton() != 0) { return false;
-}
-    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) { return false;
-}
+    if (e.GetMouseButton() != 0) { return false; }
+    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) { return false; }
 
     Vec2 mousePos    = Input::GetMousePosition();
     Vec2 viewportMin = m_ViewportPanel->GetViewportMin();
     Vec2 relPos      = mousePos - viewportMin;
 
-    if (relPos.x < 0.0f || relPos.y < 0.0f) { return false;
-}
+    if (relPos.x < 0.0f || relPos.y < 0.0f) { return false; }
 
     // Gizmo gets first right of refusal — prevents mis-selecting while dragging a handle.
-    if (m_GizmoRenderer && m_GizmoRenderer->OnMouseButtonPressed(relPos.x, relPos.y)) { return true;
-}
+    if (m_GizmoRenderer && m_GizmoRenderer->OnMouseButtonPressed(relPos.x, relPos.y)) {
+        return true;
+    }
 
     bool const isShiftHeld = Input::IsKeyPressed(KeyCode::LeftShift);
-    auto* selSystem  = m_ActiveScene->GetSystem<SelectionSystem>();
-    if (selSystem == nullptr) { return false;
-}
+    auto* selSystem        = m_ActiveScene->GetSystem<SelectionSystem>();
+    if (selSystem == nullptr) { return false; }
 
     LOG_TRACE(
         "EditorLayer click: mouse=({:.0f},{:.0f}) viewportMin=({:.0f},{:.0f}) rel=({:.0f},{:.0f})",
@@ -161,27 +158,24 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
     return true;
 }
 
-bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent&  /*e*/) {
-    if (m_GizmoRenderer) { m_GizmoRenderer->OnMouseButtonReleased();
-}
+bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& /*e*/) {
+    if (m_GizmoRenderer) { m_GizmoRenderer->OnMouseButtonReleased(); }
     return false;
 }
 
-bool EditorLayer::OnMouseMoved(MouseMovedEvent&  /*e*/) {
-    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) { return false;
-}
+bool EditorLayer::OnMouseMoved(MouseMovedEvent& /*e*/) {
+    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) { return false; }
     Vec2 const mousePos    = Input::GetMousePosition();
     Vec2 const viewportMin = m_ViewportPanel->GetViewportMin();
     Vec2 const relPos      = mousePos - viewportMin;
     if (relPos.x >= 0.0f && relPos.y >= 0.0f && m_GizmoRenderer) {
         m_GizmoRenderer->OnMouseMoved(relPos.x, relPos.y);
-}
+    }
     return false;
 }
 
 bool EditorLayer::OnMouseScrolled(MouseScrolledEvent& e) {
-    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) { return false;
-}
+    if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) { return false; }
     m_CameraController->OnScrolled(e.GetYOffset());
     return false;
 }
@@ -190,34 +184,28 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
     // Block shortcuts only when the user is actively typing in an InputText widget.
     // WantCaptureKeyboard is true for any focused ImGui window (too aggressive);
     // WantTextInput is true only during active text entry.
-    if (ImGui::GetIO().WantTextInput) { return false;
-}
+    if (ImGui::GetIO().WantTextInput) { return false; }
 
     if (e.GetKeyCode() == static_cast<int>(KeyCode::Delete)) {
-        if (m_OutlinerPanel) { m_OutlinerPanel->TriggerDeleteConfirmation();
-}
+        if (m_OutlinerPanel) { m_OutlinerPanel->TriggerDeleteConfirmation(); }
         return true;
     }
 
     if (e.GetKeyCode() == static_cast<int>(KeyCode::T)) {
-        if (m_GizmoRenderer) { m_GizmoRenderer->SetMode(GizmoMode::Translation);
-}
+        if (m_GizmoRenderer) { m_GizmoRenderer->SetMode(GizmoMode::Translation); }
         return true;
     }
     if (e.GetKeyCode() == static_cast<int>(KeyCode::R)) {
-        if (m_GizmoRenderer) { m_GizmoRenderer->SetMode(GizmoMode::Rotation);
-}
+        if (m_GizmoRenderer) { m_GizmoRenderer->SetMode(GizmoMode::Rotation); }
         return true;
     }
 
     bool const ctrl =
         Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);
-    if (!ctrl) { return false;
-}
+    if (!ctrl) { return false; }
 
     auto* hist = m_ActiveScene->GetSystem<HistorySystem>();
-    if (hist == nullptr) { return false;
-}
+    if (hist == nullptr) { return false; }
 
     if (e.GetKeyCode() == static_cast<int>(KeyCode::Z)) {
         hist->Undo();
@@ -230,11 +218,11 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
     return false;
 }
 
-bool EditorLayer::OnKeyReleased(KeyReleasedEvent&  /*e*/) {
+bool EditorLayer::OnKeyReleased(KeyReleasedEvent& /*e*/) {
     return false;
 }
 
-bool EditorLayer::OnWindowResize(WindowResizeEvent&  /*e*/) {
+bool EditorLayer::OnWindowResize(WindowResizeEvent& /*e*/) {
     // Camera and picking system dimensions are driven exclusively by OnViewportResize, which
     // receives the actual viewport content area from ViewportPanel each frame. Setting them here
     // would use the OS window size instead of the smaller content area, causing a coordinate
