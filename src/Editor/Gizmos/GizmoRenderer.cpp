@@ -2,7 +2,7 @@
 
 #include "Core/Components/Component.hpp"
 #include "Core/Scene.hpp"
-#include "Core/Systems/Commands/TransformCommand.hpp"
+#include "Core/Systems/Commands/MultiTransformCommand.hpp"
 #include "Core/Systems/HistorySystem.hpp"
 #include "Core/Systems/SelectionSystem.hpp"
 #include "Platform/Graphics/RenderCommand.hpp"
@@ -25,6 +25,28 @@ namespace {
             case GizmoAxis::Y: return {0.f, 1.f, 0.f};
             case GizmoAxis::Z: return {0.f, 0.f, 1.f};
             default:           return {0.f, 0.f, 0.f};
+        }
+    }
+
+    // Returns a pointer-to-member for the Vec3 component matching the axis.
+    // Lets callers write `vec.*field` instead of an if-else chain per axis.
+    float Vec3::* axisToField(GizmoAxis a) {
+        switch (a) {
+            case GizmoAxis::X: return &Vec3::x;
+            case GizmoAxis::Y: return &Vec3::y;
+            case GizmoAxis::Z: return &Vec3::z;
+            default:           return nullptr;
+        }
+    }
+
+    // Calls fn(currentTC, startTC) for every entity in the snapshot list.
+    // Defined here (not in the header) so Scene::GetComponent is fully visible.
+    template <typename Fn>
+    void forEachSnapshot(Scene& scene,
+                         std::vector<std::pair<entt::entity, TransformComponent>> const& snapshots,
+                         Fn fn) {
+        for (auto const& [entity, startTC] : snapshots) {
+            fn(scene.GetComponent<TransformComponent>(entity), startTC);
         }
     }
 
@@ -102,12 +124,30 @@ Vec3 GizmoRenderer::AxisDir(GizmoAxis axis, TransformComponent const& tc) const 
 std::optional<GizmoRenderer::GizmoCtx> GizmoRenderer::ActiveGizmoCtx() {
     auto const& sel = m_SelCtx.GetSelectedEntities();
     if (sel.empty()) { return std::nullopt; }
-    entt::entity const e = *sel.begin();
-    if (!m_Scene.HasComponent<TransformComponent>(e)) { return std::nullopt; }
-    Vec3 const pos =
-        m_GlobalTransform.transformPoint(m_Scene.GetComponent<TransformComponent>(e).Translation);
-    float const scale = (pos - m_Camera.GetPosition()).length() * 0.15f;
-    return GizmoCtx{e, pos, scale};
+
+    entt::entity const active = m_SelCtx.GetActiveEntity();
+    if (!m_Scene.HasComponent<TransformComponent>(active)) { return std::nullopt; }
+
+    Vec3 pivotPos;
+    if (m_PivotMode == PivotMode::MedianPoint) {
+        Vec3 sum{};
+        int count = 0;
+        for (entt::entity e : sel) {
+            if (m_Scene.HasComponent<TransformComponent>(e)) {
+                sum += m_Scene.GetComponent<TransformComponent>(e).Translation;
+                count++;
+            }
+        }
+        if (count == 0) { return std::nullopt; }
+        pivotPos = m_GlobalTransform.transformPoint(sum / static_cast<float>(count));
+    } else {
+        // IndividualOrigins and ActiveElement both display the gizmo at the active entity.
+        pivotPos = m_GlobalTransform.transformPoint(
+            m_Scene.GetComponent<TransformComponent>(active).Translation);
+    }
+
+    float const scale = (pivotPos - m_Camera.GetPosition()).length() * 0.15f;
+    return GizmoCtx{active, pivotPos, scale};
 }
 
 // ---- rendering --------------------------------------------------------------
@@ -296,14 +336,23 @@ bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
         (m_Mode == GizmoMode::Rotation) ? HitTestRings(vx, vy) : HitTestAxes(vx, vy);
     if (hit == GizmoAxis::None) { return false; }
 
-    auto& tc               = m_Scene.GetComponent<TransformComponent>(ctx->entity);
-    m_DragEntity           = ctx->entity;
-    m_TransformAtDragStart = tc;
-    m_DragAxis             = hit;
-    m_IsDragging           = true;
+    auto const& tc = m_Scene.GetComponent<TransformComponent>(ctx->entity);
+    m_DragEntity   = ctx->entity;
+    m_DragAxis     = hit;
+    m_IsDragging   = true;
 
-    Vec3 const ray = ScreenToRayDirection(vx, vy);
-    m_DragAxisDir  = AxisDir(hit, tc);
+    // Snapshot ALL selected entities so multi-entity and history work correctly.
+    m_SnapshotTransforms.clear();
+    for (entt::entity e : m_SelCtx.GetSelectedEntities()) {
+        if (m_Scene.HasComponent<TransformComponent>(e)) {
+            m_SnapshotTransforms.emplace_back(e, m_Scene.GetComponent<TransformComponent>(e));
+        }
+    }
+
+    m_DragPivotWorldPos = ctx->pos;
+    Vec3 const ray      = ScreenToRayDirection(vx, vy);
+    m_DragAxisDir       = AxisDir(hit, tc);
+
     if (m_Mode == GizmoMode::Rotation) {
         float t = NAN;
         m_RotDragRefPoint =
@@ -332,65 +381,99 @@ bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
 bool GizmoRenderer::OnMouseButtonReleased() {
     if (!m_IsDragging) { return false; }
 
-    if ((m_HistSys != nullptr) &&
-        m_DragEntity != entt::null &&
-        m_Scene.HasComponent<TransformComponent>(m_DragEntity))
-    {
-        auto const& after = m_Scene.GetComponent<TransformComponent>(m_DragEntity);
-        if (after.GetMatrix() != m_TransformAtDragStart.GetMatrix()) {
-            m_HistSys->Push(std::make_unique<TransformCommand>(&m_Scene, m_DragEntity,
-                                                               m_TransformAtDragStart, after));
+    if ((m_HistSys != nullptr) && !m_SnapshotTransforms.empty()) {
+        std::vector<std::pair<entt::entity, TransformComponent>> afterStates;
+        bool anyChanged = false;
+        for (auto const& [entity, before] : m_SnapshotTransforms) {
+            if (!m_Scene.HasComponent<TransformComponent>(entity)) { continue; }
+            auto const& after = m_Scene.GetComponent<TransformComponent>(entity);
+            if (after.GetMatrix() != before.GetMatrix()) { anyChanged = true; }
+            afterStates.emplace_back(entity, after);
+        }
+        if (anyChanged) {
+            m_HistSys->Push(std::make_unique<MultiTransformCommand>(&m_Scene, m_SnapshotTransforms,
+                                                                    std::move(afterStates)));
         }
     }
+
     m_IsDragging = false;
     m_DragAxis   = GizmoAxis::None;
     m_DragEntity = entt::null;
+    m_SnapshotTransforms.clear();
     return true;
 }
 
-void GizmoRenderer::ApplyTranslationDrag(TransformComponent& tc, Vec3 pos, Vec3 ray, bool snap) {
-    Vec3 const newHit = RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, m_DragAxisDir);
-    float disp        = (newHit - m_DragStartHitPt).dotProduct(m_DragAxisDir);
+void GizmoRenderer::ApplyTranslationDrag(Vec3 ray, bool snap) {
+    Vec3 const newHit =
+        RayAxisClosestPoint(m_Camera.GetPosition(), ray, m_DragPivotWorldPos, m_DragAxisDir);
+    float disp = (newHit - m_DragStartHitPt).dotProduct(m_DragAxisDir);
     if (snap) { disp = std::round(disp / m_Snap.translate) * m_Snap.translate; }
-    tc.Translation = m_TransformAtDragStart.Translation + m_DragAxisDir * disp;
+    Vec3 const delta = m_DragAxisDir * disp;
+    forEachSnapshot(m_Scene, m_SnapshotTransforms,
+                    [&](TransformComponent& tc, TransformComponent const& startTC) {
+                        tc.Translation = startTC.Translation + delta;
+                    });
 }
 
-void GizmoRenderer::ApplyScaleDrag(TransformComponent& tc, Vec3 pos, Vec3 ray, bool snap) {
-    Vec3 const newHit   = RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, m_DragAxisDir);
-    float const newDist = (newHit - pos).dotProduct(m_DragAxisDir);
+void GizmoRenderer::ApplyScaleDrag(Vec3 ray, bool snap) {
+    Vec3 const newHit =
+        RayAxisClosestPoint(m_Camera.GetPosition(), ray, m_DragPivotWorldPos, m_DragAxisDir);
+    float const newDist = (newHit - m_DragPivotWorldPos).dotProduct(m_DragAxisDir);
     if (std::abs(m_DragStartDist) < 1e-4f) { return; }
-    float const factor = newDist / m_DragStartDist;
-    auto applyS        = [&](float base) {
+    float const factor        = newDist / m_DragStartDist;
+    float Vec3::* const field = axisToField(m_DragAxis);
+    if (field == nullptr) { return; }
+    bool const sharedPivot = (m_PivotMode != PivotMode::IndividualOrigins);
+    auto applyS            = [&](float base) {
         float v = base * factor;
         return snap ? std::round(v / m_Snap.scale) * m_Snap.scale : v;
     };
-    if (m_DragAxis == GizmoAxis::X) {
-        tc.Scale.x = applyS(m_TransformAtDragStart.Scale.x);
-    } else if (m_DragAxis == GizmoAxis::Y) {
-        tc.Scale.y = applyS(m_TransformAtDragStart.Scale.y);
-    } else if (m_DragAxis == GizmoAxis::Z) {
-        tc.Scale.z = applyS(m_TransformAtDragStart.Scale.z);
-    }
+    forEachSnapshot(
+        m_Scene, m_SnapshotTransforms,
+        [&](TransformComponent& tc, TransformComponent const& startTC) {
+            tc.Scale.*field = applyS(startTC.Scale.*field);
+            if (sharedPivot) {
+                float const axisComp =
+                    (startTC.Translation - m_DragPivotWorldPos).dotProduct(m_DragAxisDir);
+                tc.Translation = startTC.Translation + m_DragAxisDir * (axisComp * (factor - 1.f));
+            } else {
+                tc.Translation = startTC.Translation;
+            }
+        });
 }
 
-void GizmoRenderer::ApplyRotationDrag(TransformComponent& tc, Vec3 pos, Vec3 ray, bool snap) {
+void GizmoRenderer::ApplyRotationDrag(Vec3 ray, bool snap) {
     float t = NAN;
-    if (!RayPlaneIntersect(m_Camera.GetPosition(), ray, pos, m_DragAxisDir, t)) { return; }
+    if (!RayPlaneIntersect(m_Camera.GetPosition(), ray, m_DragPivotWorldPos, m_DragAxisDir, t)) {
+        return;
+    }
     Vec3 const newHit = m_Camera.GetPosition() + ray * t;
-    Vec3 const refVec = m_RotDragRefPoint - pos;
-    Vec3 const newVec = newHit - pos;
+    Vec3 const refVec = m_RotDragRefPoint - m_DragPivotWorldPos;
+    Vec3 const newVec = newHit - m_DragPivotWorldPos;
     float delta = (std::atan2(newVec.dotProduct(m_RotDragRefV), newVec.dotProduct(m_RotDragRefU)) -
                    std::atan2(refVec.dotProduct(m_RotDragRefV), refVec.dotProduct(m_RotDragRefU))) *
                   (180.f / PI_F);
     if (snap) { delta = std::round(delta / m_Snap.rotate) * m_Snap.rotate; }
-    if (m_DragAxis == GizmoAxis::X) {
-        tc.EulerDegrees.x = m_TransformAtDragStart.EulerDegrees.x + delta;
-        // Y rotation (right-hand rule) takes +X toward -Z, opposite to the atan2(z,x) sense.
-    } else if (m_DragAxis == GizmoAxis::Y) {
-        tc.EulerDegrees.y = m_TransformAtDragStart.EulerDegrees.y - delta;
-    } else if (m_DragAxis == GizmoAxis::Z) {
-        tc.EulerDegrees.z = m_TransformAtDragStart.EulerDegrees.z + delta;
-    }
+
+    float Vec3::* const field = axisToField(m_DragAxis);
+    if (field == nullptr) { return; }
+    // Y rotation sign is flipped by right-hand rule convention.
+    float const sign       = (m_DragAxis == GizmoAxis::Y) ? -1.f : 1.f;
+    float const deltaRad   = delta * (PI_F / 180.f);
+    Matx4f const rotMat    = Matx4f::rotation(m_DragAxisDir, deltaRad);
+    bool const sharedPivot = (m_PivotMode != PivotMode::IndividualOrigins);
+    forEachSnapshot(m_Scene, m_SnapshotTransforms,
+                    [&](TransformComponent& tc, TransformComponent const& startTC) {
+                        tc.EulerDegrees.*field = startTC.EulerDegrees.*field + sign * delta;
+                        if (sharedPivot) {
+                            Vec3 const offset  = startTC.Translation - m_DragPivotWorldPos;
+                            Vec4 const rotated = rotMat * Vec4(offset.x, offset.y, offset.z, 0.f);
+                            tc.Translation =
+                                m_DragPivotWorldPos + Vec3{rotated.x, rotated.y, rotated.z};
+                        } else {
+                            tc.Translation = startTC.Translation;
+                        }
+                    });
 }
 
 bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
@@ -405,17 +488,15 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
         return false;
     }
 
-    auto& tc        = m_Scene.GetComponent<TransformComponent>(m_DragEntity);
-    Vec3 const pos  = m_GlobalTransform.transformPoint(tc.Translation);
     Vec3 const ray  = ScreenToRayDirection(vx, vy);
     bool const snap = Input::IsKeyPressed(KeyCode::LeftControl);
 
     if (m_Mode == GizmoMode::Translation) {
-        ApplyTranslationDrag(tc, pos, ray, snap);
+        ApplyTranslationDrag(ray, snap);
     } else if (m_Mode == GizmoMode::Scale) {
-        ApplyScaleDrag(tc, pos, ray, snap);
+        ApplyScaleDrag(ray, snap);
     } else {
-        ApplyRotationDrag(tc, pos, ray, snap);
+        ApplyRotationDrag(ray, snap);
     }
     return true;
 }

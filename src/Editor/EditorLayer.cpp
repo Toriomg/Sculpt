@@ -54,9 +54,9 @@ void EditorLayer::OnAttach() {
 
     m_ViewportPanel = std::make_unique<ViewportPanel>(
         m_ViewportFBO.get(), [this](uint32_t w, uint32_t h) { OnViewportResize(w, h); });
-    m_OutlinerPanel = std::make_unique<OutlinerPanel>(m_ActiveScene.get(), selSys);
-    m_InspectorPanel =
-        std::make_unique<InspectorPanel>(m_ActiveScene.get(), &selSys->GetSelectionContext());
+    m_OutlinerPanel  = std::make_unique<OutlinerPanel>(m_ActiveScene.get(), selSys);
+    m_InspectorPanel = std::make_unique<InspectorPanel>(
+        m_ActiveScene.get(), &selSys->GetSelectionContext(), m_GizmoRenderer.get());
     m_ScenePanel  = std::make_unique<ScenePanel>(&camComp.SceneCamera);
     m_MainMenuBar = std::make_unique<MainMenuBar>(
         m_OnQuit, m_ActiveScene->GetSystem<HistorySystem>(), m_EntityFactory.get(),

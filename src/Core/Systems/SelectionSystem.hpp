@@ -15,7 +15,7 @@ public:
         return m_SelectedEntities;
     }
 
-    bool IsEntitySelected(Entity entity) const { return m_SelectedEntities.count(entity) > 0; }
+    bool IsEntitySelected(Entity entity) const { return m_SelectedEntities.contains(entity); }
 
     size_t GetSelectionCount() const { return m_SelectedEntities.size(); }
 
@@ -24,16 +24,23 @@ public:
     void ClearSelection();
     void SelectMultiple(std::vector<Entity> const& entities, bool additive = false);
 
+    Entity GetActiveEntity() const { return m_ActiveEntity; }
+
     std::function<void(std::vector<Entity> const&)> OnSelectionChanged;
 
 private:
     std::unordered_set<entt::entity> m_SelectedEntities;
+    entt::entity m_ActiveEntity = entt::null;
 };
 
 class SelectionSystem : public System {
 public:
     SelectionSystem();
-    ~SelectionSystem() override = default;
+    ~SelectionSystem() override                        = default;
+    SelectionSystem(SelectionSystem const&)            = delete;
+    SelectionSystem& operator=(SelectionSystem const&) = delete;
+    SelectionSystem(SelectionSystem&&)                 = delete;
+    SelectionSystem& operator=(SelectionSystem&&)      = delete;
 
     void OnAttach(Scene* scene) override;
     void OnUpdate(float deltaTime) override;
