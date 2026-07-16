@@ -37,8 +37,14 @@ public:
     void SetGlobalTransform(Matx4f const& global) { m_GlobalTransform = global; }
     void SetMode(GizmoMode mode) { m_Mode = mode; }
     GizmoMode GetMode() const { return m_Mode; }
+    void ToggleSpace() {
+        m_Space = (m_Space == GizmoSpace::Global) ? GizmoSpace::Local : GizmoSpace::Global;
+    }
 
 private:
+    // Returns the world-space direction of axis in the current gizmo space.
+    Vec3 AxisDir(GizmoAxis axis, TransformComponent const& tc) const;
+
     GizmoAxis HitTestAxes(float mouseX, float mouseY);
     GizmoAxis HitTestRings(float mouseX, float mouseY);
     Vec3 ScreenToRayDirection(float x, float y) const;
@@ -60,7 +66,8 @@ private:
     SelectionContext& m_SelCtx;
     Camera const& m_Camera;
 
-    GizmoMode m_Mode = GizmoMode::Translation;
+    GizmoMode m_Mode   = GizmoMode::Translation;
+    GizmoSpace m_Space = GizmoSpace::Global;
 
     std::shared_ptr<Mesh> m_ArrowMesh;
     std::shared_ptr<Mesh> m_CenterMesh;
@@ -70,6 +77,7 @@ private:
 
     bool m_IsDragging    = false;
     GizmoAxis m_DragAxis = GizmoAxis::None;
+    Vec3 m_DragAxisDir{1.0f, 0.0f, 0.0f};  // world-space axis direction at drag start
     Vec3 m_DragStartHitPt{0.0f, 0.0f, 0.0f};
     float m_DragStartDist = 0.f;
 

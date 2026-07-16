@@ -202,6 +202,10 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
         if (m_GizmoRenderer) { m_GizmoRenderer->SetMode(GizmoMode::Scale); }
         return true;
     }
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::G)) {
+        if (m_GizmoRenderer) { m_GizmoRenderer->ToggleSpace(); }
+        return true;
+    }
 
     bool const ctrl =
         Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);

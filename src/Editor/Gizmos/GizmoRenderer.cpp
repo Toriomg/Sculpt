@@ -87,6 +87,14 @@ void GizmoRenderer::SetViewportSize(uint32_t w, uint32_t h) {
     m_ViewportH = h;
 }
 
+Vec3 GizmoRenderer::AxisDir(GizmoAxis axis, TransformComponent const& tc) const {
+    Vec3 const w = axisToVec3(axis);
+    if (m_Space == GizmoSpace::Global) { return w; }
+    Vec4 const v = Matx4f::rotation(tc.EulerDegrees.x, tc.EulerDegrees.y, tc.EulerDegrees.z) *
+                   Vec4(w.x, w.y, w.z, 0.f);
+    return {v.x, v.y, v.z};
+}
+
 // ---- context ----------------------------------------------------------------
 
 std::optional<GizmoRenderer::GizmoCtx> GizmoRenderer::ActiveGizmoCtx() {
@@ -106,6 +114,12 @@ void GizmoRenderer::Draw() {
     auto ctx = ActiveGizmoCtx();
     if (!ctx) { return; }
 
+    auto const& tc = m_Scene.GetComponent<TransformComponent>(ctx->entity);
+    Matx4f const entRot =
+        (m_Space == GizmoSpace::Local)
+            ? Matx4f::rotation(tc.EulerDegrees.x, tc.EulerDegrees.y, tc.EulerDegrees.z)
+            : Matx4f::identity();
+
     auto colorFor = [&](GizmoAxis axis, Vec4 base) -> Vec4 {
         if (m_HoveredAxis != axis && m_DragAxis != axis) { return base; }
         return {std::min(base.x * 1.6f, 1.f), std::min(base.y * 1.6f, 1.f),
@@ -115,14 +129,17 @@ void GizmoRenderer::Draw() {
     RenderCommand::SetDepthFunc(DepthFunc::Always);
 
     if (m_Mode == GizmoMode::Translation) {
-        Renderer::SubmitFlat(m_ArrowMesh, colorFor(GizmoAxis::X, {1.f, 0.2f, 0.2f, 1.f}),
-                             Matx4f::translation(ctx->pos) * Matx4f::scalingScalar(ctx->scale));
+        Renderer::SubmitFlat(
+            m_ArrowMesh, colorFor(GizmoAxis::X, {1.f, 0.2f, 0.2f, 1.f}),
+            Matx4f::translation(ctx->pos) * entRot * Matx4f::scalingScalar(ctx->scale));
         Renderer::SubmitFlat(m_ArrowMesh, colorFor(GizmoAxis::Y, {0.2f, 1.f, 0.2f, 1.f}),
                              Matx4f::translation(ctx->pos) *
+                                 entRot *
                                  Matx4f::rotationZ(90.f) *
                                  Matx4f::scalingScalar(ctx->scale));
         Renderer::SubmitFlat(m_ArrowMesh, colorFor(GizmoAxis::Z, {0.2f, 0.2f, 1.f, 1.f}),
                              Matx4f::translation(ctx->pos) *
+                                 entRot *
                                  Matx4f::rotationY(-90.f) *
                                  Matx4f::scalingScalar(ctx->scale));
     } else if (m_Mode == GizmoMode::Scale) {
@@ -138,11 +155,13 @@ void GizmoRenderer::Draw() {
         };
         constexpr float kCubeSize = 0.12f;
         for (auto const& def : scaleAxes) {
-            Vec4 const col = colorFor(def.axis, def.color);
-            Matx4f const shaft =
-                Matx4f::translation(ctx->pos) * def.rot * Matx4f::scalingScalar(ctx->scale);
+            Vec4 const col     = colorFor(def.axis, def.color);
+            Matx4f const shaft = Matx4f::translation(ctx->pos) *
+                                 entRot *
+                                 def.rot *
+                                 Matx4f::scalingScalar(ctx->scale);
             Renderer::SubmitFlat(m_ArrowMesh, col, shaft);
-            Vec3 const tipPos = ctx->pos + axisToVec3(def.axis) * ctx->scale;
+            Vec3 const tipPos = ctx->pos + AxisDir(def.axis, tc) * ctx->scale;
             Renderer::SubmitFlat(
                 m_ScaleCubeMesh, col,
                 Matx4f::translation(tipPos) * Matx4f::scalingScalar(ctx->scale * kCubeSize));
@@ -163,9 +182,11 @@ void GizmoRenderer::Draw() {
         };
         Matx4f const cs = Matx4f::scaling(Vec3{coneR, coneR, coneH});
         for (auto const& ring : rings) {
-            Vec4 const col = colorFor(ring.axis, ring.color);
-            Matx4f const base =
-                Matx4f::translation(ctx->pos) * ring.rot * Matx4f::scalingScalar(ctx->scale);
+            Vec4 const col    = colorFor(ring.axis, ring.color);
+            Matx4f const base = Matx4f::translation(ctx->pos) *
+                                entRot *
+                                ring.rot *
+                                Matx4f::scalingScalar(ctx->scale);
             Renderer::SubmitFlat(m_RingMesh, col, base);
             Renderer::SubmitFlat(m_ConeMesh, col, base * Matx4f::translation(Vec3{1, 0, 0}) * cs);
             Renderer::SubmitFlat(
@@ -226,8 +247,9 @@ GizmoAxis GizmoRenderer::HitTestAxes(float mouseX, float mouseY) {
     float best                              = kThresh;
     GizmoAxis hit                           = GizmoAxis::None;
 
+    auto const& tc = m_Scene.GetComponent<TransformComponent>(ctx->entity);
     for (GizmoAxis const axis : axes) {
-        Vec2 const end = worldToScreen(ctx->pos + axisToVec3(axis) * ctx->scale, VP, W, H);
+        Vec2 const end = worldToScreen(ctx->pos + AxisDir(axis, tc) * ctx->scale, VP, W, H);
         float const d  = segDist2D(mouseX, mouseY, sc.x, sc.y, end.x, end.y);
         if (d < best) {
             best = d;
@@ -249,9 +271,10 @@ GizmoAxis GizmoRenderer::HitTestRings(float mouseX, float mouseY) {
     float best                              = tol;
     GizmoAxis hit                           = GizmoAxis::None;
 
+    auto const& tc = m_Scene.GetComponent<TransformComponent>(ctx->entity);
     for (GizmoAxis const axis : axes) {
         float t = NAN;
-        if (!RayPlaneIntersect(rayOrigin, rayDir, ctx->pos, axisToVec3(axis), t)) { continue; }
+        if (!RayPlaneIntersect(rayOrigin, rayDir, ctx->pos, AxisDir(axis, tc), t)) { continue; }
         float const err = std::abs((rayOrigin + rayDir * t - ctx->pos).length() - ctx->scale);
         if (err < best) {
             best = err;
@@ -278,18 +301,27 @@ bool GizmoRenderer::OnMouseButtonPressed(float vx, float vy) {
     m_IsDragging           = true;
 
     Vec3 const ray = ScreenToRayDirection(vx, vy);
+    m_DragAxisDir  = AxisDir(hit, tc);
     if (m_Mode == GizmoMode::Rotation) {
         float t = NAN;
         m_RotDragRefPoint =
-            RayPlaneIntersect(m_Camera.GetPosition(), ray, ctx->pos, axisToVec3(hit), t)
+            RayPlaneIntersect(m_Camera.GetPosition(), ray, ctx->pos, m_DragAxisDir, t)
                 ? m_Camera.GetPosition() + ray * t
                 : ctx->pos;
         ringRefVectors(hit, m_RotDragRefU, m_RotDragRefV);
+        if (m_Space == GizmoSpace::Local) {
+            Matx4f const entRot =
+                Matx4f::rotation(tc.EulerDegrees.x, tc.EulerDegrees.y, tc.EulerDegrees.z);
+            Vec4 const u  = entRot * Vec4(m_RotDragRefU.x, m_RotDragRefU.y, m_RotDragRefU.z, 0.f);
+            Vec4 const v  = entRot * Vec4(m_RotDragRefV.x, m_RotDragRefV.y, m_RotDragRefV.z, 0.f);
+            m_RotDragRefU = {u.x, u.y, u.z};
+            m_RotDragRefV = {v.x, v.y, v.z};
+        }
     } else {
         m_DragStartHitPt =
-            RayAxisClosestPoint(m_Camera.GetPosition(), ray, ctx->pos, axisToVec3(hit));
+            RayAxisClosestPoint(m_Camera.GetPosition(), ray, ctx->pos, m_DragAxisDir);
         if (m_Mode == GizmoMode::Scale) {
-            m_DragStartDist = (m_DragStartHitPt - ctx->pos).dotProduct(axisToVec3(hit));
+            m_DragStartDist = (m_DragStartHitPt - ctx->pos).dotProduct(m_DragAxisDir);
         }
     }
     return true;
@@ -331,14 +363,12 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
     Vec3 const ray = ScreenToRayDirection(vx, vy);
 
     if (m_Mode == GizmoMode::Translation) {
-        Vec3 const newHit =
-            RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, axisToVec3(m_DragAxis));
+        Vec3 const newHit = RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, m_DragAxisDir);
         tc.Translation += newHit - m_DragStartHitPt;
         m_DragStartHitPt = newHit;
     } else if (m_Mode == GizmoMode::Scale) {
-        Vec3 const newHit =
-            RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, axisToVec3(m_DragAxis));
-        float const newDist = (newHit - pos).dotProduct(axisToVec3(m_DragAxis));
+        Vec3 const newHit   = RayAxisClosestPoint(m_Camera.GetPosition(), ray, pos, m_DragAxisDir);
+        float const newDist = (newHit - pos).dotProduct(m_DragAxisDir);
         if (std::abs(m_DragStartDist) > 1e-4f) {
             float const factor = newDist / m_DragStartDist;
             if (m_DragAxis == GizmoAxis::X) {
@@ -351,9 +381,7 @@ bool GizmoRenderer::OnMouseMoved(float vx, float vy) {
         }
     } else {
         float t = NAN;
-        if (!RayPlaneIntersect(m_Camera.GetPosition(), ray, pos, axisToVec3(m_DragAxis), t)) {
-            return true;
-        }
+        if (!RayPlaneIntersect(m_Camera.GetPosition(), ray, pos, m_DragAxisDir, t)) { return true; }
         Vec3 const newHit = m_Camera.GetPosition() + ray * t;
         Vec3 const refVec = m_RotDragRefPoint - pos;
         Vec3 const newVec = newHit - pos;
