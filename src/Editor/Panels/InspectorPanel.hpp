@@ -4,6 +4,8 @@
 #include "Core/Entity.hpp"
 #include "Editor/Panels/Panel.hpp"
 #include <array>
+#include <utility>
+#include <vector>
 
 class Scene;
 class SelectionContext;
@@ -17,6 +19,9 @@ public:
 
 private:
     void DrawMultiEntityView();
+    void DrawMultiTransformSection();
+    void ApplyMultiDelta(Vec3 TransformComponent::* field, Vec3 v, Entity active);
+    void PushMultiHistory();
     void DrawGizmoSettings();
     void DrawTransformSection(Entity entity, TransformComponent& tc);
     void DrawMeshSection(Entity entity);
@@ -28,6 +33,7 @@ private:
 
     Entity m_SnapshotEntity = entt::null;
     TransformComponent m_TransformSnapshot;
+    std::vector<std::pair<Entity, TransformComponent>> m_MultiSnapshot;
 
     Entity m_TexturePathEntity             = entt::null;
     std::array<char, 256> m_TexturePathBuf = {};

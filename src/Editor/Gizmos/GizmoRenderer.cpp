@@ -50,6 +50,25 @@ namespace {
         }
     }
 
+    // Extracts ZYX Euler angles in degrees from a pure rotation matrix R = Rz*Ry*Rx.
+    // Handles gimbal lock (y = ±90°) by setting z = 0 and solving for x.
+    Vec3 matToEulerDegrees(Matx4f const& r) {
+        constexpr float kToDeg = 180.f / PI_F;
+        float const sy         = std::clamp(-r.m[2][0], -1.f, 1.f);
+        float const y          = std::asin(sy) * kToDeg;
+        float const cy         = std::sqrt(1.f - sy * sy);
+        float x{}, z{};
+        if (cy > 1e-4f) {
+            x = std::atan2(r.m[2][1], r.m[2][2]) * kToDeg;
+            z = std::atan2(r.m[1][0], r.m[0][0]) * kToDeg;
+        } else if (sy > 0.f) {
+            x = std::atan2(r.m[0][1], r.m[0][2]) * kToDeg;
+        } else {
+            x = std::atan2(-r.m[0][1], -r.m[0][2]) * kToDeg;
+        }
+        return {x, y, z};
+    }
+
     float segDist2D(float px, float py, float ax, float ay, float bx, float by) {
         float const abx = bx - ax, aby = by - ay, apx = px - ax, apy = py - ay;
         float const ab2 = abx * abx + aby * aby;
@@ -455,19 +474,25 @@ void GizmoRenderer::ApplyRotationDrag(Vec3 ray, bool snap) {
                   (180.f / PI_F);
     if (snap) { delta = std::round(delta / m_Snap.rotate) * m_Snap.rotate; }
 
-    float Vec3::* const field = axisToField(m_DragAxis);
-    if (field == nullptr) { return; }
-    // Y rotation sign is flipped by right-hand rule convention.
-    float const sign       = (m_DragAxis == GizmoAxis::Y) ? -1.f : 1.f;
-    float const deltaRad   = delta * (PI_F / 180.f);
-    Matx4f const rotMat    = Matx4f::rotation(m_DragAxisDir, deltaRad);
+    if (m_DragAxis == GizmoAxis::None) { return; }
+    // Y ring atan2 convention is opposite to right-hand Y rotation; flip sign so orbit and
+    // orientation both go in the direction the user dragged.
+    float const sign     = (m_DragAxis == GizmoAxis::Y) ? -1.f : 1.f;
+    float const deltaRad = delta * (PI_F / 180.f);
+    // Single signed rotation matrix used for both orientation and position-orbit so they stay
+    // consistent in direction (using separate matrices with different signs broke Y-axis orbit).
+    Matx4f const rot       = Matx4f::rotation(m_DragAxisDir, sign * deltaRad);
     bool const sharedPivot = (m_PivotMode != PivotMode::IndividualOrigins);
     forEachSnapshot(m_Scene, m_SnapshotTransforms,
                     [&](TransformComponent& tc, TransformComponent const& startTC) {
-                        tc.EulerDegrees.*field = startTC.EulerDegrees.*field + sign * delta;
+                        // Pre-multiply by the world-space delta rotation so all entities rotate
+                        // around the same gizmo axis, regardless of their individual orientations.
+                        Matx4f const startRot = Matx4f::rotation(
+                            startTC.EulerDegrees.x, startTC.EulerDegrees.y, startTC.EulerDegrees.z);
+                        tc.EulerDegrees = matToEulerDegrees(rot * startRot);
                         if (sharedPivot) {
                             Vec3 const offset  = startTC.Translation - m_DragPivotWorldPos;
-                            Vec4 const rotated = rotMat * Vec4(offset.x, offset.y, offset.z, 0.f);
+                            Vec4 const rotated = rot * Vec4(offset.x, offset.y, offset.z, 0.f);
                             tc.Translation =
                                 m_DragPivotWorldPos + Vec3{rotated.x, rotated.y, rotated.z};
                         } else {

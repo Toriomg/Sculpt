@@ -84,7 +84,7 @@ private:
 
     GizmoMode m_Mode      = GizmoMode::Translation;
     GizmoSpace m_Space    = GizmoSpace::Global;
-    PivotMode m_PivotMode = PivotMode::IndividualOrigins;
+    PivotMode m_PivotMode = PivotMode::MedianPoint;
 
     std::shared_ptr<Mesh> m_ArrowMesh;
     std::shared_ptr<Mesh> m_CenterMesh;

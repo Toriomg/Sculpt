@@ -42,8 +42,72 @@ void InspectorPanel::DrawGizmoSettings() {
     }
 }
 
+void InspectorPanel::ApplyMultiDelta(Vec3 TransformComponent::* field, Vec3 v, Entity active) {
+    Vec3 base{};
+    for (auto const& [e, snap] : m_MultiSnapshot) {
+        if (e == active) {
+            base = snap.*field;
+            break;
+        }
+    }
+    Vec3 const delta = v - base;
+    for (auto const& [e, snap] : m_MultiSnapshot) {
+        if (m_Scene->HasComponent<TransformComponent>(e)) {
+            m_Scene->GetComponent<TransformComponent>(e).*field = snap.*field + delta;
+        }
+    }
+}
+
+void InspectorPanel::PushMultiHistory() {
+    if ((m_HistSys == nullptr) || m_MultiSnapshot.empty()) { return; }
+    std::vector<std::pair<Entity, TransformComponent>> after;
+    after.reserve(m_MultiSnapshot.size());
+    for (auto const& [e, snapTc] : m_MultiSnapshot) {
+        if (m_Scene->HasComponent<TransformComponent>(e)) {
+            after.emplace_back(e, m_Scene->GetComponent<TransformComponent>(e));
+        }
+    }
+    m_HistSys->Push(
+        std::make_unique<MultiTransformCommand>(m_Scene, m_MultiSnapshot, std::move(after)));
+}
+
+void InspectorPanel::DrawMultiTransformSection() {
+    Entity const active = m_SelectionContext->GetActiveEntity();
+    if (!m_Scene->HasComponent<TransformComponent>(active)) { return; }
+    auto& activeTc = m_Scene->GetComponent<TransformComponent>(active);
+
+    if (!ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) { return; }
+
+    auto captureSnapshot = [&] {
+        m_MultiSnapshot.clear();
+        for (entt::entity e : m_SelectionContext->GetSelectedEntities()) {
+            if (m_Scene->HasComponent<TransformComponent>(e)) {
+                m_MultiSnapshot.emplace_back(e, m_Scene->GetComponent<TransformComponent>(e));
+            }
+        }
+        m_SnapshotEntity = active;
+    };
+
+    auto drag3 = [&](char const* label, Vec3 TransformComponent::* field, float speed,
+                     float lo = 0.f, float hi = 0.f) {
+        Vec3 v = activeTc.*field;
+        ImGui::DragFloat3(label, &v.x, speed, lo, hi);
+        if (ImGui::IsItemActivated()) { captureSnapshot(); }
+        if (ImGui::IsItemActive()) { ApplyMultiDelta(field, v, active); }
+        if (ImGui::IsItemDeactivatedAfterEdit() && m_SnapshotEntity == active) {
+            PushMultiHistory();
+        }
+    };
+
+    drag3("Position", &TransformComponent::Translation, 0.1f);
+    drag3("Rotation", &TransformComponent::EulerDegrees, 0.5f);
+    drag3("Scale", &TransformComponent::Scale, 0.01f, 0.001f, 100.f);
+}
+
 void InspectorPanel::DrawMultiEntityView() {
     ImGui::Text("%zu objects selected", m_SelectionContext->GetSelectionCount());
+    ImGui::Separator();
+    DrawMultiTransformSection();
     ImGui::Separator();
     DrawGizmoSettings();
 }
