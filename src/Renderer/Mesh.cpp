@@ -1,9 +1,36 @@
 ﻿#include "Mesh.hpp"
+#include "Platform/Graphics/Buffers/VertexBufferLayout.hpp"
 #include "Platform/Graphics/Vertex.hpp"
 #include <cmath>
 #include <cstddef>
 #include <numbers>
 #include <vector>
+
+void Mesh::UpdateData(std::vector<Vertex> const& verts, std::vector<uint32_t> const& inds) {
+    m_VertexBuffer = std::make_shared<VertexBuffer>(
+        verts.data(), static_cast<uint32_t>(verts.size() * sizeof(Vertex)), false);
+
+    VertexBufferLayout layout;
+    layout.Push<float>(3);
+    layout.Push<float>(3);
+    layout.Push<float>(2);
+
+    auto vao = std::make_shared<VertexArray>();
+    vao->AddBufferPtr(m_VertexBuffer, layout);
+
+    m_VertexArray = std::move(vao);
+    m_IndexBuffer = std::make_shared<IndexBuffer>(
+        reinterpret_cast<unsigned int const*>(inds.data()), static_cast<uint32_t>(inds.size()));
+    m_VertexCount = static_cast<uint32_t>(verts.size());
+    m_CpuVertices = verts;
+    m_CpuIndices  = inds;
+}
+
+void Mesh::UpdateVertices(std::vector<Vertex> const& verts) {
+    if (!m_VertexBuffer || verts.size() != m_CpuVertices.size()) { return; }
+    m_VertexBuffer->SetData(verts.data(), static_cast<uint32_t>(verts.size() * sizeof(Vertex)));
+    m_CpuVertices = verts;
+}
 
 std::shared_ptr<Mesh> Mesh::CreateMeshFromData(void const* vertices, uint32_t vertexSize,
                                                uint32_t const* indices, uint32_t indexCount) {

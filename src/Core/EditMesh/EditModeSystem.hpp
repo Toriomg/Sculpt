@@ -5,6 +5,8 @@
 #include "Platform/CoreUtils/Math/maths.hpp"
 #include <cstdint>
 #include <memory>
+#include <optional>
+#include <vector>
 
 class Scene;
 class Camera;
@@ -34,11 +36,40 @@ public:
     // primitiveID is gl_PrimitiveID from the picking pass (= triangle index).
     void OnMouseClick(uint32_t primitiveID, float screenX, float screenY, bool additive);
 
+    // Extrude selected elements and immediately enter grab mode (E key).
+    void Extrude();
+    [[nodiscard]] bool IsGrabActive() const { return m_ExtrudeState.has_value(); }
+    // Apply screen-space mouse delta to the active grab (call from OnMouseMoved).
+    void UpdateGrab(float dx, float dy);
+    // Commit the grab: geometry stays as-is, grab state cleared.
+    void ConfirmGrab();
+    // Discard the grab: restore pre-extrude geometry and selection.
+    void CancelGrab();
+
     // Render edge-line + vertex-dot overlay, plus selection highlight.
     // Call after Scene::OnUpdate, inside the viewport FBO, after Renderer::BeginScene has run.
     void DrawOverlay(Matx4f const& globalTransform);
 
 private:
+    struct ExtrudeState {
+        size_t vertexCountBefore{};
+        std::vector<uint32_t> indicesBefore;
+        std::unordered_set<uint32_t> facesBefore;
+        std::unordered_set<uint32_t> vertsBefore;
+        std::unordered_set<uint64_t> edgesBefore;
+        ElementMode modeBefore{ElementMode::Vertex};
+        std::vector<uint32_t> grabbedVerts;  // new vertex indices to translate during drag
+        std::vector<Vec3> basePositions;     // grabbed vert positions at extrude time
+        Vec3 normal{0.0f, 1.0f, 0.0f};       // extrude direction
+        float offset{0.0f};                  // accumulated drag distance
+    };
+
+    void DoExtrudeFaces(ExtrudeState& state);
+    void DoExtrudeEdges(ExtrudeState& state);
+    void DoExtrudeVerts(ExtrudeState& state);
+    // Convert EditMesh CPU data → GPU. fullRebuild=true when index count changed.
+    void FlushToGPU(bool fullRebuild);
+
     [[nodiscard]] Vec2 WorldToScreen(Vec3 localPos, Matx4f const& modelMatrix) const;
     [[nodiscard]] uint32_t FindClosestVertex(uint32_t triBase, float sx, float sy,
                                              Matx4f const& model) const;
@@ -52,6 +83,8 @@ private:
     Matx4f m_GlobalTransform = Matx4f::identity();
     uint32_t m_ViewportW     = 1470;
     uint32_t m_ViewportH     = 810;
+
+    std::optional<ExtrudeState> m_ExtrudeState;
 
     // Selection highlight VAO/VBO (position-only, rebuilt when selection changes).
     std::shared_ptr<VertexArray> m_SelectionVAO;

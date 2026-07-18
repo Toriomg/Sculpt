@@ -153,6 +153,11 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
 
     // In edit mode, clicks go to element selection via the picking system.
     if (m_InEditMode && m_EditModeSystem) {
+        // A click while a grab is active confirms the extrude placement.
+        if (m_EditModeSystem->IsGrabActive()) {
+            m_EditModeSystem->ConfirmGrab();
+            return true;
+        }
         auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
         if (pickSys == nullptr) { return false; }
         pickSys->RequestPickingPass(static_cast<uint32_t>(relPos.x),
@@ -193,8 +198,17 @@ bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& /*e*/) {
 }
 
 bool EditorLayer::OnMouseMoved(MouseMovedEvent& /*e*/) {
+    Vec2 const mousePos = Input::GetMousePosition();
+    Vec2 const delta    = mousePos - m_LastMousePosition;
+    m_LastMousePosition = mousePos;
+
     if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) { return false; }
-    Vec2 const mousePos    = Input::GetMousePosition();
+
+    if (m_InEditMode && m_EditModeSystem && m_EditModeSystem->IsGrabActive()) {
+        m_EditModeSystem->UpdateGrab(delta.x, delta.y);
+        return false;
+    }
+
     Vec2 const viewportMin = m_ViewportPanel->GetViewportMin();
     Vec2 const relPos      = mousePos - viewportMin;
     if (relPos.x >= 0.0f && relPos.y >= 0.0f && m_GizmoRenderer) {
@@ -270,6 +284,20 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
         if (e.GetKeyCode() == static_cast<int>(KeyCode::D3)) {
             m_EditModeSystem->SetElementMode(ElementMode::Face);
             return true;
+        }
+        if (e.GetKeyCode() == static_cast<int>(KeyCode::E)) {
+            if (m_EditModeSystem->IsGrabActive()) {
+                m_EditModeSystem->ConfirmGrab();
+            } else {
+                m_EditModeSystem->Extrude();
+            }
+            return true;
+        }
+        if (e.GetKeyCode() == static_cast<int>(KeyCode::Escape)) {
+            if (m_EditModeSystem->IsGrabActive()) {
+                m_EditModeSystem->CancelGrab();
+                return true;
+            }
         }
         return false;
     }

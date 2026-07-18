@@ -15,7 +15,7 @@ public:
     AssetHandle Handle;
 
     Mesh(std::shared_ptr<VertexArray> va, std::shared_ptr<IndexBuffer> ib, uint32_t vertexCount)
-        : m_VertexArray(va), m_IndexBuffer(ib), m_VertexCount(vertexCount) { }
+        : m_VertexArray(std::move(va)), m_IndexBuffer(std::move(ib)), m_VertexCount(vertexCount) { }
 
     [[nodiscard]] std::shared_ptr<VertexArray> const& GetVertexArray() const {
         return m_VertexArray;
@@ -45,9 +45,15 @@ public:
     static std::shared_ptr<Mesh> CreateMeshFromData(void const* vertices, uint32_t vertexSize,
                                                     uint32_t const* indices, uint32_t indexCount);
 
+    // Rebuilds all GPU buffers from new CPU data (vertex count may change — used after extrude).
+    void UpdateData(std::vector<Vertex> const& verts, std::vector<uint32_t> const& inds);
+    // Re-uploads vertex positions only; count must stay the same (used during grab drag).
+    void UpdateVertices(std::vector<Vertex> const& verts);
+
 private:
     std::shared_ptr<VertexArray> m_VertexArray;
     std::shared_ptr<IndexBuffer> m_IndexBuffer;
+    std::shared_ptr<VertexBuffer> m_VertexBuffer;  // cached for fast per-frame position updates
     uint32_t m_VertexCount = 0;
     std::vector<Vertex> m_CpuVertices;
     std::vector<uint32_t> m_CpuIndices;
