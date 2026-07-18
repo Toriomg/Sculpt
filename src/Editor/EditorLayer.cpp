@@ -303,7 +303,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
                 return true;
             }
         }
-        return false;
+        // Don't return false here — let Ctrl+Z/Y fall through to the undo handler below.
     }
 
     // Gizmo shortcuts are object-mode only.

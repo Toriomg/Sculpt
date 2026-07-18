@@ -350,24 +350,51 @@ void EditModeSystem::DoExtrudeFaces(ExtrudeState& state) {
         });
     }
 
-    // Duplicate each unique vertex used by the selected faces.
-    // Capture a copy before push_back to avoid UB from potential reallocation.
-    std::unordered_map<uint32_t, uint32_t> oldToNew;
+    // Mesh factories produce triangle soups with no shared vertices across faces (unique vertices
+    // per face for flat normals). We must therefore use quantised 3-D position as the edge
+    // identity key instead of vertex indices; otherwise every edge appears exactly once and we
+    // incorrectly add walls between adjacent selected faces.
+    auto qf     = [](float v) { return static_cast<int32_t>(llroundf(v * 1.0e4f)); };
+    using PK    = std::array<int32_t, 3>;
+    auto qp     = [&qf](Vec3 const& p) -> PK { return {qf(p.x), qf(p.y), qf(p.z)}; };
+    using EK    = std::pair<PK, PK>;
+    auto makeEK = [&qp](Vec3 const& pa, Vec3 const& pb) -> EK {
+        PK ka = qp(pa), kb = qp(pb);
+        return ka < kb ? EK{ka, kb} : EK{kb, ka};
+    };
+
+    // Count how many selected faces share each geometric edge.
+    // Edges with count==1 are on the boundary and need a wall quad.
+    std::map<EK, int> edgePosCount;
+    for (auto const& of : origFaces) {
+        for (uint32_t k = 0; k < 3; ++k) {
+            uint32_t const a = of.v[k], b = of.v[(k + 1) % 3];
+            edgePosCount[makeEK(verts[a].position, verts[b].position)]++;
+        }
+    }
+
+    // Duplicate selected vertices — weld by position so faces sharing a geometric vertex
+    // produce a single new top vertex rather than one per face.
+    std::unordered_map<uint32_t, uint32_t> oldToNew;  // old index → new index
+    std::map<PK, uint32_t> posToNew;                  // quantised pos → new index
+
     for (auto const& of : origFaces) {
         for (uint32_t k = 0; k < 3; ++k) {
             uint32_t const vi = of.v[k];
-            if (!oldToNew.contains(vi)) {
+            PK pk             = qp(verts[vi].position);
+            if (!posToNew.count(pk)) {
                 uint32_t const newIdx = static_cast<uint32_t>(verts.size());
-                oldToNew[vi]          = newIdx;
+                posToNew[pk]          = newIdx;
                 EditVertex copy       = verts[vi];
                 verts.push_back(copy);
                 state.grabbedVerts.push_back(newIdx);
                 state.basePositions.push_back(copy.position);
             }
+            oldToNew[vi] = posToNew[pk];
         }
     }
 
-    // Remap the selected faces to the new (duplicate) vertices.
+    // Remap the selected faces to the welded new vertices.
     for (auto const& of : origFaces) {
         uint32_t const base = of.fi * 3;
         indices[base]       = oldToNew[of.v[0]];
@@ -375,21 +402,14 @@ void EditModeSystem::DoExtrudeFaces(ExtrudeState& state) {
         indices[base + 2]   = oldToNew[of.v[2]];
     }
 
-    // Find boundary edges: edges used by exactly one selected face.
-    std::unordered_map<uint64_t, int> edgeSelCount;
-    for (auto const& of : origFaces) {
-        for (uint32_t k = 0; k < 3; ++k) {
-            edgeSelCount[EditMesh::PackEdge(of.v[k], of.v[(k + 1) % 3])]++;
-        }
-    }
-
-    // Add wall quads (2 triangles each) for every boundary edge using dedicated vertices
-    // with the lateral wall normal so lighting is correct on walls.
+    // Add wall quads for every boundary edge. Use edgeUnit × extrudeNormal for the outward
+    // wall normal (E × N, NOT N × E — the latter points inward for CCW-wound faces).
     for (auto const& of : origFaces) {
         for (uint32_t k = 0; k < 3; ++k) {
             uint32_t const A = of.v[k];
             uint32_t const B = of.v[(k + 1) % 3];
-            if (edgeSelCount[EditMesh::PackEdge(A, B)] != 1) { continue; }
+            if (edgePosCount[makeEK(verts[A].position, verts[B].position)] != 1) { continue; }
+
             uint32_t const nA = oldToNew[A];
             uint32_t const nB = oldToNew[B];
 
@@ -397,14 +417,12 @@ void EditModeSystem::DoExtrudeFaces(ExtrudeState& state) {
             float const edgeLen =
                 std::sqrt(edgeDir.x * edgeDir.x + edgeDir.y * edgeDir.y + edgeDir.z * edgeDir.z);
             Vec3 const edgeUnit   = (edgeLen > 1e-8f) ? edgeDir / edgeLen : Vec3{1.0f, 0.0f, 0.0f};
-            Vec3 const wallNormal = state.normal.crossProduct(edgeUnit);
+            Vec3 const wallNormal = edgeUnit.crossProduct(state.normal);
             float const wn_len    = std::sqrt(wallNormal.x * wallNormal.x +
                                               wallNormal.y * wallNormal.y +
                                               wallNormal.z * wallNormal.z);
             Vec3 const wallNUnit  = (wn_len > 1e-8f) ? wallNormal / wn_len : state.normal;
 
-            // 4 dedicated wall vertices: bottom-A, top-A (mirror of nA), top-B (mirror of nB),
-            // bottom-B
             auto makeWallVert = [&](uint32_t srcIdx, Vec3 const& wn) -> uint32_t {
                 uint32_t const idx = static_cast<uint32_t>(verts.size());
                 EditVertex wv      = verts[srcIdx];
@@ -424,13 +442,11 @@ void EditModeSystem::DoExtrudeFaces(ExtrudeState& state) {
             indices.push_back(wnB);
             indices.push_back(wB);
 
-            // Track which wall-top verts must follow their grabbed counterpart.
             state.wallTopMirrors.emplace_back(wnA, nA);
             state.wallTopMirrors.emplace_back(wnB, nB);
         }
     }
 
-    // Switch to vertex mode so the grab highlight shows the extruded vertices.
     m_EditMesh.ClearSelection();
     m_EditMesh.mode = ElementMode::Vertex;
     for (uint32_t vi : state.grabbedVerts) { m_EditMesh.selectedVertices.insert(vi); }
@@ -487,7 +503,7 @@ void EditModeSystem::DoExtrudeEdges(ExtrudeState& state) {
         float const edgeLen =
             std::sqrt(edgeDir.x * edgeDir.x + edgeDir.y * edgeDir.y + edgeDir.z * edgeDir.z);
         Vec3 const edgeUnit   = (edgeLen > 1e-8f) ? edgeDir / edgeLen : Vec3{1.0f, 0.0f, 0.0f};
-        Vec3 const wallNormal = state.normal.crossProduct(edgeUnit);
+        Vec3 const wallNormal = edgeUnit.crossProduct(state.normal);
         float const wn_len    = std::sqrt(wallNormal.x * wallNormal.x +
                                           wallNormal.y * wallNormal.y +
                                           wallNormal.z * wallNormal.z);
