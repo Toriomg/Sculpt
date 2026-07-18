@@ -1,7 +1,7 @@
 // Quaternion type for rotation representation; converted to a Matx4f via QuatRotation() defined in
 // maths.hpp.
 #pragma once
-#include "vec3.hpp"
+#include "Platform/CoreUtils/Math/vec.hpp"
 
 class Quaternion {
 public:

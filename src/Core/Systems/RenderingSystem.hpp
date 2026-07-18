@@ -1,6 +1,6 @@
 // ECS system: iterates all entities with a MeshComponent and submits them to Renderer each frame.
 #pragma once
-#include "Platform/CoreUtils/Math/matx.hpp"
+#include "Platform/CoreUtils/Math/maths.hpp"
 #include "System.hpp"
 
 class Renderer;

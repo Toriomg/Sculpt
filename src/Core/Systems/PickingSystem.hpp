@@ -1,7 +1,7 @@
 // GPU picking system: renders entity IDs into a PickingTexture each frame and reads back the hit
 // entity on request.
 #pragma once
-#include "Platform/CoreUtils/Math/matx.hpp"
+#include "Platform/CoreUtils/Math/maths.hpp"
 #include "Platform/Graphics/PickingTexture.hpp"
 #include "Platform/Graphics/Shader.hpp"
 #include "System.hpp"
