@@ -211,7 +211,7 @@ void InspectorPanel::OnImGuiRender() {
         ImGui::Text("Vertices: %zu", em.vertices.size());
         ImGui::Text("Faces:    %u", em.FaceCount());
         ImGui::Spacing();
-        ImGui::TextDisabled("Tab  — exit Edit Mode");
+        ImGui::TextDisabled("Tab - exit Edit Mode");
         ImGui::End();
         return;
     }
