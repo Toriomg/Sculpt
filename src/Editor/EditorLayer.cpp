@@ -198,19 +198,33 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
             auto* selSys = m_ActiveScene->GetSystem<SelectionSystem>();
             auto& selCtx = selSys->GetSelectionContext();
             if (!m_InEditMode) {
-                // Enter edit mode on the active entity if one is selected.
-                entt::entity const active = selCtx.GetActiveEntity();
-                if (active != entt::null && m_ActiveScene->HasComponent<MeshComponent>(active)) {
-                    m_EditModeSystem->Enter(active);
-                    selCtx.ClearSelection();  // object-level selection doesn't apply in edit mode
+                // Prefer the active selection; fall back to the first mesh entity in the scene.
+                entt::entity target = selCtx.GetActiveEntity();
+                if (target == entt::null || !m_ActiveScene->HasComponent<MeshComponent>(target)) {
+                    auto view = m_ActiveScene->GetAllEntitiesWith<MeshComponent>();
+                    for (auto e2 : view) {
+                        target = e2;
+                        break;
+                    }
+                }
+                if (target != entt::null && m_ActiveScene->HasComponent<MeshComponent>(target)) {
+                    m_EditModeSystem->Enter(target);
+                    selCtx.ClearSelection();
                     m_InEditMode = true;
+                    std::string_view name;
+                    if (m_ActiveScene->HasComponent<NameComponent>(target)) {
+                        name = m_ActiveScene->GetComponent<NameComponent>(target).Name;
+                    }
+                    if (m_OutlinerPanel) { m_OutlinerPanel->SetInEditMode(true, name); }
+                    LOG_INFO("Entered Edit Mode on entity {}", (uint32_t) target);
                 }
             } else {
-                // Exit edit mode: restore object selection to the edited entity.
                 entt::entity const edited = m_EditModeSystem->GetEditedEntity();
                 m_EditModeSystem->Exit();
                 m_InEditMode = false;
+                if (m_OutlinerPanel) { m_OutlinerPanel->SetInEditMode(false); }
                 if (edited != entt::null) { selCtx.Select(edited); }
+                LOG_INFO("Exited Edit Mode");
             }
         }
         return true;
