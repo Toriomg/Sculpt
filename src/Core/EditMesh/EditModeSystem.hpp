@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 class Scene;
@@ -41,10 +42,13 @@ public:
     [[nodiscard]] bool IsGrabActive() const { return m_ExtrudeState.has_value(); }
     // Apply screen-space mouse delta to the active grab (call from OnMouseMoved).
     void UpdateGrab(float dx, float dy);
-    // Commit the grab: geometry stays as-is, grab state cleared.
+    // Commit the grab: geometry stays, grab state cleared, undo record pushed.
     void ConfirmGrab();
     // Discard the grab: restore pre-extrude geometry and selection.
     void CancelGrab();
+
+    // Overwrite CPU mesh state without re-reading from GPU; called by undo/redo.
+    void SyncFromVertices(std::vector<EditVertex> const& verts, std::vector<uint32_t> const& inds);
 
     // Render edge-line + vertex-dot overlay, plus selection highlight.
     // Call after Scene::OnUpdate, inside the viewport FBO, after Renderer::BeginScene has run.
@@ -58,10 +62,13 @@ private:
         std::unordered_set<uint32_t> vertsBefore;
         std::unordered_set<uint64_t> edgesBefore;
         ElementMode modeBefore{ElementMode::Vertex};
-        std::vector<uint32_t> grabbedVerts;  // new vertex indices to translate during drag
-        std::vector<Vec3> basePositions;     // grabbed vert positions at extrude time
-        Vec3 normal{0.0f, 1.0f, 0.0f};       // extrude direction
-        float offset{0.0f};                  // accumulated drag distance
+        std::vector<uint32_t> grabbedVerts;      // new vertex indices to translate during drag
+        std::vector<Vec3> basePositions;         // grabbed vert positions at extrude time
+        Vec3 normal{0.0f, 1.0f, 0.0f};           // extrude direction
+        float offset{0.0f};                      // accumulated drag distance
+        std::vector<EditVertex> verticesBefore;  // full vertex snapshot before extrude (for undo)
+        // (wall-top vert, grabbed vert it mirrors): synced in UpdateGrab for correct wall normals
+        std::vector<std::pair<uint32_t, uint32_t>> wallTopMirrors;
     };
 
     void DoExtrudeFaces(ExtrudeState& state);

@@ -2,6 +2,8 @@
 
 #include "Core/Components/Component.hpp"
 #include "Core/Scene.hpp"
+#include "Core/Systems/Commands/MeshEditCommand.hpp"
+#include "Core/Systems/HistorySystem.hpp"
 #include "Core/glhead.hpp"
 #include "Platform/Graphics/Buffers/VertexArray.hpp"
 #include "Platform/Graphics/Buffers/VertexBuffer.hpp"
@@ -349,6 +351,7 @@ void EditModeSystem::DoExtrudeFaces(ExtrudeState& state) {
     }
 
     // Duplicate each unique vertex used by the selected faces.
+    // Capture a copy before push_back to avoid UB from potential reallocation.
     std::unordered_map<uint32_t, uint32_t> oldToNew;
     for (auto const& of : origFaces) {
         for (uint32_t k = 0; k < 3; ++k) {
@@ -356,9 +359,10 @@ void EditModeSystem::DoExtrudeFaces(ExtrudeState& state) {
             if (!oldToNew.contains(vi)) {
                 uint32_t const newIdx = static_cast<uint32_t>(verts.size());
                 oldToNew[vi]          = newIdx;
-                verts.push_back(verts[vi]);
+                EditVertex copy       = verts[vi];
+                verts.push_back(copy);
                 state.grabbedVerts.push_back(newIdx);
-                state.basePositions.push_back(verts[vi].position);
+                state.basePositions.push_back(copy.position);
             }
         }
     }
@@ -379,9 +383,8 @@ void EditModeSystem::DoExtrudeFaces(ExtrudeState& state) {
         }
     }
 
-    // Add wall quads (2 triangles each) for every boundary edge.
-    // Winding: for CCW top-face edge (A→B), wall triangles (A, nA, nB) and (A, nB, B)
-    // produce outward-facing wall normals.
+    // Add wall quads (2 triangles each) for every boundary edge using dedicated vertices
+    // with the lateral wall normal so lighting is correct on walls.
     for (auto const& of : origFaces) {
         for (uint32_t k = 0; k < 3; ++k) {
             uint32_t const A = of.v[k];
@@ -389,12 +392,41 @@ void EditModeSystem::DoExtrudeFaces(ExtrudeState& state) {
             if (edgeSelCount[EditMesh::PackEdge(A, B)] != 1) { continue; }
             uint32_t const nA = oldToNew[A];
             uint32_t const nB = oldToNew[B];
-            indices.push_back(A);
-            indices.push_back(nA);
-            indices.push_back(nB);
-            indices.push_back(A);
-            indices.push_back(nB);
-            indices.push_back(B);
+
+            Vec3 const edgeDir = verts[B].position - verts[A].position;
+            float const edgeLen =
+                std::sqrt(edgeDir.x * edgeDir.x + edgeDir.y * edgeDir.y + edgeDir.z * edgeDir.z);
+            Vec3 const edgeUnit   = (edgeLen > 1e-8f) ? edgeDir / edgeLen : Vec3{1.0f, 0.0f, 0.0f};
+            Vec3 const wallNormal = state.normal.crossProduct(edgeUnit);
+            float const wn_len    = std::sqrt(wallNormal.x * wallNormal.x +
+                                              wallNormal.y * wallNormal.y +
+                                              wallNormal.z * wallNormal.z);
+            Vec3 const wallNUnit  = (wn_len > 1e-8f) ? wallNormal / wn_len : state.normal;
+
+            // 4 dedicated wall vertices: bottom-A, top-A (mirror of nA), top-B (mirror of nB),
+            // bottom-B
+            auto makeWallVert = [&](uint32_t srcIdx, Vec3 const& wn) -> uint32_t {
+                uint32_t const idx = static_cast<uint32_t>(verts.size());
+                EditVertex wv      = verts[srcIdx];
+                wv.normal          = wn;
+                verts.push_back(wv);
+                return idx;
+            };
+            uint32_t const wA  = makeWallVert(A, wallNUnit);
+            uint32_t const wnA = makeWallVert(nA, wallNUnit);
+            uint32_t const wnB = makeWallVert(nB, wallNUnit);
+            uint32_t const wB  = makeWallVert(B, wallNUnit);
+
+            indices.push_back(wA);
+            indices.push_back(wnA);
+            indices.push_back(wnB);
+            indices.push_back(wA);
+            indices.push_back(wnB);
+            indices.push_back(wB);
+
+            // Track which wall-top verts must follow their grabbed counterpart.
+            state.wallTopMirrors.emplace_back(wnA, nA);
+            state.wallTopMirrors.emplace_back(wnB, nB);
         }
     }
 
@@ -427,6 +459,7 @@ void EditModeSystem::DoExtrudeEdges(ExtrudeState& state) {
     state.normal = (len > 1e-8f) ? avgNormal / len : Vec3{0.0f, 1.0f, 0.0f};
 
     // Duplicate each unique vertex in the selected edges.
+    // Capture a copy before push_back to avoid UB from potential reallocation.
     std::unordered_map<uint32_t, uint32_t> oldToNew;
     for (uint64_t ek : selEdges) {
         auto const ia = static_cast<uint32_t>(ek >> 32U);
@@ -435,25 +468,52 @@ void EditModeSystem::DoExtrudeEdges(ExtrudeState& state) {
             if (vi >= verts.size() || oldToNew.contains(vi)) { continue; }
             uint32_t const newIdx = static_cast<uint32_t>(verts.size());
             oldToNew[vi]          = newIdx;
-            verts.push_back(verts[vi]);
+            EditVertex copy       = verts[vi];
+            verts.push_back(copy);
             state.grabbedVerts.push_back(newIdx);
-            state.basePositions.push_back(verts[vi].position);
+            state.basePositions.push_back(copy.position);
         }
     }
 
-    // Add a wall quad for each selected edge: (A, nA, nB) + (A, nB, B).
+    // Add a wall quad for each selected edge using dedicated vertices with wall normals.
     for (uint64_t ek : selEdges) {
         auto const A = static_cast<uint32_t>(ek >> 32U);
         auto const B = static_cast<uint32_t>(ek & 0xFFFFFFFFULL);
         if (!oldToNew.contains(A) || !oldToNew.contains(B)) { continue; }
         uint32_t const nA = oldToNew[A];
         uint32_t const nB = oldToNew[B];
-        indices.push_back(A);
-        indices.push_back(nA);
-        indices.push_back(nB);
-        indices.push_back(A);
-        indices.push_back(nB);
-        indices.push_back(B);
+
+        Vec3 const edgeDir = verts[B].position - verts[A].position;
+        float const edgeLen =
+            std::sqrt(edgeDir.x * edgeDir.x + edgeDir.y * edgeDir.y + edgeDir.z * edgeDir.z);
+        Vec3 const edgeUnit   = (edgeLen > 1e-8f) ? edgeDir / edgeLen : Vec3{1.0f, 0.0f, 0.0f};
+        Vec3 const wallNormal = state.normal.crossProduct(edgeUnit);
+        float const wn_len    = std::sqrt(wallNormal.x * wallNormal.x +
+                                          wallNormal.y * wallNormal.y +
+                                          wallNormal.z * wallNormal.z);
+        Vec3 const wallNUnit  = (wn_len > 1e-8f) ? wallNormal / wn_len : state.normal;
+
+        auto makeWallVert = [&](uint32_t srcIdx, Vec3 const& wn) -> uint32_t {
+            uint32_t const idx = static_cast<uint32_t>(verts.size());
+            EditVertex wv      = verts[srcIdx];
+            wv.normal          = wn;
+            verts.push_back(wv);
+            return idx;
+        };
+        uint32_t const wA  = makeWallVert(A, wallNUnit);
+        uint32_t const wnA = makeWallVert(nA, wallNUnit);
+        uint32_t const wnB = makeWallVert(nB, wallNUnit);
+        uint32_t const wB  = makeWallVert(B, wallNUnit);
+
+        indices.push_back(wA);
+        indices.push_back(wnA);
+        indices.push_back(wnB);
+        indices.push_back(wA);
+        indices.push_back(wnB);
+        indices.push_back(wB);
+
+        state.wallTopMirrors.emplace_back(wnA, nA);
+        state.wallTopMirrors.emplace_back(wnB, nB);
     }
 
     m_EditMesh.ClearSelection();
@@ -485,9 +545,10 @@ void EditModeSystem::DoExtrudeVerts(ExtrudeState& state) {
         if (vi >= verts.size()) { continue; }
         uint32_t const newIdx = static_cast<uint32_t>(verts.size());
         oldToNew[vi]          = newIdx;
-        verts.push_back(verts[vi]);
+        EditVertex copy       = verts[vi];
+        verts.push_back(copy);
         state.grabbedVerts.push_back(newIdx);
-        state.basePositions.push_back(verts[vi].position);
+        state.basePositions.push_back(copy.position);
     }
 
     m_EditMesh.ClearSelection();
@@ -513,6 +574,7 @@ void EditModeSystem::Extrude() {
     state.vertsBefore       = m_EditMesh.selectedVertices;
     state.edgesBefore       = m_EditMesh.selectedEdges;
     state.modeBefore        = m_EditMesh.mode;
+    state.verticesBefore    = m_EditMesh.vertices;  // full snapshot for undo
 
     switch (m_EditMesh.mode) {
         case ElementMode::Face:   DoExtrudeFaces(state); break;
@@ -527,17 +589,46 @@ void EditModeSystem::Extrude() {
     RebuildSelectionBuffer();
 }
 
-void EditModeSystem::UpdateGrab(float /*dx*/, float dy) {
-    if (!m_ExtrudeState) { return; }
+void EditModeSystem::UpdateGrab(float dx, float dy) {
+    if (!m_ExtrudeState || !m_Scene->HasComponent<TransformComponent>(m_EditMesh.GetEntity())) {
+        return;
+    }
 
-    // Screen Y increases downward; moving up (negative dy) extrudes outward.
-    m_ExtrudeState->offset += dy * -0.005f;
+    auto& state        = *m_ExtrudeState;
+    auto const& tc     = m_Scene->GetComponent<TransformComponent>(m_EditMesh.GetEntity());
+    Matx4f const model = m_GlobalTransform * tc.GetMatrix();
 
-    for (size_t i = 0; i < m_ExtrudeState->grabbedVerts.size(); ++i) {
-        uint32_t const vi = m_ExtrudeState->grabbedVerts[i];
+    // Project the extrude normal onto the screen to find which 2-D direction it points.
+    Vec3 center{0.0f, 0.0f, 0.0f};
+    for (Vec3 const& p : state.basePositions) { center = center + p; }
+    if (!state.basePositions.empty()) {
+        center = center / static_cast<float>(state.basePositions.size());
+    }
+    Vec2 const s0      = WorldToScreen(center, model);
+    Vec2 const s1      = WorldToScreen(center + state.normal * 0.5f, model);
+    float const sdx    = s1.x - s0.x;
+    float const sdy    = s1.y - s0.y;
+    float const sdLen  = std::sqrt(sdx * sdx + sdy * sdy);
+    float const invLen = (sdLen > 1e-4f) ? 1.0f / sdLen : 0.0f;
+    // Normalised screen-space direction of the extrude normal; fallback to "up" (−Y screen).
+    float const ndx = (sdLen > 1e-4f) ? sdx * invLen : 0.0f;
+    float const ndy = (sdLen > 1e-4f) ? sdy * invLen : -1.0f;
+
+    // Signed pixel count along the projected normal direction.
+    float const proj = dx * ndx + dy * ndy;
+    state.offset += proj * 0.005f;
+
+    for (size_t i = 0; i < state.grabbedVerts.size(); ++i) {
+        uint32_t const vi = state.grabbedVerts[i];
         if (vi >= m_EditMesh.vertices.size()) { continue; }
-        m_EditMesh.vertices[vi].position =
-            m_ExtrudeState->basePositions[i] + m_ExtrudeState->normal * m_ExtrudeState->offset;
+        m_EditMesh.vertices[vi].position = state.basePositions[i] + state.normal * state.offset;
+    }
+
+    // Keep wall-top verts in sync with their grabbed counterparts.
+    for (auto const& [wallVert, grabbedVert] : state.wallTopMirrors) {
+        if (wallVert < m_EditMesh.vertices.size() && grabbedVert < m_EditMesh.vertices.size()) {
+            m_EditMesh.vertices[wallVert].position = m_EditMesh.vertices[grabbedVert].position;
+        }
     }
 
     FlushToGPU(false);
@@ -546,8 +637,23 @@ void EditModeSystem::UpdateGrab(float /*dx*/, float dy) {
 
 void EditModeSystem::ConfirmGrab() {
     if (!m_ExtrudeState) { return; }
+    auto* hist = m_Scene->GetSystem<HistorySystem>();
+    if (hist != nullptr && m_EditMesh.IsActive()) {
+        hist->Push(std::make_unique<MeshEditCommand>(
+            m_Scene, m_EditMesh.GetEntity(), this, m_ExtrudeState->verticesBefore,
+            m_ExtrudeState->indicesBefore, m_EditMesh.vertices, m_EditMesh.indices));
+    }
     m_ExtrudeState.reset();
     // GPU already reflects the final state from the last UpdateGrab call.
+}
+
+void EditModeSystem::SyncFromVertices(std::vector<EditVertex> const& verts,
+                                      std::vector<uint32_t> const& inds) {
+    m_EditMesh.vertices = verts;
+    m_EditMesh.indices  = inds;
+    m_EditMesh.ClearSelection();
+    m_ExtrudeState.reset();
+    RebuildSelectionBuffer();
 }
 
 void EditModeSystem::CancelGrab() {
