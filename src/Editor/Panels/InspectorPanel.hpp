@@ -12,10 +12,14 @@ class SelectionContext;
 class HistorySystem;
 class GizmoRenderer;
 
+class EditModeSystem;
+
 class InspectorPanel : public Panel {
 public:
     InspectorPanel(Scene* scene, SelectionContext* selectionContext, GizmoRenderer* gizmoRenderer);
     void OnImGuiRender() override;
+
+    void SetEditModeSystem(EditModeSystem* sys) { m_EditModeSystem = sys; }
 
 private:
     void DrawMultiEntityView();
@@ -28,8 +32,9 @@ private:
 
     Scene* m_Scene;
     SelectionContext* m_SelectionContext;
-    HistorySystem* m_HistSys       = nullptr;
-    GizmoRenderer* m_GizmoRenderer = nullptr;
+    HistorySystem* m_HistSys         = nullptr;
+    GizmoRenderer* m_GizmoRenderer   = nullptr;
+    EditModeSystem* m_EditModeSystem = nullptr;
 
     Entity m_SnapshotEntity = entt::null;
     TransformComponent m_TransformSnapshot;

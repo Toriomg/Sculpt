@@ -1,6 +1,7 @@
 #include "Editor/Panels/InspectorPanel.hpp"
 #include "AssetManager/AssetManager.hpp"
 #include "Core/Components/Component.hpp"
+#include "Core/EditMesh/EditModeSystem.hpp"
 #include "Core/Scene.hpp"
 #include "Core/Systems/Commands/MultiTransformCommand.hpp"
 #include "Core/Systems/HistorySystem.hpp"
@@ -195,6 +196,25 @@ void InspectorPanel::OnImGuiRender() {
     ImGui::SetNextWindowPos(ImVec2{1210.f, 20.f}, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2{260.f, 500.f}, ImGuiCond_FirstUseEver);
     ImGui::Begin("Inspector");
+
+    // In edit mode the inspector shows mesh element info instead of object components.
+    if (m_EditModeSystem != nullptr && m_EditModeSystem->IsActive()) {
+        auto const& em            = m_EditModeSystem->GetEditMesh();
+        entt::entity const edited = em.GetEntity();
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.55f, 0.0f, 1.0f));
+        ImGui::TextUnformatted("EDIT MODE");
+        ImGui::PopStyleColor();
+        ImGui::Separator();
+        if (edited != entt::null && m_Scene->HasComponent<NameComponent>(edited)) {
+            ImGui::TextUnformatted(m_Scene->GetComponent<NameComponent>(edited).Name.c_str());
+        }
+        ImGui::Text("Vertices: %zu", em.vertices.size());
+        ImGui::Text("Faces:    %u", em.FaceCount());
+        ImGui::Spacing();
+        ImGui::TextDisabled("Tab  — exit Edit Mode");
+        ImGui::End();
+        return;
+    }
 
     if (m_SelectionContext->GetSelectionCount() == 0) {
         ImGui::TextDisabled("Nothing selected");

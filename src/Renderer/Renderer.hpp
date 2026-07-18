@@ -36,6 +36,9 @@ public:
     static void SubmitOutline(std::shared_ptr<Mesh> const& mesh, Vec4 const& color, float thickness,
                               Matx4f const& transform);
 
+    // Edit mode overlay: dark edge lines + orange vertex dots on top of the solid mesh.
+    static void SubmitEditOverlay(std::shared_ptr<Mesh> const& mesh, Matx4f const& transform);
+
     static void OnWindowResize(uint32_t width, uint32_t height);
 
     static void SetDebugSelectionMode(bool enable);

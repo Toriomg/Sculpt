@@ -1,5 +1,6 @@
 #include "Editor/EditorLayer.hpp"
 #include "Core/Components/Component.hpp"
+#include "Core/EditMesh/EditModeSystem.hpp"
 #include "Core/Systems/HistorySystem.hpp"
 #include "Core/Systems/PickingSystem.hpp"
 #include "Core/Systems/RenderingSystem.hpp"
@@ -36,7 +37,8 @@ void EditorLayer::OnAttach() {
     camTransform.Translation = Vec3(0.0f, 0.0f, 5.0f);
     camComp.SceneCamera.SetPosition({0.0f, 1.0f, 5.0f});
 
-    m_EntityFactory = std::make_unique<EntityFactory>(m_ActiveScene.get());
+    m_EntityFactory  = std::make_unique<EntityFactory>(m_ActiveScene.get());
+    m_EditModeSystem = std::make_unique<EditModeSystem>(m_ActiveScene.get());
     if (auto r = m_EntityFactory->SpawnFromFile("res/models/monkey.obj"); !r) {
         CORE_LOG_ERROR("Default scene asset missing: {}", r.error());
     }
@@ -57,6 +59,7 @@ void EditorLayer::OnAttach() {
     m_OutlinerPanel  = std::make_unique<OutlinerPanel>(m_ActiveScene.get(), selSys);
     m_InspectorPanel = std::make_unique<InspectorPanel>(
         m_ActiveScene.get(), &selSys->GetSelectionContext(), m_GizmoRenderer.get());
+    m_InspectorPanel->SetEditModeSystem(m_EditModeSystem.get());
     m_ScenePanel  = std::make_unique<ScenePanel>(&camComp.SceneCamera);
     m_MainMenuBar = std::make_unique<MainMenuBar>(
         m_OnQuit, m_ActiveScene->GetSystem<HistorySystem>(), m_EntityFactory.get(),
@@ -101,9 +104,14 @@ void EditorLayer::OnUpdate(float deltaTime) {
     // Render the scene into the viewport FBO.
     m_ViewportFBO->Bind();
     m_ActiveScene->OnUpdate(deltaTime);
+    if (m_InEditMode && m_EditModeSystem) {
+        Matx4f const global =
+            m_ScenePanel ? m_ScenePanel->GetGlobalTransform() : Matx4f::identity();
+        m_EditModeSystem->DrawOverlay(global);
+    }
     m_Grid->Draw(camComp.SceneCamera.GetViewMatrix(), camComp.SceneCamera.GetProjectionMatrix(),
                  camComp.SceneCamera.GetPosition());
-    m_GizmoRenderer->Draw();
+    if (!m_InEditMode) { m_GizmoRenderer->Draw(); }
     Framebuffer::Unbind();
 }
 
@@ -185,10 +193,36 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
     // WantTextInput is true only during active text entry.
     if (ImGui::GetIO().WantTextInput) { return false; }
 
-    if (e.GetKeyCode() == static_cast<int>(KeyCode::Delete)) {
-        if (m_OutlinerPanel) { m_OutlinerPanel->TriggerDeleteConfirmation(); }
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::Tab)) {
+        if (m_EditModeSystem) {
+            auto* selSys = m_ActiveScene->GetSystem<SelectionSystem>();
+            auto& selCtx = selSys->GetSelectionContext();
+            if (!m_InEditMode) {
+                // Enter edit mode on the active entity if one is selected.
+                entt::entity const active = selCtx.GetActiveEntity();
+                if (active != entt::null && m_ActiveScene->HasComponent<MeshComponent>(active)) {
+                    m_EditModeSystem->Enter(active);
+                    selCtx.ClearSelection();  // object-level selection doesn't apply in edit mode
+                    m_InEditMode = true;
+                }
+            } else {
+                // Exit edit mode: restore object selection to the edited entity.
+                entt::entity const edited = m_EditModeSystem->GetEditedEntity();
+                m_EditModeSystem->Exit();
+                m_InEditMode = false;
+                if (edited != entt::null) { selCtx.Select(edited); }
+            }
+        }
         return true;
     }
+
+    if (e.GetKeyCode() == static_cast<int>(KeyCode::Delete)) {
+        if (!m_InEditMode && m_OutlinerPanel) { m_OutlinerPanel->TriggerDeleteConfirmation(); }
+        return true;
+    }
+
+    // Gizmo shortcuts are object-mode only.
+    if (m_InEditMode) { return false; }
 
     if (e.GetKeyCode() == static_cast<int>(KeyCode::T)) {
         if (m_GizmoRenderer) { m_GizmoRenderer->SetMode(GizmoMode::Translation); }

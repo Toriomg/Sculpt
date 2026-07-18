@@ -153,6 +153,33 @@ void Renderer::SubmitOutline(std::shared_ptr<Mesh> const& mesh, Vec4 const& colo
     Shader::Unbind();
 }
 
+void Renderer::SubmitEditOverlay(std::shared_ptr<Mesh> const& mesh, Matx4f const& transform) {
+    auto const& shader      = s_SceneData.WireframeShader;
+    auto const& vertexArray = mesh->GetVertexArray();
+    auto const& indexBuffer = mesh->GetIndexBuffer();
+
+    shader->Bind();
+    shader->SetUniformMat4f("u_ViewProjection", s_SceneData.View);
+    shader->SetUniformMat4f("u_Model", transform);
+
+    // Dark edge lines rendered on top of the solid mesh
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glPolygonOffset(-1.0f, -1.0f);
+    shader->SetUniform4f("u_Color", 0.05f, 0.05f, 0.05f, 1.0f);
+    RenderCommand::Draw(vertexArray, indexBuffer);
+    glDisable(GL_POLYGON_OFFSET_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // Orange vertex dots
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    shader->SetUniform4f("u_Color", 1.0f, 0.55f, 0.0f, 1.0f);
+    RenderCommand::DrawPoints(vertexArray, mesh->GetVertexCount());
+    glDisable(GL_PROGRAM_POINT_SIZE);
+
+    Shader::Unbind();
+}
+
 void Renderer::SubmitFlat(std::shared_ptr<Mesh> const& mesh, Vec4 const& color,
                           Matx4f const& transform) {
     auto const& shader = s_SceneData.WireframeShader;

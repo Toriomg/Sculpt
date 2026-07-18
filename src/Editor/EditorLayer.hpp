@@ -15,6 +15,7 @@
 class Framebuffer;
 class EntityFactory;
 class GizmoRenderer;
+class EditModeSystem;
 class ViewportPanel;
 class OutlinerPanel;
 class InspectorPanel;
@@ -55,6 +56,9 @@ private:
     Entity m_CameraEntity;
 
     Vec2 m_LastMousePosition{0.0f, 0.0f};
+
+    bool m_InEditMode = false;
+    std::unique_ptr<EditModeSystem> m_EditModeSystem;
 
     std::unique_ptr<EntityFactory> m_EntityFactory;
     std::unique_ptr<GizmoRenderer> m_GizmoRenderer;
