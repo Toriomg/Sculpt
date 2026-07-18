@@ -229,6 +229,10 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
     // WantTextInput is true only during active text entry.
     if (ImGui::GetIO().WantTextInput) { return false; }
 
+    // RMB held = fly camera mode; suppress all editor shortcuts so WASD/Space/Shift
+    // reach the camera controller without also firing gizmo or edit-mode actions.
+    if (Input::IsMouseButtonPressed(MouseCode::Right)) { return false; }
+
     if (e.GetKeyCode() == static_cast<int>(KeyCode::Tab)) {
         if (m_EditModeSystem) {
             auto* selSys = m_ActiveScene->GetSystem<SelectionSystem>();
