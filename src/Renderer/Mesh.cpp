@@ -7,23 +7,26 @@
 
 std::shared_ptr<Mesh> Mesh::CreateMeshFromData(void const* vertices, uint32_t vertexSize,
                                                uint32_t const* indices, uint32_t indexCount) {
-    // 1. Create the low-level GPU buffers
     auto vbo = std::make_shared<VertexBuffer>(vertices, vertexSize, true);
     auto ibo = std::make_shared<IndexBuffer>(indices, indexCount);
 
-    // 2. Define the standard layout for all our primitives
     VertexBufferLayout layout;
     layout.Push<float>(3);  // Position (vec3)
     layout.Push<float>(3);  // Normal (vec3)
     layout.Push<float>(2);  // Texture Coordinates (vec2)
 
-    // 3. Create the VAO and link everything together
     auto vao = std::make_shared<VertexArray>();
     vao->AddBufferPtr(vbo, layout);
 
-    // 4. Create and return the final high-level Mesh object
     uint32_t const vertexCount = vertexSize / static_cast<uint32_t>(sizeof(Vertex));
-    return std::make_shared<Mesh>(vao, ibo, vertexCount);
+    auto mesh                  = std::make_shared<Mesh>(vao, ibo, vertexCount);
+
+    // Store CPU copies for edit-mode access.
+    auto const* vPtr = static_cast<Vertex const*>(vertices);
+    mesh->m_CpuVertices.assign(vPtr, vPtr + vertexCount);
+    mesh->m_CpuIndices.assign(indices, indices + indexCount);
+
+    return mesh;
 }
 
 std::shared_ptr<Mesh> Mesh::CreateCube(float size) {

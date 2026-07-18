@@ -7,14 +7,12 @@
 #include "Renderer/Renderer.hpp"
 #include "SelectionSystem.hpp"
 
-void RenderingSystem::OnUpdate(float  /*deltaTime*/) {
+void RenderingSystem::OnUpdate(float /*deltaTime*/) {
     // Safety check: ensure we have a scene to work with.
-    if (m_Scene == nullptr) { return;
-}
+    if (m_Scene == nullptr) { return; }
 
     // 1. Find the primary camera in the scene.
     Camera const* mainCamera = nullptr;
-    Matx4f const cameraTransform;
     {
         // Get all entities that have both a Transform and a Camera component.
         auto view = m_Scene->GetAllEntitiesWith<TransformComponent, CameraComponent>();
@@ -31,9 +29,11 @@ void RenderingSystem::OnUpdate(float  /*deltaTime*/) {
     if (mainCamera != nullptr) {
         Renderer::BeginScene(mainCamera->GetViewProjectionMatrix());
 
-        auto *selectionSystem                     = m_Scene->GetSystem<SelectionSystem>();
+        auto* selectionSystem                    = m_Scene->GetSystem<SelectionSystem>();
         SelectionContext const* selectionContext = nullptr;
-        if (selectionSystem != nullptr) { selectionContext = &selectionSystem->GetSelectionContext(); }
+        if (selectionSystem != nullptr) {
+            selectionContext = &selectionSystem->GetSelectionContext();
+        }
 
         // 3. Find all entities that are renderable and submit them.
         auto group = m_Scene->GetAllEntitiesWith<TransformComponent, MeshComponent>();
@@ -62,7 +62,8 @@ void RenderingSystem::OnUpdate(float  /*deltaTime*/) {
                     "u_cameraPos", mainCamera->GetPosition().x, mainCamera->GetPosition().y,
                     mainCamera->GetPosition().z);
 
-                bool const isSelected = (selectionContext != nullptr) && selectionContext->IsEntitySelected(entity);
+                bool const isSelected =
+                    (selectionContext != nullptr) && selectionContext->IsEntitySelected(entity);
 
                 if (isSelected) {
                     // Stencil write pass: mark pixels covered by this entity
@@ -74,8 +75,9 @@ void RenderingSystem::OnUpdate(float  /*deltaTime*/) {
 
                 if (meshComp.Wireframe) {
                     Renderer::SubmitWireframe(meshComp.MeshAsset, worldTransform);
-                } else { Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, worldTransform);
-}
+                } else {
+                    Renderer::Submit(meshComp.MeshAsset, meshComp.MaterialAsset, worldTransform);
+                }
 
                 if (isSelected) {
                     // Outline pass: draw scaled mesh only where stencil == 0 (outside the entity)

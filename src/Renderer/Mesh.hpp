@@ -1,12 +1,14 @@
 // Owns a VertexArray + IndexBuffer; provides static factory methods for built-in primitives (cube,
-// sphere, torus, etc.).
+// sphere, torus, etc.). CPU copies of vertex/index data are stored for edit-mode access.
 #pragma once
 
 #include "Platform/CoreUtils/AssetHandle.hpp"
 #include "Platform/Graphics/Buffers/IndexBuffer.hpp"
 #include "Platform/Graphics/Buffers/VertexArray.hpp"
+#include "Platform/Graphics/Vertex.hpp"
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 class Mesh {
 public:
@@ -15,9 +17,18 @@ public:
     Mesh(std::shared_ptr<VertexArray> va, std::shared_ptr<IndexBuffer> ib, uint32_t vertexCount)
         : m_VertexArray(va), m_IndexBuffer(ib), m_VertexCount(vertexCount) { }
 
-    std::shared_ptr<VertexArray> const& GetVertexArray() const { return m_VertexArray; }
-    std::shared_ptr<IndexBuffer> const& GetIndexBuffer() const { return m_IndexBuffer; }
-    uint32_t GetVertexCount() const { return m_VertexCount; }
+    [[nodiscard]] std::shared_ptr<VertexArray> const& GetVertexArray() const {
+        return m_VertexArray;
+    }
+    [[nodiscard]] std::shared_ptr<IndexBuffer> const& GetIndexBuffer() const {
+        return m_IndexBuffer;
+    }
+    [[nodiscard]] uint32_t GetVertexCount() const { return m_VertexCount; }
+
+    // CPU-side copies populated by CreateMeshFromData; empty for meshes built with raw float
+    // arrays.
+    [[nodiscard]] std::vector<Vertex> const& GetCpuVertices() const { return m_CpuVertices; }
+    [[nodiscard]] std::vector<uint32_t> const& GetCpuIndices() const { return m_CpuIndices; }
 
     static std::shared_ptr<Mesh> CreateCube(float size);
     static std::shared_ptr<Mesh> CreatePyramid(float size);
@@ -38,4 +49,6 @@ private:
     std::shared_ptr<VertexArray> m_VertexArray;
     std::shared_ptr<IndexBuffer> m_IndexBuffer;
     uint32_t m_VertexCount = 0;
+    std::vector<Vertex> m_CpuVertices;
+    std::vector<uint32_t> m_CpuIndices;
 };

@@ -23,5 +23,12 @@ public:
     // Non-indexed point draw (used by wireframe vertex pass)
     static void DrawPoints(std::shared_ptr<VertexArray> const& vertexArray, uint32_t vertexCount);
 
+    // Non-indexed line draw (GL_LINES: every two vertices form one segment)
+    static void DrawLines(std::shared_ptr<VertexArray> const& vertexArray, uint32_t vertexCount);
+
+    // Non-indexed triangle draw (GL_TRIANGLES array, no IBO)
+    static void DrawTrianglesArray(std::shared_ptr<VertexArray> const& vertexArray,
+                                   uint32_t vertexCount);
+
     static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 };

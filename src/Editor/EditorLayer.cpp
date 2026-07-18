@@ -38,7 +38,7 @@ void EditorLayer::OnAttach() {
     camComp.SceneCamera.SetPosition({0.0f, 1.0f, 5.0f});
 
     m_EntityFactory  = std::make_unique<EntityFactory>(m_ActiveScene.get());
-    m_EditModeSystem = std::make_unique<EditModeSystem>(m_ActiveScene.get());
+    m_EditModeSystem = std::make_unique<EditModeSystem>(m_ActiveScene.get(), camComp.SceneCamera);
     if (auto r = m_EntityFactory->SpawnFromFile("res/models/monkey.obj"); !r) {
         CORE_LOG_ERROR("Default scene asset missing: {}", r.error());
     }
@@ -74,6 +74,7 @@ void EditorLayer::OnViewportResize(uint32_t width, uint32_t height) {
     auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
     if (pickSys != nullptr) { pickSys->OnWindowResize(width, height); }
     if (m_GizmoRenderer) { m_GizmoRenderer->SetViewportSize(width, height); }
+    if (m_EditModeSystem) { m_EditModeSystem->SetViewportSize(width, height); }
 }
 
 void EditorLayer::OnUpdate(float deltaTime) {
@@ -99,6 +100,7 @@ void EditorLayer::OnUpdate(float deltaTime) {
             ps->SetGlobalTransform(global);
         }
         if (m_GizmoRenderer) { m_GizmoRenderer->SetGlobalTransform(global); }
+        if (m_EditModeSystem) { m_EditModeSystem->SetGlobalTransform(global); }
     }
 
     // Render the scene into the viewport FBO.
@@ -147,13 +149,33 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
 
     if (relPos.x < 0.0f || relPos.y < 0.0f) { return false; }
 
+    bool const isShiftHeld = Input::IsKeyPressed(KeyCode::LeftShift);
+
+    // In edit mode, clicks go to element selection via the picking system.
+    if (m_InEditMode && m_EditModeSystem) {
+        auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
+        if (pickSys == nullptr) { return false; }
+        pickSys->RequestPickingPass(static_cast<uint32_t>(relPos.x),
+                                    static_cast<uint32_t>(relPos.y));
+        pickSys->OnUpdate(0.0f);
+        auto const& result = pickSys->GetLastResult();
+        if (result.Valid) {
+            m_EditModeSystem->OnMouseClick(result.PrimitiveID, relPos.x, relPos.y, isShiftHeld);
+        } else {
+            // Click on empty space clears selection (unless additive).
+            if (!isShiftHeld) {
+                m_EditModeSystem->OnMouseClick(0xFFFFFFFFu, relPos.x, relPos.y, false);
+            }
+        }
+        return true;
+    }
+
     // Gizmo gets first right of refusal — prevents mis-selecting while dragging a handle.
     if (m_GizmoRenderer && m_GizmoRenderer->OnMouseButtonPressed(relPos.x, relPos.y)) {
         return true;
     }
 
-    bool const isShiftHeld = Input::IsKeyPressed(KeyCode::LeftShift);
-    auto* selSystem        = m_ActiveScene->GetSystem<SelectionSystem>();
+    auto* selSystem = m_ActiveScene->GetSystem<SelectionSystem>();
     if (selSystem == nullptr) { return false; }
 
     LOG_TRACE(
@@ -235,8 +257,24 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
         return true;
     }
 
+    // Element mode shortcuts (edit mode only): 1=Vertex, 2=Edge, 3=Face.
+    if (m_InEditMode && m_EditModeSystem) {
+        if (e.GetKeyCode() == static_cast<int>(KeyCode::D1)) {
+            m_EditModeSystem->SetElementMode(ElementMode::Vertex);
+            return true;
+        }
+        if (e.GetKeyCode() == static_cast<int>(KeyCode::D2)) {
+            m_EditModeSystem->SetElementMode(ElementMode::Edge);
+            return true;
+        }
+        if (e.GetKeyCode() == static_cast<int>(KeyCode::D3)) {
+            m_EditModeSystem->SetElementMode(ElementMode::Face);
+            return true;
+        }
+        return false;
+    }
+
     // Gizmo shortcuts are object-mode only.
-    if (m_InEditMode) { return false; }
 
     if (e.GetKeyCode() == static_cast<int>(KeyCode::T)) {
         if (m_GizmoRenderer) { m_GizmoRenderer->SetMode(GizmoMode::Translation); }

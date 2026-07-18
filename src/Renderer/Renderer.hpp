@@ -39,6 +39,11 @@ public:
     // Edit mode overlay: dark edge lines + orange vertex dots on top of the solid mesh.
     static void SubmitEditOverlay(std::shared_ptr<Mesh> const& mesh, Matx4f const& transform);
 
+    // Selection highlight: draws a position-only VAO with a white flat-color shader.
+    // glPrimitive should be GL_POINTS, GL_LINES, or GL_TRIANGLES.
+    static void SubmitSelectionHighlight(std::shared_ptr<VertexArray> const& vao, uint32_t count,
+                                         uint32_t glPrimitive, Matx4f const& transform);
+
     static void OnWindowResize(uint32_t width, uint32_t height);
 
     static void SetDebugSelectionMode(bool enable);

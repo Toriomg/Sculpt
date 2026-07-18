@@ -180,6 +180,24 @@ void Renderer::SubmitEditOverlay(std::shared_ptr<Mesh> const& mesh, Matx4f const
     Shader::Unbind();
 }
 
+void Renderer::SubmitSelectionHighlight(std::shared_ptr<VertexArray> const& vao, uint32_t count,
+                                        uint32_t glPrimitive, Matx4f const& transform) {
+    auto const& shader = s_SceneData.WireframeShader;
+    shader->Bind();
+    shader->SetUniformMat4f("u_ViewProjection", s_SceneData.View);
+    shader->SetUniformMat4f("u_Model", transform);
+    shader->SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);  // white highlight
+
+    vao->Bind();
+    glLineWidth(2.0f);
+    glPointSize(8.0f);
+    glDrawArrays(static_cast<GLenum>(glPrimitive), 0, static_cast<GLsizei>(count));
+    glLineWidth(1.0f);
+    glPointSize(1.0f);
+
+    Shader::Unbind();
+}
+
 void Renderer::SubmitFlat(std::shared_ptr<Mesh> const& mesh, Vec4 const& color,
                           Matx4f const& transform) {
     auto const& shader = s_SceneData.WireframeShader;

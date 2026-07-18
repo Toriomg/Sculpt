@@ -29,6 +29,18 @@ void RenderCommand::DrawPoints(std::shared_ptr<VertexArray> const& vertexArray,
     GLCall(glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(vertexCount)));
 }
 
+void RenderCommand::DrawLines(std::shared_ptr<VertexArray> const& vertexArray,
+                              uint32_t vertexCount) {
+    vertexArray->Bind();
+    GLCall(glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertexCount)));
+}
+
+void RenderCommand::DrawTrianglesArray(std::shared_ptr<VertexArray> const& vertexArray,
+                                       uint32_t vertexCount) {
+    vertexArray->Bind();
+    GLCall(glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertexCount)));
+}
+
 void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
     GLCall(glViewport(x, y, width, height));
 }
