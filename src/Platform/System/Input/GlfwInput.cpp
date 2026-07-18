@@ -1,11 +1,10 @@
 #include "GlfwInput.hpp"
+#include "Platform/System/Window/GlfwWindow.hpp"
 
 #include <cmath>
 
-GlfwInput::GlfwInput(Window* window)
-    : m_NativeWindow(static_cast<GLFWwindow*>(window->GetNativeWindow())) {
-    // We need the native GLFW window handle for polling
-}
+GlfwInput::GlfwInput(GlfwWindow* window)
+    : m_NativeWindow(static_cast<GLFWwindow*>(window->GetNativeWindow())) { }
 
 void GlfwInput::OnUpdateImpl() {
     // This can be used for more advanced features later, like

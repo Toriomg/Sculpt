@@ -1,29 +1,33 @@
-// OpenGL 2D texture implementing IAsset; wraps a GL texture ID and exposes Bind/Unbind by slot.
+// OpenGL 2D texture wrapping a GL texture ID; exposes Bind/Unbind by slot.
 #pragma once
-#include "Platform/CoreUtils/IAsset.hpp"
+#include "Platform/CoreUtils/AssetHandle.hpp"
 #include <cstdint>
 
 struct TextureSpecification {
     uint32_t Width  = 1;
     uint32_t Height = 1;
     int channels    = 4;  // Default to RGBA
-                          // You can add more formats later, e.g., RGB, Float textures, etc.
-                          // GLenum Format = GL_RGBA8;
 };
 
-class Texture : public IAsset {
+class Texture {
+public:
+    AssetHandle Handle;
+
+    Texture(TextureSpecification const& specification, void const* data = nullptr);
+    ~Texture();
+    Texture(Texture const&)            = delete;
+    Texture& operator=(Texture const&) = delete;
+    Texture(Texture&&)                 = default;
+    Texture& operator=(Texture&&)      = default;
+
+    void Bind(unsigned int slot = 0) const;
+    static void Unbind();
+
+    int GetWidth() const { return static_cast<int>(m_Specification.Width); }
+    int GetHeight() const { return static_cast<int>(m_Specification.Height); }
+    uint32_t GetRendererID() const { return m_RendererID; }
+
 private:
     uint32_t m_RendererID;
     TextureSpecification m_Specification;
-
-public:
-    Texture(TextureSpecification const& specification, void const* data = nullptr);
-    virtual ~Texture();
-
-    void Bind(unsigned int slot = 0) const;
-    static void Unbind() ;
-
-    inline int GetWidth() const { return m_Specification.Width; }
-    inline int GetHeight() const { return m_Specification.Height; }
-    uint32_t GetRendererID() const { return m_RendererID; }
 };

@@ -3,7 +3,7 @@
 
 #include "stb_image/stb_image.h"
 
-std::shared_ptr<IAsset> TextureLoader::Load(std::string const& filepath) {
+std::shared_ptr<Texture> TextureLoader::Load(std::string const& filepath) {
     int width = 0, height = 0, channels = 0;
 
     // stb_image stores rows top-to-bottom; OpenGL expects bottom-to-top. This is a global stb_image

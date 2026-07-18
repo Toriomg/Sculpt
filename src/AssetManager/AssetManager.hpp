@@ -1,9 +1,9 @@
-// Static asset management facade: routes file loads through LoaderSystem and caches results in
-// AssetRegistry.
+// Static asset management facade: loads assets from disk and caches them by handle.
 #pragma once
-#include "AssetRegistry.hpp"
-#include "Loader/LoaderSystem.hpp"
+#include "Platform/CoreUtils/AssetHandle.hpp"
 #include <functional>
+#include <memory>
+#include <string>
 
 class AssetManager {
 public:
@@ -16,10 +16,10 @@ public:
     static void LoadAsync(std::string const& filepath,
                           std::function<void(AssetHandle)> onComplete = {});
 
-    // Retrieves an asset by its handle. Returns nullptr if not found.
-    static std::shared_ptr<IAsset> Get(AssetHandle handle);
+    // Retrieves an asset by its handle as void*. Prefer GetAs<T>.
+    static std::shared_ptr<void> Get(AssetHandle handle);
 
     template <typename T> static std::shared_ptr<T> GetAs(AssetHandle handle) {
-        return std::dynamic_pointer_cast<T>(Get(handle));
+        return std::static_pointer_cast<T>(Get(handle));
     }
 };

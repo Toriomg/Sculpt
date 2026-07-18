@@ -3,10 +3,6 @@
 #include "Platform/CoreUtils/Log.hpp"
 #include <utility>
 
-std::unique_ptr<Window> Window::Create(std::string_view title, uint32_t width, uint32_t height) {
-    return std::make_unique<GlfwWindow>(title, width, height);
-}
-
 GlfwWindow::GlfwWindow(std::string_view title, uint32_t width, uint32_t height) {
     Init(title, width, height);
 }

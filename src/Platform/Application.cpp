@@ -2,7 +2,6 @@
 
 #include <ranges>
 
-#include <utility>
 #include "AssetManager/AssetManager.hpp"
 #include "Editor/EditorLayer.hpp"
 #include "Editor/ImGuiLayer.hpp"
@@ -10,14 +9,15 @@
 #include "Platform/Jobs/TaskQueue.hpp"
 #include "Platform/System/Time.hpp"
 #include "Renderer/Renderer.hpp"
+#include <utility>
 
-Application::Application(std::string  name, unsigned int  /*width*/, unsigned int  /*height*/)
+Application::Application(std::string name, unsigned int /*width*/, unsigned int /*height*/)
     : m_Window(nullptr), m_AppName(std::move(name)) {
     Log::Init();
     AssetManager::Init();
     TaskQueue::Init();
 
-    m_Window = Window::Create();
+    m_Window = std::make_unique<GlfwWindow>("3D Modeler", 1470, 810);
     Input::Init(m_Window.get());
     Renderer::Init();  // Initialize the Renderer
 
@@ -75,13 +75,13 @@ void Application::OnEvent(Event& e) {
 
     // Reverse iteration gives the topmost (most recently pushed) layer first,
     // so overlay layers can consume events before layers beneath them.
-    for (auto & it : std::views::reverse(m_LayerStack)) {
+    for (auto& it : std::views::reverse(m_LayerStack)) {
         if (e.Handled) { break; }
         it->OnEvent(e);
     }
 }
 
-bool Application::OnWindowClose(WindowCloseEvent&  /*e*/) {
+bool Application::OnWindowClose(WindowCloseEvent& /*e*/) {
     m_Running = false;
     CORE_LOG_INFO("Window close event received. Shutting down.");
     return true;  // Return true: we handled it, no other layer needs it.

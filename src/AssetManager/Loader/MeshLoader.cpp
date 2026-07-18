@@ -6,7 +6,7 @@
 #include "Platform/Graphics/Vertex.hpp"
 #include "Renderer/Mesh.hpp"
 
-std::shared_ptr<IAsset> MeshLoader::Load(std::string const& filepath) {
+std::shared_ptr<Mesh> MeshLoader::Load(std::string const& filepath) {
     Assimp::Importer importer;
     // aiProcess_FlipUVs: OpenGL places V=0 at the bottom, but most DCC tools export V=0 at the top.
     // aiProcess_CalcTangentSpace: pre-computed for future normal mapping; not consumed by the
@@ -16,7 +16,10 @@ std::shared_ptr<IAsset> MeshLoader::Load(std::string const& filepath) {
                                                            aiProcess_FlipUVs |
                                                            aiProcess_CalcTangentSpace);
 
-    if ((scene == nullptr) || ((scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || (scene->mRootNode == nullptr)) {
+    if ((scene == nullptr) ||
+        ((scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) ||
+        (scene->mRootNode == nullptr))
+    {
         CORE_LOG_ERROR("[MeshLoader] Assimp error loading {0}: {1}", filepath,
                        importer.GetErrorString());
         return nullptr;

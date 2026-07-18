@@ -1,11 +1,11 @@
-// IAssetLoader that produces Mesh assets via Assimp; registered in LoaderSystem for 3D model file
-// extensions.
+// Loads 3D model files via Assimp and returns a Mesh.
 #pragma once
-#include "IAssetLoader.hpp"
+#include <memory>
+#include <string>
 
-class MeshLoader : public IAssetLoader {
+class Mesh;
+
+class MeshLoader {
 public:
-    std::shared_ptr<IAsset> Load(std::string const& filepath) override;
-
-private:
+    std::shared_ptr<Mesh> Load(std::string const& filepath);
 };

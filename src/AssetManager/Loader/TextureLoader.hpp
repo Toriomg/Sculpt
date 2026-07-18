@@ -1,9 +1,11 @@
-// IAssetLoader that produces Texture assets via stb_image; registered in LoaderSystem for image
-// file extensions.
+// Loads image files via stb_image and returns a Texture.
 #pragma once
-#include "IAssetLoader.hpp"
+#include <memory>
+#include <string>
 
-class TextureLoader : public IAssetLoader {
+class Texture;
+
+class TextureLoader {
 public:
-    std::shared_ptr<IAsset> Load(std::string const& filepath) override;
+    std::shared_ptr<Texture> Load(std::string const& filepath);
 };

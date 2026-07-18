@@ -2,12 +2,13 @@
 // Application on startup.
 #pragma once
 #include "Platform/System/Input/Input.hpp"
-#include "Platform/System/Window/Window.hpp"
-#include <GLFW/glfw3.h>
+
+struct GLFWwindow;  // opaque GLFW handle; full type only needed in .cpp
+class GlfwWindow;
 
 class GlfwInput : public Input::InputImpl {
 public:
-    GlfwInput(Window* window);  // Constructor takes the abstract Window
+    explicit GlfwInput(GlfwWindow* window);
 
 protected:
     // Implement the pure virtual functions from the base class

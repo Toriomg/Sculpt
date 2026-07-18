@@ -5,7 +5,7 @@
 std::unique_ptr<Input::InputImpl> Input::s_Instance;
 
 // This is where we create the concrete implementation and store it
-void Input::Init(Window* window) {
+void Input::Init(GlfwWindow* window) {
     // We create a new GlfwInput and give it the window it needs to poll
     s_Instance = std::make_unique<GlfwInput>(window);
 }

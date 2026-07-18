@@ -3,15 +3,14 @@
 #pragma once
 #include "KeyCodes.hpp"
 #include "Platform/CoreUtils/Math/maths.hpp"
-#include "Platform/System/Window/Window.hpp"
 #include <memory>
 
-class Window;  // Forward-declare
+class GlfwWindow;
 
 // The public-facing static class
 class Input {
 public:
-    static void Init(Window* window);
+    static void Init(GlfwWindow* window);
     static void Shutdown();
 
     // To be called once per frame by the Application

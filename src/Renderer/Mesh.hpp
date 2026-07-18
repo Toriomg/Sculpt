@@ -2,14 +2,16 @@
 // sphere, torus, etc.).
 #pragma once
 
-#include "Platform/CoreUtils/IAsset.hpp"
+#include "Platform/CoreUtils/AssetHandle.hpp"
 #include "Platform/Graphics/Buffers/IndexBuffer.hpp"
 #include "Platform/Graphics/Buffers/VertexArray.hpp"
 #include <cstdint>
 #include <memory>
 
-class Mesh : public IAsset {
+class Mesh {
 public:
+    AssetHandle Handle;
+
     Mesh(std::shared_ptr<VertexArray> va, std::shared_ptr<IndexBuffer> ib, uint32_t vertexCount)
         : m_VertexArray(va), m_IndexBuffer(ib), m_VertexCount(vertexCount) { }
 

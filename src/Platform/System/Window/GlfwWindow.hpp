@@ -1,27 +1,35 @@
-// GLFW concrete Window: owns GLFWwindow*, installs GLFW callbacks, and initializes the OpenGL
-// context.
+// GLFW window: owns GLFWwindow*, installs GLFW callbacks, and initializes the OpenGL context.
 #pragma once
-#include "Platform/System/Window/Window.hpp"
+#include "Core/glhead.hpp"
+#include "Platform/System/Events/KeyboardEvent.hpp"
+#include "Platform/System/Events/MouseEvent.hpp"
+#include "Platform/System/Events/WindowEvent.hpp"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <functional>
+#include <string_view>
 
-class GlfwWindow : public Window {
+class GlfwWindow {
 public:
+    using EventCallbackFn = std::function<void(Event&)>;
+
     GlfwWindow(std::string_view title, uint32_t width, uint32_t height);
-    ~GlfwWindow() override;
+    ~GlfwWindow();
+    GlfwWindow(GlfwWindow const&)            = delete;
+    GlfwWindow& operator=(GlfwWindow const&) = delete;
+    GlfwWindow(GlfwWindow&&)                 = delete;
+    GlfwWindow& operator=(GlfwWindow&&)      = delete;
 
-    void OnUpdate() override;
+    void OnUpdate();
 
-    uint32_t GetWidth() const override { return m_Data.Width; }
-    uint32_t GetHeight() const override { return m_Data.Height; }
+    uint32_t GetWidth() const { return m_Data.Width; }
+    uint32_t GetHeight() const { return m_Data.Height; }
 
-    void SetEventCallback(EventCallbackFn const& callback) override {
-        m_Data.EventCallback = callback;
-    }
-    void SetVSync(bool enabled) override;
-    bool IsVSync() const override;
+    void SetEventCallback(EventCallbackFn const& callback) { m_Data.EventCallback = callback; }
+    void SetVSync(bool enabled);
+    bool IsVSync() const;
 
-    void* GetNativeWindow() const override { return m_Window; }
+    void* GetNativeWindow() const { return m_Window; }
 
 private:
     void Init(std::string_view title, uint32_t width, uint32_t height);

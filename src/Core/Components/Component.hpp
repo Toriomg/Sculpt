@@ -9,11 +9,7 @@
 class Mesh;
 class Material;
 
-// Base component struct. All components will "inherit" from this conceptually.
-// In practice, they just need to be simple data structs.
-struct Component { };
-
-struct NameComponent : public Component {
+struct NameComponent {
     std::string Name;
 
     NameComponent()                                = default;
@@ -22,7 +18,7 @@ struct NameComponent : public Component {
     NameComponent(std::string const& name) : Name(name) { }
 };
 
-struct TransformComponent : public Component {
+struct TransformComponent {
     Vec3 Translation  = {0.0f, 0.0f, 0.0f};
     Vec3 EulerDegrees = {0.0f, 0.0f, 0.0f};
     Vec3 Scale        = {1.0f, 1.0f, 1.0f};
@@ -38,7 +34,7 @@ struct TransformComponent : public Component {
     }
 };
 
-struct MeshComponent : public Component {
+struct MeshComponent {
     std::shared_ptr<Mesh> MeshAsset;
     std::shared_ptr<Material> MaterialAsset;
     bool Wireframe = false;
@@ -50,7 +46,7 @@ struct MeshComponent : public Component {
         : MeshAsset(mesh), MaterialAsset(material) { }
 };
 
-struct CameraComponent : public Component {
+struct CameraComponent {
     Camera SceneCamera;
     bool IsPrimary = true;
 
@@ -59,7 +55,7 @@ struct CameraComponent : public Component {
     CameraComponent& operator=(CameraComponent const&) = default;
 };
 
-struct SelectionComponent : public Component {
+struct SelectionComponent {
     uint32_t SelectionGroup = 0;
     uint32_t CustomData     = 0;
     bool AllowsOutline      = true;

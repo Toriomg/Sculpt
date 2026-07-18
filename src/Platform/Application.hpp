@@ -4,7 +4,7 @@
 
 #include "Platform/Layers/LayerStack.hpp"
 #include "Platform/System/Input/Input.hpp"
-#include "Platform/System/Window/Window.hpp"
+#include "Platform/System/Window/GlfwWindow.hpp"
 #include <memory>
 #include <string>
 
@@ -12,7 +12,7 @@ class ImGuiLayer;
 
 class Application {
 public:
-    Application(std::string  name = "3D MODELER", unsigned int width = 1470,
+    Application(std::string name = "3D MODELER", unsigned int width = 1470,
                 unsigned int height = 810);
     ~Application();
 
@@ -20,7 +20,7 @@ public:
     void OnEvent(Event& event);
 
 private:
-    std::unique_ptr<Window> m_Window;
+    std::unique_ptr<GlfwWindow> m_Window;
     std::string m_AppName;
     bool m_Running = true;
 
