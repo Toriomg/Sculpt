@@ -33,7 +33,7 @@ Sculpt is a desktop 3D modeler with an ECS-based scene graph (EnTT), a custom ma
 
 ```bash
 cmake -B build && cmake --build build
-./build/MyOpenGLApp
+./build/Sculpt
 ```
 
 Requires: CMake, a C++23-capable Clang, OpenGL 4.x, GLFW, GLEW, Assimp.

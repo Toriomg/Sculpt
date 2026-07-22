@@ -6,7 +6,7 @@ if(NOT DEFINED CMAKE_CXX_COMPILER)
     set(CMAKE_CXX_COMPILER clang++)
 endif()
 
-project(MyOpenGLProject CXX)
+project(Sculpt CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -34,11 +34,11 @@ set(VENDOR_SOURCES
     src/vendor/stb_image/stb_image.cpp
 )
 
-add_executable(MyOpenGLApp ${APP_SOURCES} ${VENDOR_SOURCES})
+add_executable(Sculpt ${APP_SOURCES} ${VENDOR_SOURCES})
 
 # --- Include paths ---
 
-target_include_directories(MyOpenGLApp PRIVATE
+target_include_directories(Sculpt PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vendor
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vendor/imgui
@@ -46,7 +46,7 @@ target_include_directories(MyOpenGLApp PRIVATE
 
 # --- Compiler flags ---
 
-target_compile_options(MyOpenGLApp PRIVATE
+target_compile_options(Sculpt PRIVATE
     -Wall
     -Wextra
     -Wpedantic
@@ -55,12 +55,12 @@ target_compile_options(MyOpenGLApp PRIVATE
     $<$<CONFIG:Release>:-O2 -DNDEBUG>
 )
 
-target_compile_definitions(MyOpenGLApp PRIVATE
+target_compile_definitions(Sculpt PRIVATE
     FMT_HEADER_ONLY
     $<$<CONFIG:Debug>:LSAN_SUPPRESSIONS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/lsan.supp">
 )
 
-target_link_options(MyOpenGLApp PRIVATE
+target_link_options(Sculpt PRIVATE
     $<$<CONFIG:Debug>:-fsanitize=address,undefined>
 )
 
@@ -72,7 +72,7 @@ set_source_files_properties(${VENDOR_SOURCES} PROPERTIES
 
 # --- Link ---
 
-target_link_libraries(MyOpenGLApp PRIVATE
+target_link_libraries(Sculpt PRIVATE
     OpenGL::GL
     assimp::assimp
     GLEW::glew
