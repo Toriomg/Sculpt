@@ -3,6 +3,8 @@
 Reference for what the project needs to become a functional 3D modeler.
 Grouped by domain; roughly priority-ordered within each group.
 
+**After implementing a feature, delete its entry from this file and from `doc/skills/features-summary.md`.**
+
 ---
 
 ## Already Implemented

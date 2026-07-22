@@ -1,13 +1,28 @@
-# Graphs and Diagrams
+# doc/
 
-This folder contains `.drawio` files, which are used to create and store class diagrams and architecture diagrams for the project. These diagrams help visualize the structure and relationships within the codebase, making it easier to understand and maintain the software design.
+Diagrams and agent skills for this codebase.
 
-## Purpose
+## Diagrams (`.drawio` — open with draw.io)
+| File | Contents |
+|---|---|
+| `ClassDiagram3.0.drawio` | Class diagram — consult before structural changes |
+| `Architecture.drawio` | High-level architecture |
+| `redesign.drawio` | Redesign notes |
 
-The diagrams serve as a reference for developers to quickly grasp the overall architecture, dependencies, and interactions between different components. They are especially useful during onboarding, code reviews, and when planning new features or refactoring.
+## skills/
+Topic-specific reference files. Read one when doing work in that domain.
 
-## How to Use
+| File | When to use |
+|---|---|
+| `architecture-uml.md` | Before any structural change — full UML class diagrams, ownership tree, planned extensions |
+| `math-api.md` | Writing transform/math code — Vec, Matx4f, Quaternion API |
+| `edit-mode.md` | Working on EditMesh, EditModeSystem, or any edit mode operation |
+| `gl-patterns.md` | GPU code: VAO/VBO, shaders, FBOs, picking, UBOs |
+| `planned-arch.md` | Implementing planned features: lighting, modifiers, serialization, post-process, skybox, preferences |
+| `features-summary.md` | Quick one-line specs for all roadmap features |
 
-- Open `.drawio` files with [draw.io](https://app.diagrams.net/) or compatible editors.
-- Update diagrams when significant changes are made to the codebase.
-- Use diagrams to communicate design decisions and document architectural patterns.
+## Other
+| File | Contents |
+|---|---|
+| `features.md` | Full feature specs with algorithm and parameter details |
+| `audit_sobreingenieria.md` | Over-engineering audit report |
