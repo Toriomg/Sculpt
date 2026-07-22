@@ -1,0 +1,161 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  # ── Windows ─────────────────────────────────────────────────────────────────
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+          C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
+
+      - name: Install dependencies (static)
+        run: C:\vcpkg\vcpkg.exe install glfw3:x64-windows-static glew:x64-windows-static assimp:x64-windows-static
+
+      - name: Build
+        run: |
+          cmake -B build `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
+            -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+          cmake --build build --config Release
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v',''
+          $dir = "sculpt-$version-windows"
+          New-Item -ItemType Directory $dir
+          Copy-Item build\Release\Sculpt.exe $dir\
+          Copy-Item -Recurse res $dir\res
+          Remove-Item $dir\res\models\dragon.obj -ErrorAction SilentlyContinue
+          Remove-Item -Recurse $dir\res\Screenshots -ErrorAction SilentlyContinue
+          Compress-Archive -Path $dir -DestinationPath "$dir.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: sculpt-*-windows.zip
+
+  # ── macOS ───────────────────────────────────────────────────────────────────
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (static)
+        run: brew install glfw glew assimp
+
+      - name: Build
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DBUILD_SHARED_LIBS=OFF
+          cmake --build build
+
+      - name: Package
+        run: |
+          version="${{ github.ref_name }}"
+          version="${version#v}"
+          dir="sculpt-${version}-macos"
+          mkdir "$dir"
+          cp build/Sculpt "$dir/"
+          cp -r res "$dir/res"
+          rm -f "$dir/res/models/dragon.obj"
+          rm -rf "$dir/res/Screenshots"
+          zip -r "${dir}.zip" "$dir"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: sculpt-*-macos.zip
+
+  # ── Debian (.deb) ───────────────────────────────────────────────────────────
+  debian:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang-18 \
+            libglfw3-dev \
+            libglew-dev \
+            libassimp-dev \
+            libgtest-dev
+
+      - name: Build
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=clang++-18
+          cmake --build build
+
+      - name: Package .deb
+        run: |
+          version="${{ github.ref_name }}"
+          version="${version#v}"
+
+          pkg="sculpt_${version}_amd64"
+          mkdir -p "${pkg}/DEBIAN"
+          mkdir -p "${pkg}/opt/sculpt/bin"
+          mkdir -p "${pkg}/opt/sculpt/res"
+          mkdir -p "${pkg}/usr/bin"
+
+          cp build/Sculpt "${pkg}/opt/sculpt/bin/Sculpt"
+          cp -r res/. "${pkg}/opt/sculpt/res/"
+          rm -f "${pkg}/opt/sculpt/res/models/dragon.obj"
+          rm -rf "${pkg}/opt/sculpt/res/Screenshots"
+
+          # Wrapper script so relative res/ paths resolve correctly
+          cat > "${pkg}/usr/bin/sculpt" <<'EOF'
+          #!/bin/sh
+          cd /opt/sculpt && exec ./bin/Sculpt "$@"
+          EOF
+          chmod +x "${pkg}/usr/bin/sculpt"
+
+          cat > "${pkg}/DEBIAN/control" <<EOF
+          Package: sculpt
+          Version: ${version}
+          Architecture: amd64
+          Maintainer: Toriomg <hectorusuario@gmail.com>
+          Description: 3D mesh modeling application built with OpenGL
+          Depends: libglfw3, libglew2.2, libassimp5
+          EOF
+
+          dpkg-deb --build "${pkg}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debian
+          path: sculpt_*.deb
+
+  # ── GitHub Release ───────────────────────────────────────────────────────────
+  release:
+    needs: [windows, macos, debian]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: artifacts
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
