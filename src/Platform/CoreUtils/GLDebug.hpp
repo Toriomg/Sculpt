@@ -4,7 +4,11 @@
 #include "Log.hpp"
 #include <GL/glew.h>
 
-#define DEBUG_BREAK() __builtin_trap()
+#ifdef _MSC_VER
+ #define DEBUG_BREAK() __debugbreak()
+#else
+ #define DEBUG_BREAK() __builtin_trap()
+#endif
 
 // A macro to wrap our GL calls in for easy debugging
 #define ASSERT(x)            \

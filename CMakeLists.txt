@@ -57,7 +57,7 @@ target_compile_options(Sculpt PRIVATE
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
         -Wall -Wextra -Wpedantic -Wno-unused-parameter>
     $<$<CXX_COMPILER_ID:MSVC>:
-        /W4 /wd4100>
+        /W4 /wd4100 /utf-8>
     $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
         -O0 -g -fsanitize=address,undefined>
     $<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
