@@ -81,13 +81,14 @@ target_link_libraries(Sculpt PRIVATE
 
 # --- Math tests ---
 
-find_package(GTest REQUIRED)
-
-add_executable(MathTest
-    tests/math_test.cpp
-    src/Platform/CoreUtils/Math/maths.cpp
-)
-target_include_directories(MathTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_compile_options(MathTest PRIVATE -Wall -Wextra -Wpedantic)
-target_compile_features(MathTest PRIVATE cxx_std_23)
-target_link_libraries(MathTest PRIVATE GLEW::glew GTest::GTest GTest::Main)
+find_package(GTest)
+if(GTest_FOUND)
+    add_executable(MathTest
+        tests/math_test.cpp
+        src/Platform/CoreUtils/Math/maths.cpp
+    )
+    target_include_directories(MathTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_compile_options(MathTest PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_features(MathTest PRIVATE cxx_std_23)
+    target_link_libraries(MathTest PRIVATE GLEW::glew GTest::GTest GTest::Main)
+endif()

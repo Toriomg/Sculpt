@@ -93,8 +93,7 @@ jobs:
             clang-18 \
             libglfw3-dev \
             libglew-dev \
-            libassimp-dev \
-            libgtest-dev
+            libassimp-dev
 
       - name: Build
         run: |
