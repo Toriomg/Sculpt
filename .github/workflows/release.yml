@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 0.0.0)'
+        required: true
+        default: '0.0.0-test'
 
 jobs:
   # ── Windows ─────────────────────────────────────────────────────────────────
@@ -32,7 +38,8 @@ jobs:
       - name: Package
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}" -replace '^v',''
+          $tag = "${{ github.ref_name }}"
+          $version = if ("${{ github.event_name }}" -eq "workflow_dispatch") { "${{ inputs.version }}" } else { $tag -replace '^v','' }
           $dir = "sculpt-$version-windows"
           New-Item -ItemType Directory $dir
           Copy-Item build\Release\Sculpt.exe $dir\
@@ -65,8 +72,12 @@ jobs:
 
       - name: Package
         run: |
-          version="${{ github.ref_name }}"
-          version="${version#v}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            version="${{ inputs.version }}"
+          else
+            version="${{ github.ref_name }}"
+            version="${version#v}"
+          fi
           dir="sculpt-${version}-macos"
           mkdir "$dir"
           cp build/Sculpt "$dir/"
@@ -104,8 +115,12 @@ jobs:
 
       - name: Package .deb
         run: |
-          version="${{ github.ref_name }}"
-          version="${version#v}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            version="${{ inputs.version }}"
+          else
+            version="${{ github.ref_name }}"
+            version="${version#v}"
+          fi
 
           pkg="sculpt_${version}_amd64"
           mkdir -p "${pkg}/DEBIAN"
@@ -141,8 +156,9 @@ jobs:
           name: debian
           path: sculpt_*.deb
 
-  # ── GitHub Release ───────────────────────────────────────────────────────────
+  # ── GitHub Release (tag pushes only) ────────────────────────────────────────
   release:
+    if: github.event_name == 'push'
     needs: [windows, macos, debian]
     runs-on: ubuntu-latest
     permissions:
