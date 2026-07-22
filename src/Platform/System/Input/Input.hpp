@@ -4,6 +4,7 @@
 #include "KeyCodes.hpp"
 #include "Platform/CoreUtils/Math/maths.hpp"
 #include <memory>
+#include <string>
 
 class GlfwWindow;
 
