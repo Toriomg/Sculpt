@@ -14,7 +14,6 @@
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Renderer.hpp"
 
-#include "Platform/CoreUtils/Log.hpp"
 #include <algorithm>
 #include <cmath>
 #include <map>
@@ -1101,11 +1100,27 @@ void EditModeSystem::DoBevelEdges(BevelState& state) {
         uint32_t const A2 = addOffsetVert(srcA_f2, posA, perp2);
         uint32_t const B2 = addOffsetVert(srcB_f2, posB, perp2);
 
-        // Redirect F1 and F2 to use the new offset vertices.
-        indices[f1.fi * 3 + f1_posForA] = A1;
-        indices[f1.fi * 3 + f1_posForB] = B1;
-        indices[f2.fi * 3 + f2_posForA] = A2;
-        indices[f2.fi * 3 + f2_posForB] = B2;
+        // Redirect ALL triangles in the same geometric face group to the offset vertices.
+        // A flat-shaded quad has 2 triangles sharing the same vertex indices; updating only
+        // f1.fi leaves the partner triangle at the original position, creating a crack.
+        // ponytail: normal-based grouping; smooth-mesh vertex corners need half-edge topology.
+        Vec3 const n1            = geoNormal(f1.fi);
+        Vec3 const n2            = geoNormal(f2.fi);
+        auto redirectInFaceGroup = [&](uint32_t src, uint32_t dst, Vec3 const& fn) {
+            for (uint32_t fi2 = 0; fi2 < faceCount; ++fi2) {
+                Vec3 const tfn = geoNormal(fi2);
+                float const d  = tfn.x * fn.x + tfn.y * fn.y + tfn.z * fn.z;
+                if (d < 0.99f) { continue; }
+                uint32_t const b = fi2 * 3;
+                for (uint32_t k = 0; k < 3; ++k) {
+                    if (indices[b + k] == src) { indices[b + k] = dst; }
+                }
+            }
+        };
+        redirectInFaceGroup(srcA_f1, A1, n1);
+        redirectInFaceGroup(srcB_f1, B1, n1);
+        redirectInFaceGroup(srcA_f2, A2, n2);
+        redirectInFaceGroup(srcB_f2, B2, n2);
 
         // Bevel strip: quad A1-B1-B2-A2 as two CCW triangles.
         // The predicted strip normal is cross(perp2-perp1, edgeDir); it must align with the
@@ -1133,18 +1148,12 @@ void EditModeSystem::DoBevelEdges(BevelState& state) {
         }
     }
 
-    CORE_LOG_INFO("DoBevelEdges: offsetVerts={} selEdges={}", state.offsetVerts.size(),
-                  m_EditMesh.selectedEdges.size());
     m_EditMesh.selectionDirty = true;
 }
 
 void EditModeSystem::Bevel() {
     if (!m_EditMesh.IsActive() || m_BevelState.has_value()) { return; }
-    if (m_EditMesh.mode != ElementMode::Edge || m_EditMesh.selectedEdges.empty()) {
-        CORE_LOG_WARN("Bevel: mode={} selectedEdges={}", static_cast<int>(m_EditMesh.mode),
-                      m_EditMesh.selectedEdges.size());
-        return;
-    }
+    if (m_EditMesh.mode != ElementMode::Edge || m_EditMesh.selectedEdges.empty()) { return; }
 
     BevelState state;
     state.verticesBefore = m_EditMesh.vertices;
@@ -1162,8 +1171,6 @@ void EditModeSystem::UpdateBevel(float dx, float dy) {
     if (!m_BevelState) { return; }
     auto& state = *m_BevelState;
     state.width = std::max(0.0f, state.width + dx * 0.005f);
-    CORE_LOG_TRACE("UpdateBevel dx={:.2f} width={:.4f} offsetVerts={}", dx, state.width,
-                   state.offsetVerts.size());
 
     for (auto const& ov : state.offsetVerts) {
         if (ov.idx >= m_EditMesh.vertices.size()) { continue; }
