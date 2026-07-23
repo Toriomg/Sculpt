@@ -47,6 +47,13 @@ public:
     // Discard the grab: restore pre-extrude geometry and selection.
     void CancelGrab();
 
+    // Inset selected faces (I key). Mouse drag controls thickness; click or Enter confirms.
+    void Inset();
+    [[nodiscard]] bool IsInsetActive() const { return m_InsetState.has_value(); }
+    void UpdateInset(float dx, float dy);
+    void ConfirmInset();
+    void CancelInset();
+
     // Overwrite CPU mesh state without re-reading from GPU; called by undo/redo.
     void SyncFromVertices(std::vector<EditVertex> const& verts, std::vector<uint32_t> const& inds);
 
@@ -55,6 +62,21 @@ public:
     void DrawOverlay(Matx4f const& globalTransform);
 
 private:
+    struct InsetState {
+        std::vector<EditVertex> verticesBefore;
+        std::vector<uint32_t> indicesBefore;
+        std::unordered_set<uint32_t> facesBefore;
+        // Per inner-vertex: original face center + inset direction (centroid → original pos).
+        struct InnerVert {
+            uint32_t idx   = 0;     // index in m_EditMesh.vertices
+            Vec3 center    = {};    // face centroid (fixed reference point)
+            Vec3 direction = {};    // unit vector from center toward original vertex position
+            float baseLen  = 0.0f;  // distance from center to original vertex (max inset radius)
+        };
+        std::vector<InnerVert> innerVerts;
+        float thickness = 0.0f;
+    };
+
     struct ExtrudeState {
         size_t vertexCountBefore{};
         std::vector<uint32_t> indicesBefore;
@@ -74,6 +96,7 @@ private:
     void DoExtrudeFaces(ExtrudeState& state);
     void DoExtrudeEdges(ExtrudeState& state);
     void DoExtrudeVerts(ExtrudeState& state);
+    void DoInsetFaces(InsetState& state);
     // Convert EditMesh CPU data → GPU. fullRebuild=true when index count changed.
     void FlushToGPU(bool fullRebuild);
 
@@ -92,6 +115,7 @@ private:
     uint32_t m_ViewportH     = 810;
 
     std::optional<ExtrudeState> m_ExtrudeState;
+    std::optional<InsetState> m_InsetState;
 
     // Selection highlight VAO/VBO (position-only, rebuilt when selection changes).
     std::shared_ptr<VertexArray> m_SelectionVAO;

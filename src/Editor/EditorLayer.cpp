@@ -297,9 +297,21 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
             }
             return true;
         }
+        if (e.GetKeyCode() == static_cast<int>(KeyCode::I)) {
+            if (m_EditModeSystem->IsInsetActive()) {
+                m_EditModeSystem->ConfirmInset();
+            } else {
+                m_EditModeSystem->Inset();
+            }
+            return true;
+        }
         if (e.GetKeyCode() == static_cast<int>(KeyCode::Escape)) {
             if (m_EditModeSystem->IsGrabActive()) {
                 m_EditModeSystem->CancelGrab();
+                return true;
+            }
+            if (m_EditModeSystem->IsInsetActive()) {
+                m_EditModeSystem->CancelInset();
                 return true;
             }
         }
