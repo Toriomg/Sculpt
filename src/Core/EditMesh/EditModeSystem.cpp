@@ -1040,20 +1040,26 @@ void EditModeSystem::DoBevelEdges(BevelState& state) {
         FaceEdge const& f1 = it->second[0];
         FaceEdge const& f2 = it->second[1];
 
+        // Geometric face normal (p1-p0 × p2-p0, CCW convention) — accurate for any shading mode.
+        auto geoNormal = [&](uint32_t fi) -> Vec3 {
+            uint32_t const b = fi * 3;
+            Vec3 const p0    = verts[indices[b]].position;
+            Vec3 const p1    = verts[indices[b + 1]].position;
+            Vec3 const p2    = verts[indices[b + 2]].position;
+            return normalise((p1 - p0).crossProduct(p2 - p0));
+        };
+
         // For each face, compute the perp direction (from the shared edge into the face).
         auto perpForFace = [&](FaceEdge const& fe) -> Vec3 {
             uint32_t const base = fe.fi * 3;
             Vec3 const pA       = verts[indices[base + fe.posA]].position;
             Vec3 const pB       = verts[indices[base + fe.posB]].position;
             Vec3 const pC       = verts[indices[base + fe.posC]].position;
-            // Face normal from stored vertex normals (safe, regardless of winding).
-            Vec3 const n = normalise(verts[indices[base + fe.posA]].normal +
-                                     verts[indices[base + fe.posB]].normal +
-                                     verts[indices[base + fe.posC]].normal);
-            Vec3 const e = normalise(pB - pA);
-            Vec3 perp    = normalise(n.crossProduct(e));
-            // Ensure perp points toward pC (into the face), not away.
-            Vec3 const toC = pC - (pA + pB) / 2.0f;
+            Vec3 const n        = geoNormal(fe.fi);
+            Vec3 const e        = normalise(pB - pA);
+            Vec3 perp           = normalise(n.crossProduct(e));
+            Vec3 const mid      = (pA + pB) * 0.5f;
+            Vec3 const toC      = pC - mid;
             if ((perp.x * toC.x + perp.y * toC.y + perp.z * toC.z) < 0.0f) { perp = perp * -1.0f; }
             return perp;
         };
@@ -1064,12 +1070,9 @@ void EditModeSystem::DoBevelEdges(BevelState& state) {
         // Determine which local position in each face corresponds to posA (vertex A) vs posB (B).
         // The face may store the edge as A→B or B→A depending on winding.
         auto faceVertIdx = [&](FaceEdge const& fe, Vec3 const& refPos, uint32_t candidate) {
-            // Returns candidate if its position matches refPos, else the other edge pos.
             uint32_t const other = (candidate == fe.posA) ? fe.posB : fe.posA;
             Vec3 const candPos   = verts[indices[fe.fi * 3 + candidate]].position;
-            PK const cp          = qp(candPos);
-            PK const rp          = qp(refPos);
-            return (cp == rp) ? candidate : other;
+            return (qp(candPos) == qp(refPos)) ? candidate : other;
         };
         uint32_t const f1_posForA = faceVertIdx(f1, posA, f1.posA);
         uint32_t const f1_posForB = (f1_posForA == f1.posA) ? f1.posB : f1.posA;
@@ -1077,10 +1080,12 @@ void EditModeSystem::DoBevelEdges(BevelState& state) {
         uint32_t const f2_posForB = (f2_posForA == f2.posA) ? f2.posB : f2.posA;
 
         // Create 4 offset vertices (at width=0 they coincide with A and B).
+        // Copy src vertex before push_back to avoid UB if the vector reallocates.
         auto addOffsetVert = [&](uint32_t srcIdx, Vec3 const& basePos,
                                  Vec3 const& dir) -> uint32_t {
-            uint32_t const newIdx = static_cast<uint32_t>(verts.size());
-            verts.push_back(verts[srcIdx]);
+            uint32_t const newIdx  = static_cast<uint32_t>(verts.size());
+            EditVertex const srcVt = verts[srcIdx];
+            verts.push_back(srcVt);
             verts.back().position = basePos;
             state.offsetVerts.push_back({newIdx, basePos, dir});
             return newIdx;
@@ -1102,14 +1107,30 @@ void EditModeSystem::DoBevelEdges(BevelState& state) {
         indices[f2.fi * 3 + f2_posForA] = A2;
         indices[f2.fi * 3 + f2_posForB] = B2;
 
-        // Bevel strip: quad (A1,B1,B2,A2) as two CCW triangles.
-        // Winding: (A1,B2,B1) and (A1,A2,B2) — verified for standard manifold configs.
-        indices.push_back(A1);
-        indices.push_back(B2);
-        indices.push_back(B1);
-        indices.push_back(A1);
-        indices.push_back(A2);
-        indices.push_back(B2);
+        // Bevel strip: quad A1-B1-B2-A2 as two CCW triangles.
+        // The predicted strip normal is cross(perp2-perp1, edgeDir); it must align with the
+        // average face normal. If it doesn't, flip the winding.
+        Vec3 const edgeDirN   = normalise(posB - posA);
+        Vec3 const predictedN = (perp2 - perp1).crossProduct(edgeDirN);
+        Vec3 const avgFaceN   = geoNormal(f1.fi) + geoNormal(f2.fi);
+        bool const flip =
+            (predictedN.x * avgFaceN.x + predictedN.y * avgFaceN.y + predictedN.z * avgFaceN.z) <
+            0.0f;
+        if (!flip) {
+            indices.push_back(A1);
+            indices.push_back(B2);
+            indices.push_back(B1);
+            indices.push_back(A1);
+            indices.push_back(A2);
+            indices.push_back(B2);
+        } else {
+            indices.push_back(A1);
+            indices.push_back(B1);
+            indices.push_back(B2);
+            indices.push_back(A1);
+            indices.push_back(B2);
+            indices.push_back(A2);
+        }
     }
 
     CORE_LOG_INFO("DoBevelEdges: offsetVerts={} selEdges={}", state.offsetVerts.size(),
