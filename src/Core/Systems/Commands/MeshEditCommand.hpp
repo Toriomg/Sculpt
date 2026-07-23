@@ -1,4 +1,4 @@
-// Undoable mesh topology edit (extrude, etc.); stores full vertex/index snapshots.
+// Undoable mesh topology edit (Extrude, Inset, Loop Cut, etc.); stores full vertex/index snapshots.
 #pragma once
 #include "Core/EditMesh/EditMesh.hpp"
 #include "Core/Entity.hpp"

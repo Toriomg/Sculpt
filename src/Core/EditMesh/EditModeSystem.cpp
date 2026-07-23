@@ -659,7 +659,7 @@ void EditModeSystem::ConfirmGrab() {
     if (hist != nullptr && m_EditMesh.IsActive()) {
         hist->Push(std::make_unique<MeshEditCommand>(
             m_Scene, m_EditMesh.GetEntity(), this, m_ExtrudeState->verticesBefore,
-            m_ExtrudeState->indicesBefore, m_EditMesh.vertices, m_EditMesh.indices));
+            m_ExtrudeState->indicesBefore, m_EditMesh.vertices, m_EditMesh.indices, "Extrude"));
     }
     m_ExtrudeState.reset();
     // GPU already reflects the final state from the last UpdateGrab call.
@@ -802,7 +802,7 @@ void EditModeSystem::ConfirmInset() {
     if (hist != nullptr && m_EditMesh.IsActive()) {
         hist->Push(std::make_unique<MeshEditCommand>(
             m_Scene, m_EditMesh.GetEntity(), this, m_InsetState->verticesBefore,
-            m_InsetState->indicesBefore, m_EditMesh.vertices, m_EditMesh.indices));
+            m_InsetState->indicesBefore, m_EditMesh.vertices, m_EditMesh.indices, "Inset Faces"));
     }
     m_InsetState.reset();
 }
@@ -971,7 +971,7 @@ void EditModeSystem::LoopCut(uint32_t primitiveID, float screenX, float screenY)
     if (hist != nullptr) {
         hist->Push(std::make_unique<MeshEditCommand>(m_Scene, m_EditMesh.GetEntity(), this,
                                                      vertsBefore, indsBefore, m_EditMesh.vertices,
-                                                     m_EditMesh.indices));
+                                                     m_EditMesh.indices, "Loop Cut"));
     }
 
     m_LoopCutMode = false;
