@@ -189,6 +189,138 @@ void InspectorPanel::DrawMeshSection(Entity entity) {
     }
 }
 
+// ---- edit mode panel --------------------------------------------------------
+
+void InspectorPanel::DrawEditModeSection() {
+    auto const& em            = m_EditModeSystem->GetEditMesh();
+    entt::entity const edited = em.GetEntity();
+
+    // Header
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.55f, 0.0f, 1.0f));
+    ImGui::TextUnformatted("EDIT MODE");
+    ImGui::PopStyleColor();
+    if (edited != entt::null && m_Scene->HasComponent<NameComponent>(edited)) {
+        ImGui::TextDisabled("%s", m_Scene->GetComponent<NameComponent>(edited).Name.c_str());
+    }
+
+    ImGui::Separator();
+
+    // Active operation status banner (Nielsen heuristic #1: system status visibility)
+    bool const grabActive    = m_EditModeSystem->IsGrabActive();
+    bool const insetActive   = m_EditModeSystem->IsInsetActive();
+    bool const bevelActive   = m_EditModeSystem->IsBevelActive();
+    bool const loopCutActive = m_EditModeSystem->IsLoopCutActive();
+    bool const anyOpActive   = grabActive || insetActive || bevelActive || loopCutActive;
+
+    if (anyOpActive) {
+        ImVec4 const statusColor{1.0f, 0.85f, 0.1f, 1.0f};
+        ImGui::PushStyleColor(ImGuiCol_Text, statusColor);
+        if (grabActive) {
+            ImGui::TextUnformatted("GRAB  — drag to move");
+        } else if (insetActive) {
+            ImGui::TextUnformatted("INSET  — drag to adjust");
+        } else if (bevelActive) {
+            ImGui::TextUnformatted("BEVEL  — drag to adjust");
+        } else if (loopCutActive) {
+            ImGui::TextUnformatted("LOOP CUT  — click edge");
+        }
+        ImGui::PopStyleColor();
+
+        if (grabActive || insetActive || bevelActive) {
+            float const btnW =
+                (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+            if (ImGui::Button("Confirm", ImVec2(btnW, 0))) {
+                if (grabActive) {
+                    m_EditModeSystem->ConfirmGrab();
+                } else if (insetActive) {
+                    m_EditModeSystem->ConfirmInset();
+                } else if (bevelActive) {
+                    m_EditModeSystem->ConfirmBevel();
+                }
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(btnW, 0))) {
+                if (grabActive) {
+                    m_EditModeSystem->CancelGrab();
+                } else if (insetActive) {
+                    m_EditModeSystem->CancelInset();
+                } else if (bevelActive) {
+                    m_EditModeSystem->CancelBevel();
+                }
+            }
+        } else if (loopCutActive) {
+            if (ImGui::Button("Cancel Loop Cut", ImVec2(-1, 0))) {
+                m_EditModeSystem->SetLoopCutMode(false);
+            }
+        }
+        ImGui::Separator();
+    }
+
+    // Element mode buttons
+    ImGui::TextUnformatted("Element Mode");
+    ImVec4 const activeBtn{0.85f, 0.45f, 0.05f, 1.0f};
+    float const modeW =
+        (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x * 2) / 3.0f;
+
+    auto modeButton = [&](char const* label, ElementMode mode) {
+        bool const active = em.mode == mode;
+        if (active) { ImGui::PushStyleColor(ImGuiCol_Button, activeBtn); }
+        if (ImGui::Button(label, ImVec2(modeW, 0)) && !anyOpActive) {
+            m_EditModeSystem->SetElementMode(mode);
+        }
+        if (active) { ImGui::PopStyleColor(); }
+    };
+    modeButton("Vertex", ElementMode::Vertex);
+    ImGui::SameLine();
+    modeButton("Edge", ElementMode::Edge);
+    ImGui::SameLine();
+    modeButton("Face", ElementMode::Face);
+
+    // Selection count
+    size_t selCount      = 0;
+    char const* selLabel = "vertices";
+    switch (em.mode) {
+        case ElementMode::Vertex:
+            selCount = em.selectedVertices.size();
+            selLabel = "vertices";
+            break;
+        case ElementMode::Edge:
+            selCount = em.selectedEdges.size();
+            selLabel = "edges";
+            break;
+        case ElementMode::Face:
+            selCount = em.selectedFaces.size();
+            selLabel = "faces";
+            break;
+    }
+    ImGui::Text("Selected: %zu %s", selCount, selLabel);
+
+    ImGui::Separator();
+
+    // Operation buttons
+    ImGui::TextUnformatted("Operations");
+    if (anyOpActive) { ImGui::BeginDisabled(); }
+
+    float const opW = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+    if (ImGui::Button("Extrude  E", ImVec2(opW, 0))) { m_EditModeSystem->Extrude(); }
+    ImGui::SameLine();
+    if (ImGui::Button("Inset  I", ImVec2(opW, 0))) { m_EditModeSystem->Inset(); }
+
+    if (ImGui::Button("Loop Cut  ^R", ImVec2(opW, 0))) {
+        m_EditModeSystem->SetLoopCutMode(!m_EditModeSystem->IsLoopCutActive());
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Bevel  ^B", ImVec2(opW, 0))) { m_EditModeSystem->Bevel(); }
+
+    if (anyOpActive) { ImGui::EndDisabled(); }
+
+    ImGui::Separator();
+    ImGui::Text("Vertices: %zu", em.vertices.size());
+    ImGui::Text("Faces:    %u", em.FaceCount());
+    ImGui::Spacing();
+    ImGui::TextDisabled("Tab  exit Edit Mode");
+}
+
 // ---- main render ------------------------------------------------------------
 
 void InspectorPanel::OnImGuiRender() {
@@ -197,21 +329,9 @@ void InspectorPanel::OnImGuiRender() {
     ImGui::SetNextWindowSize(ImVec2{260.f, 500.f}, ImGuiCond_FirstUseEver);
     ImGui::Begin("Inspector");
 
-    // In edit mode the inspector shows mesh element info instead of object components.
+    // In edit mode the inspector shows element controls and live operation status.
     if (m_EditModeSystem != nullptr && m_EditModeSystem->IsActive()) {
-        auto const& em            = m_EditModeSystem->GetEditMesh();
-        entt::entity const edited = em.GetEntity();
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.55f, 0.0f, 1.0f));
-        ImGui::TextUnformatted("EDIT MODE");
-        ImGui::PopStyleColor();
-        ImGui::Separator();
-        if (edited != entt::null && m_Scene->HasComponent<NameComponent>(edited)) {
-            ImGui::TextUnformatted(m_Scene->GetComponent<NameComponent>(edited).Name.c_str());
-        }
-        ImGui::Text("Vertices: %zu", em.vertices.size());
-        ImGui::Text("Faces:    %u", em.FaceCount());
-        ImGui::Spacing();
-        ImGui::TextDisabled("Tab - exit Edit Mode");
+        DrawEditModeSection();
         ImGui::End();
         return;
     }

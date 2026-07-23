@@ -22,6 +22,7 @@ public:
     void SetEditModeSystem(EditModeSystem* sys) { m_EditModeSystem = sys; }
 
 private:
+    void DrawEditModeSection();
     void DrawMultiEntityView();
     void DrawMultiTransformSection();
     void ApplyMultiDelta(Vec3 TransformComponent::* field, Vec3 v, Entity active);
