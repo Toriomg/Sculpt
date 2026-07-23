@@ -162,6 +162,10 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
             m_EditModeSystem->ConfirmInset();
             return true;
         }
+        if (m_EditModeSystem->IsBevelActive()) {
+            m_EditModeSystem->ConfirmBevel();
+            return true;
+        }
         auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
         if (pickSys == nullptr) { return false; }
         pickSys->RequestPickingPass(static_cast<uint32_t>(relPos.x),
@@ -223,6 +227,10 @@ bool EditorLayer::OnMouseMoved(MouseMovedEvent& /*e*/) {
         }
         if (m_EditModeSystem->IsInsetActive()) {
             m_EditModeSystem->UpdateInset(delta.x, delta.y);
+            return false;
+        }
+        if (m_EditModeSystem->IsBevelActive()) {
+            m_EditModeSystem->UpdateBevel(delta.x, delta.y);
             return false;
         }
     }
@@ -328,6 +336,14 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
             m_EditModeSystem->SetLoopCutMode(!m_EditModeSystem->IsLoopCutActive());
             return true;
         }
+        if (ctrlHeld && e.GetKeyCode() == static_cast<int>(KeyCode::B)) {
+            if (m_EditModeSystem->IsBevelActive()) {
+                m_EditModeSystem->ConfirmBevel();
+            } else {
+                m_EditModeSystem->Bevel();
+            }
+            return true;
+        }
         if (e.GetKeyCode() == static_cast<int>(KeyCode::Escape)) {
             if (m_EditModeSystem->IsGrabActive()) {
                 m_EditModeSystem->CancelGrab();
@@ -335,6 +351,10 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
             }
             if (m_EditModeSystem->IsInsetActive()) {
                 m_EditModeSystem->CancelInset();
+                return true;
+            }
+            if (m_EditModeSystem->IsBevelActive()) {
+                m_EditModeSystem->CancelBevel();
                 return true;
             }
             if (m_EditModeSystem->IsLoopCutActive()) {

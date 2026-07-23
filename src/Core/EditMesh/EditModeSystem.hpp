@@ -60,6 +60,13 @@ public:
     // Execute a loop cut through the edge nearest the click point on the hit triangle.
     void LoopCut(uint32_t primitiveID, float screenX, float screenY);
 
+    // Bevel selected edges (Ctrl+B in edge mode). Mouse drag controls width; click confirms.
+    void Bevel();
+    [[nodiscard]] bool IsBevelActive() const { return m_BevelState.has_value(); }
+    void UpdateBevel(float dx, float dy);
+    void ConfirmBevel();
+    void CancelBevel();
+
     // Overwrite CPU mesh state without re-reading from GPU; called by undo/redo.
     void SyncFromVertices(std::vector<EditVertex> const& verts, std::vector<uint32_t> const& inds);
 
@@ -68,6 +75,19 @@ public:
     void DrawOverlay(Matx4f const& globalTransform);
 
 private:
+    struct BevelState {
+        std::vector<EditVertex> verticesBefore;
+        std::vector<uint32_t> indicesBefore;
+        std::unordered_set<uint64_t> edgesBefore;
+        struct OffsetVert {
+            uint32_t idx   = 0;
+            Vec3 basePos   = {};
+            Vec3 direction = {};  // unit vector: move by width in this direction
+        };
+        std::vector<OffsetVert> offsetVerts;
+        float width = 0.0f;
+    };
+
     struct InsetState {
         std::vector<EditVertex> verticesBefore;
         std::vector<uint32_t> indicesBefore;
@@ -104,6 +124,7 @@ private:
     void DoExtrudeVerts(ExtrudeState& state);
     void DoInsetFaces(InsetState& state);
     void DoLoopCut(uint32_t primitiveID, float screenX, float screenY);
+    void DoBevelEdges(BevelState& state);
     // Convert EditMesh CPU data → GPU. fullRebuild=true when index count changed.
     void FlushToGPU(bool fullRebuild);
 
@@ -123,6 +144,7 @@ private:
 
     std::optional<ExtrudeState> m_ExtrudeState;
     std::optional<InsetState> m_InsetState;
+    std::optional<BevelState> m_BevelState;
     bool m_LoopCutMode = false;
 
     // Selection highlight VAO/VBO (position-only, rebuilt when selection changes).
