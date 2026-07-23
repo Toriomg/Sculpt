@@ -153,9 +153,13 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
 
     // In edit mode, clicks go to element selection via the picking system.
     if (m_InEditMode && m_EditModeSystem) {
-        // A click while a grab is active confirms the extrude placement.
+        // A click while a grab/inset is active confirms the operation.
         if (m_EditModeSystem->IsGrabActive()) {
             m_EditModeSystem->ConfirmGrab();
+            return true;
+        }
+        if (m_EditModeSystem->IsInsetActive()) {
+            m_EditModeSystem->ConfirmInset();
             return true;
         }
         auto* pickSys = m_ActiveScene->GetSystem<PickingSystem>();
@@ -204,9 +208,15 @@ bool EditorLayer::OnMouseMoved(MouseMovedEvent& /*e*/) {
 
     if (!m_ViewportPanel || !m_ViewportPanel->IsHovered()) { return false; }
 
-    if (m_InEditMode && m_EditModeSystem && m_EditModeSystem->IsGrabActive()) {
-        m_EditModeSystem->UpdateGrab(delta.x, delta.y);
-        return false;
+    if (m_InEditMode && m_EditModeSystem) {
+        if (m_EditModeSystem->IsGrabActive()) {
+            m_EditModeSystem->UpdateGrab(delta.x, delta.y);
+            return false;
+        }
+        if (m_EditModeSystem->IsInsetActive()) {
+            m_EditModeSystem->UpdateInset(delta.x, delta.y);
+            return false;
+        }
     }
 
     Vec2 const viewportMin = m_ViewportPanel->GetViewportMin();
