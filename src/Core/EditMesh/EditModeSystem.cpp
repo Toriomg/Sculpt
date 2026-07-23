@@ -925,24 +925,23 @@ void EditModeSystem::DoLoopCut(uint32_t primitiveID, float screenX, float screen
             continue;
         }
 
-        // Face normal for the new midpoint vertex.
-        Vec3 const e1  = verts[v[1]].position - verts[v[0]].position;
-        Vec3 const e2  = verts[v[2]].position - verts[v[0]].position;
-        Vec3 faceN     = e1.crossProduct(e2);
-        float const nl = std::sqrt(faceN.x * faceN.x + faceN.y * faceN.y + faceN.z * faceN.z);
-        faceN          = (nl > 1e-8f) ? faceN / nl : verts[v[0]].normal;
-
         // posA=(cutK), posB=(cutK+1)%3, posC=(cutK+2)%3 — the split edge and its opposite.
         uint32_t const posA = static_cast<uint32_t>(cutK);
         uint32_t const posB = static_cast<uint32_t>((cutK + 1) % 3);
         uint32_t const posC = static_cast<uint32_t>((cutK + 2) % 3);
         uint32_t const vA = v[posA], vB = v[posB], vC = v[posC];
 
+        // Midpoint normal: interpolate from the two edge endpoints so we never have to
+        // guess the winding convention — the stored normals are already correct.
+        Vec3 rawN       = verts[vA].normal + verts[vB].normal;
+        float const nl  = std::sqrt(rawN.x * rawN.x + rawN.y * rawN.y + rawN.z * rawN.z);
+        Vec3 const midN = (nl > 1e-8f) ? rawN / nl : verts[vA].normal;
+
         // Add midpoint vertex.
         uint32_t const M = static_cast<uint32_t>(verts.size());
         EditVertex mv;
         mv.position = (verts[vA].position + verts[vB].position) / 2.0f;
-        mv.normal   = faceN;
+        mv.normal   = midN;
         mv.texCoord = (verts[vA].texCoord + verts[vB].texCoord) / 2.0f;
         verts.push_back(mv);
 
