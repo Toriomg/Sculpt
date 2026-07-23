@@ -168,6 +168,14 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
                                     static_cast<uint32_t>(relPos.y));
         pickSys->OnUpdate(0.0f);
         auto const& result = pickSys->GetLastResult();
+        if (m_EditModeSystem->IsLoopCutActive()) {
+            if (result.Valid) {
+                m_EditModeSystem->LoopCut(result.PrimitiveID, relPos.x, relPos.y);
+            } else {
+                m_EditModeSystem->SetLoopCutMode(false);
+            }
+            return true;
+        }
         if (result.Valid) {
             m_EditModeSystem->OnMouseClick(result.PrimitiveID, relPos.x, relPos.y, isShiftHeld);
         } else {
@@ -315,6 +323,11 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
             }
             return true;
         }
+        bool const ctrlHeld = Input::IsKeyPressed(KeyCode::LeftControl);
+        if (ctrlHeld && e.GetKeyCode() == static_cast<int>(KeyCode::R)) {
+            m_EditModeSystem->SetLoopCutMode(!m_EditModeSystem->IsLoopCutActive());
+            return true;
+        }
         if (e.GetKeyCode() == static_cast<int>(KeyCode::Escape)) {
             if (m_EditModeSystem->IsGrabActive()) {
                 m_EditModeSystem->CancelGrab();
@@ -322,6 +335,10 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
             }
             if (m_EditModeSystem->IsInsetActive()) {
                 m_EditModeSystem->CancelInset();
+                return true;
+            }
+            if (m_EditModeSystem->IsLoopCutActive()) {
+                m_EditModeSystem->SetLoopCutMode(false);
                 return true;
             }
         }

@@ -54,6 +54,12 @@ public:
     void ConfirmInset();
     void CancelInset();
 
+    // Loop cut (Ctrl+R): click on a face/edge to cut an edge ring at midpoint.
+    void SetLoopCutMode(bool active) { m_LoopCutMode = active; }
+    [[nodiscard]] bool IsLoopCutActive() const { return m_LoopCutMode; }
+    // Execute a loop cut through the edge nearest the click point on the hit triangle.
+    void LoopCut(uint32_t primitiveID, float screenX, float screenY);
+
     // Overwrite CPU mesh state without re-reading from GPU; called by undo/redo.
     void SyncFromVertices(std::vector<EditVertex> const& verts, std::vector<uint32_t> const& inds);
 
@@ -97,6 +103,7 @@ private:
     void DoExtrudeEdges(ExtrudeState& state);
     void DoExtrudeVerts(ExtrudeState& state);
     void DoInsetFaces(InsetState& state);
+    void DoLoopCut(uint32_t primitiveID, float screenX, float screenY);
     // Convert EditMesh CPU data → GPU. fullRebuild=true when index count changed.
     void FlushToGPU(bool fullRebuild);
 
@@ -116,6 +123,7 @@ private:
 
     std::optional<ExtrudeState> m_ExtrudeState;
     std::optional<InsetState> m_InsetState;
+    bool m_LoopCutMode = false;
 
     // Selection highlight VAO/VBO (position-only, rebuilt when selection changes).
     std::shared_ptr<VertexArray> m_SelectionVAO;
