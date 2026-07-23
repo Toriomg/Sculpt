@@ -85,7 +85,10 @@ private:
             Vec3 direction = {};  // unit vector: move by width in this direction
         };
         std::vector<OffsetVert> offsetVerts;
-        float width = 0.0f;
+        // Faces whose vertices got moved by the bevel — used to recompute normals during drag.
+        std::vector<uint32_t> affectedFaces;
+        float width    = 0.0f;
+        float maxWidth = 1.0f;  // clamp so offsets don't overshoot adjacent triangles
     };
 
     struct InsetState {
